@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Description>Deep Research module for IronHive.Flux - autonomous research agent system</Description>
+    <PackageTags>$(PackageTags);DeepResearch;Agent;Research</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IronHive.Flux.Core\IronHive.Flux.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- IronBees Autonomous SDK (로우레벨 프리미티브) - Phase 2 이후 활성화 -->
+    <!-- <PackageReference Include="IronBees.Autonomous" /> -->
+
+    <!-- WebFlux (콘텐츠 추출) - Phase 2에서 사용 -->
+    <PackageReference Include="WebFlux" />
+
+    <!-- HTTP & Resilience -->
+    <PackageReference Include="Microsoft.Extensions.Http" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Polly" />
+    <PackageReference Include="Polly.Extensions" />
+
+    <!-- Caching -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+
+    <!-- Logging -->
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>

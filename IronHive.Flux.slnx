@@ -3,6 +3,7 @@
     <Project Path="src/IronHive.Flux.Core/IronHive.Flux.Core.csproj" />
     <Project Path="src/IronHive.Flux.Agent/IronHive.Flux.Agent.csproj" />
     <Project Path="src/IronHive.Flux.Rag/IronHive.Flux.Rag.csproj" />
+    <Project Path="src/IronHive.Flux.DeepResearch/IronHive.Flux.DeepResearch.csproj" />
     <Project Path="src/IronHive.Flux/IronHive.Flux.csproj" />
   </Folder>
   <Folder Name="/tests/">
