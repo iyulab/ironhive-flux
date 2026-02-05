@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IronHive.Flux</PackageId>
+    <Description>Complete bridge SDK connecting IronHive AI framework with Flux ecosystem (FileFlux, WebFlux, FluxIndex). Includes Core adapters, Agent tools, and RAG capabilities.</Description>
+    <PackageTags>iyulab;AI;LLM;RAG;Agent;IronHive;Flux;FileFlux;WebFlux;FluxIndex;Complete;SDK</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IronHive.Flux.Core\IronHive.Flux.Core.csproj" />
+    <ProjectReference Include="..\IronHive.Flux.Agent\IronHive.Flux.Agent.csproj" />
+    <ProjectReference Include="..\IronHive.Flux.Rag\IronHive.Flux.Rag.csproj" />
+  </ItemGroup>
+
+</Project>

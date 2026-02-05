@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IronHive.Flux.Core</PackageId>
+    <Description>Core adapters bridging IronHive AI services to Flux ecosystem (FileFlux, WebFlux, FluxIndex)</Description>
+    <PackageTags>iyulab;AI;LLM;RAG;IronHive;Flux;Adapter;Embedding;TextCompletion</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IronHive.Abstractions" />
+    <PackageReference Include="FileFlux" />
+    <PackageReference Include="WebFlux" />
+    <PackageReference Include="FluxIndex.Core" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+</Project>
