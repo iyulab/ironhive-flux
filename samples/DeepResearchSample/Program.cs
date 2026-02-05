@@ -125,7 +125,7 @@ Console.WriteLine("[INFO] 서비스 초기화 완료\n");
 var researcher = serviceProvider.GetRequiredService<IDeepResearcher>();
 var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 
-var testQuery = "2024년 AI 에이전트 프레임워크의 주요 트렌드와 발전 방향은 무엇인가?";
+var testQuery = "2026년 AI 에이전트 프레임워크의 주요 트렌드와 발전 방향은 무엇인가?";
 
 Console.WriteLine($"[QUERY] {testQuery}\n");
 Console.WriteLine("[INFO] 스트리밍 리서치 시작...\n");

@@ -263,6 +263,7 @@ public class DeepResearcherTests
         return new ResearchResult
         {
             SessionId = Guid.NewGuid().ToString("N"),
+            Query = "Test research query",
             Report = "# Test Report\n\nContent",
             Sections =
             [
@@ -273,8 +274,10 @@ public class DeepResearcherTests
                     Order = 1
                 }
             ],
-            Sources = [],
+            CitedSources = [],
+            UncitedSources = [],
             Citations = [],
+            ThinkingProcess = [],
             Metadata = new ResearchMetadata
             {
                 IterationCount = 1,
@@ -364,10 +367,13 @@ internal class MockResearchOrchestratorForFacade : ResearchOrchestrator
         return Task.FromResult(_result ?? new ResearchResult
         {
             SessionId = Guid.NewGuid().ToString("N"),
+            Query = "Default query",
             Report = "Default report",
             Sections = [],
-            Sources = [],
+            CitedSources = [],
+            UncitedSources = [],
             Citations = [],
+            ThinkingProcess = [],
             Metadata = new ResearchMetadata
             {
                 IterationCount = 1,
