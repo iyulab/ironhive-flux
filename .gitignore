@@ -66,3 +66,4 @@ CLAUDE.md
 appsettings.local.json
 appsettings.*.local.json
 local-docs/
+nul

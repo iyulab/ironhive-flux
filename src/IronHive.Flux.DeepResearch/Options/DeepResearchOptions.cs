@@ -79,4 +79,11 @@ public class DeepResearchOptions
     /// 재시도 횟수
     /// </summary>
     public int MaxRetries { get; set; } = 3;
+
+    /// <summary>
+    /// WebFlux 패키지 기반 콘텐츠 추출 사용 여부
+    /// true: WebFlux의 ICrawler + IContentExtractor 사용 (고급 기능)
+    /// false: 기본 HttpClient + ContentProcessor 사용 (경량)
+    /// </summary>
+    public bool UseWebFluxPackage { get; set; } = false;
 }

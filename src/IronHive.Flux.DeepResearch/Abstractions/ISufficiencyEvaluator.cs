@@ -52,23 +52,3 @@ public interface IReportGenerator
         ResearchState state,
         CancellationToken cancellationToken = default);
 }
-
-/// <summary>
-/// 콘텐츠 추출 인터페이스
-/// </summary>
-public interface IContentExtractor
-{
-    /// <summary>
-    /// URL에서 콘텐츠 추출
-    /// </summary>
-    Task<ExtractedContent> ExtractAsync(
-        string url,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// 배치 콘텐츠 추출
-    /// </summary>
-    Task<IReadOnlyList<ExtractedContent>> ExtractBatchAsync(
-        IEnumerable<string> urls,
-        CancellationToken cancellationToken = default);
-}

@@ -5,6 +5,11 @@
     <PackageTags>$(PackageTags);DeepResearch;Agent;Research</PackageTags>
   </PropertyGroup>
 
+  <!-- 테스트 프로젝트에서 internal 타입 접근 허용 -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="IronHive.Flux.Tests" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\IronHive.Flux.Core\IronHive.Flux.Core.csproj" />
   </ItemGroup>
