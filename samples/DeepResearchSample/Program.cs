@@ -1,3 +1,4 @@
+using System.Text.Json;
 using DeepResearchSample;
 using IronHive.Abstractions.Messages;
 using IronHive.Flux.DeepResearch;
@@ -20,6 +21,7 @@ var gpuStackModel = Environment.GetEnvironmentVariable("GPUSTACK_MODEL");
 var openAiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
 var tavilyKey = Environment.GetEnvironmentVariable("TAVILY_API_KEY");
 var useWebFlux = Environment.GetEnvironmentVariable("USE_WEBFLUX_PACKAGE")?.ToLower() == "true";
+var outputDir = Environment.GetEnvironmentVariable("OUTPUT_DIR") ?? "./reports";
 
 // LLM 설정 결정
 OpenAIConfig? llmConfig = null;
@@ -191,6 +193,22 @@ try
                 Console.WriteLine($"  - 반복 횟수: {progress.Result?.Metadata?.IterationCount}");
                 Console.WriteLine($"  - 소요 시간: {progress.Result?.Metadata?.Duration.TotalSeconds:F1}초");
 
+                // 보고서 파일 저장
+                if (progress.Result != null)
+                {
+                    var savedPath = await SaveReportAsync(progress.Result, outputDir);
+                    if (savedPath != null)
+                    {
+                        Console.WriteLine($"  - 저장 위치: {savedPath}");
+                    }
+
+                    // 사고 과정 출력
+                    if (progress.Result.ThinkingProcess.Count > 0)
+                    {
+                        Console.WriteLine($"  - 사고 과정: {progress.Result.ThinkingProcess.Count}개 단계");
+                    }
+                }
+
                 Console.WriteLine("\n=== 보고서 ===\n");
                 Console.WriteLine(progress.Result?.Report ?? "(보고서 없음)");
                 break;
@@ -230,5 +248,72 @@ static void LoadEnvFile(string path)
         {
             Environment.SetEnvironmentVariable(key, value);
         }
+    }
+}
+
+// 보고서 파일 저장 헬퍼
+static async Task<string?> SaveReportAsync(ResearchResult result, string outputDir)
+{
+    try
+    {
+        // 출력 디렉토리 생성
+        Directory.CreateDirectory(outputDir);
+
+        // 파일명 생성 (타임스탬프 + 세션ID 앞 8자리)
+        var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+        var sessionPrefix = result.SessionId[..Math.Min(8, result.SessionId.Length)];
+        var baseFileName = $"report_{timestamp}_{sessionPrefix}";
+
+        // 마크다운 보고서 저장 (본문만)
+        var mdPath = Path.Combine(outputDir, $"{baseFileName}.md");
+        await File.WriteAllTextAsync(mdPath, result.Report);
+
+        // 전체 결과를 JSON으로 저장 (소비 앱이 활용)
+        var fullResult = new
+        {
+            result.SessionId,
+            result.Query,
+            GeneratedAt = DateTime.Now,
+            Duration = result.Metadata.Duration.TotalSeconds,
+            IterationCount = result.Metadata.IterationCount,
+
+            // 보고서에 사용된 소스
+            CitedSources = result.CitedSources.Select(s => new
+            {
+                s.Id, s.Url, s.Title, s.Author, s.PublishedDate, s.Provider
+            }).ToList(),
+
+            // 읽었지만 사용되지 않은 소스
+            UncitedSources = result.UncitedSources.Select(s => new
+            {
+                s.Id, s.Url, s.Title, s.Author, s.PublishedDate, s.Provider
+            }).ToList(),
+
+            // 인용 정보
+            result.Citations,
+
+            // 사고 과정
+            ThinkingProcess = result.ThinkingProcess.Select(t => new
+            {
+                t.Type, t.Title, t.Description, t.Timestamp, t.Duration
+            }).ToList(),
+
+            // 에러
+            result.Errors
+        };
+
+        var jsonPath = Path.Combine(outputDir, $"{baseFileName}.json");
+        var jsonOptions = new JsonSerializerOptions { WriteIndented = true };
+        await File.WriteAllTextAsync(jsonPath, JsonSerializer.Serialize(fullResult, jsonOptions));
+
+        Console.WriteLine($"[FILE] 보고서 저장됨: {mdPath}");
+        Console.WriteLine($"[FILE] 메타데이터 저장됨: {jsonPath}");
+
+        return mdPath;
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"[ERROR] 파일 저장 실패: {ex.Message}");
+        return null;
     }
 }

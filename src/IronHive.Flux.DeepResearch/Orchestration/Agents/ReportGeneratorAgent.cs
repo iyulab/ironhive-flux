@@ -76,10 +76,10 @@ public class ReportGeneratorAgent
             outline.Sections.Count, outline.Sections.Count);
         var citations = citationContext.Citations.Values.OrderBy(c => c.Number).ToList();
 
-        // 4. 보고서 조립
+        // 4. 보고서 조립 (본문만)
         ReportProgress(progress, ReportGenerationPhase.AssemblingReport,
             outline.Sections.Count, outline.Sections.Count);
-        var report = AssembleReport(outline, sections, citations, options);
+        var report = AssembleReport(outline, sections, options);
 
         var completedAt = DateTimeOffset.UtcNow;
 
@@ -234,12 +234,11 @@ public class ReportGeneratorAgent
     }
 
     /// <summary>
-    /// 보고서 조립
+    /// 보고서 조립 (본문만, 출처는 ResearchResult에서 별도 제공)
     /// </summary>
     private string AssembleReport(
         ReportOutline outline,
         List<ReportSection> sections,
-        List<Citation> citations,
         ReportGenerationOptions options)
     {
         var sb = new StringBuilder();
@@ -255,34 +254,6 @@ public class ReportGeneratorAgent
             sb.AppendLine();
             sb.AppendLine(section.Content);
             sb.AppendLine();
-        }
-
-        // 참고문헌
-        if (options.IncludeReferences && citations.Count > 0)
-        {
-            sb.AppendLine("## 참고문헌");
-            sb.AppendLine();
-
-            foreach (var citation in citations)
-            {
-                var dateStr = citation.PublishedDate.HasValue
-                    ? citation.PublishedDate.Value.ToString("yyyy-MM-dd")
-                    : "날짜 없음";
-
-                var authorStr = !string.IsNullOrEmpty(citation.Author)
-                    ? $"{citation.Author}. "
-                    : "";
-
-                sb.AppendLine(options.CitationStyle switch
-                {
-                    CitationStyle.Numbered =>
-                        $"[{citation.Number}] {authorStr}\"{citation.Title}\". {dateStr}. {citation.Url}",
-                    CitationStyle.AuthorYear =>
-                        $"- {authorStr}({dateStr}). \"{citation.Title}\". {citation.Url}",
-                    _ =>
-                        $"[{citation.Number}] {citation.Title}. {citation.Url}"
-                });
-            }
         }
 
         return sb.ToString();

@@ -295,17 +295,50 @@ public class ResearchOrchestrator
     {
         state.CurrentPhase = ResearchPhase.Searching;
 
-        var searchResult = await ExecuteSearchPhaseInternalAsync(state, cancellationToken);
+        var retryCount = 0;
+        var maxRetries = _options.MaxSearchRetriesPerIteration;
 
-        // 에러 기록
-        foreach (var failed in searchResult.FailedSearches)
+        while (retryCount <= maxRetries && !cancellationToken.IsCancellationRequested)
         {
-            state.Errors.Add(new ResearchError
+            var searchResult = await ExecuteSearchPhaseInternalAsync(state, cancellationToken);
+
+            // 에러 기록
+            foreach (var failed in searchResult.FailedSearches)
             {
-                Type = ResearchErrorType.SearchProviderError,
-                Message = failed.ErrorMessage,
-                OccurredAt = DateTimeOffset.UtcNow
-            });
+                state.Errors.Add(new ResearchError
+                {
+                    Type = ResearchErrorType.SearchProviderError,
+                    Message = failed.ErrorMessage,
+                    OccurredAt = DateTimeOffset.UtcNow
+                });
+            }
+
+            // 소스를 얻었거나 최대 재시도 도달하면 종료
+            if (searchResult.UniqueSourcesCollected > 0 || retryCount >= maxRetries)
+            {
+                if (searchResult.UniqueSourcesCollected == 0 && retryCount >= maxRetries)
+                {
+                    _logger.LogWarning("검색 재시도 {RetryCount}회 후에도 소스를 찾지 못함", retryCount);
+                    state.AddThinkingStep(
+                        ThinkingStepType.Searching,
+                        "검색 결과 없음",
+                        $"검색 재시도 {retryCount}회 후에도 소스를 찾지 못했습니다. 봇 보호 또는 네트워크 문제일 수 있습니다.",
+                        data: new Dictionary<string, object> { ["retryCount"] = retryCount });
+                }
+                break;
+            }
+
+            // 재시도 대기 (봇 보호 우회)
+            retryCount++;
+            _logger.LogInformation("검색 결과 없음, {Delay}초 후 재시도 ({Retry}/{Max})",
+                _options.RetryDelayOnNoResults.TotalSeconds, retryCount, maxRetries);
+
+            state.AddThinkingStep(
+                ThinkingStepType.Searching,
+                $"검색 재시도 {retryCount}/{maxRetries}",
+                $"검색 결과가 없어서 {_options.RetryDelayOnNoResults.TotalSeconds}초 대기 후 재시도합니다.");
+
+            await Task.Delay(_options.RetryDelayOnNoResults, cancellationToken);
         }
     }
 
@@ -431,13 +464,21 @@ public class ResearchOrchestrator
     {
         state.CurrentPhase = ResearchPhase.Completed;
 
+        // 인용된 소스와 인용되지 않은 소스 분리
+        var citedSourceIds = reportResult.Citations.Select(c => c.SourceId).ToHashSet();
+        var citedSources = state.CollectedSources.Where(s => citedSourceIds.Contains(s.Id)).ToList();
+        var uncitedSources = state.CollectedSources.Where(s => !citedSourceIds.Contains(s.Id)).ToList();
+
         return new ResearchResult
         {
             SessionId = state.SessionId,
+            Query = state.Request.Query,
             Report = reportResult.Report,
             Sections = reportResult.Sections,
-            Sources = state.CollectedSources,
+            CitedSources = citedSources,
+            UncitedSources = uncitedSources,
             Citations = reportResult.Citations,
+            ThinkingProcess = state.ThinkingSteps,
             Metadata = new ResearchMetadata
             {
                 IterationCount = state.CurrentIteration,
@@ -463,10 +504,13 @@ public class ResearchOrchestrator
         return new ResearchResult
         {
             SessionId = state.SessionId,
+            Query = state.Request.Query,
             Report = partialReport,
             Sections = state.GeneratedSections,
-            Sources = state.CollectedSources,
+            CitedSources = [],
+            UncitedSources = state.CollectedSources.ToList(),
             Citations = [],
+            ThinkingProcess = state.ThinkingSteps,
             Metadata = new ResearchMetadata
             {
                 IterationCount = state.CurrentIteration,

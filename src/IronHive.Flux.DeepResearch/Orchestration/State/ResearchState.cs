@@ -39,6 +39,26 @@ public class ResearchState
 
     // 에러 추적
     public List<ResearchError> Errors { get; } = [];
+
+    // 사고 과정 추적
+    public List<ThinkingStep> ThinkingSteps { get; } = [];
+
+    /// <summary>
+    /// 사고 과정 단계 추가
+    /// </summary>
+    public void AddThinkingStep(ThinkingStepType type, string title, string description,
+        TimeSpan? duration = null, Dictionary<string, object>? data = null)
+    {
+        ThinkingSteps.Add(new ThinkingStep
+        {
+            Type = type,
+            Title = title,
+            Description = description,
+            Timestamp = DateTimeOffset.UtcNow,
+            Duration = duration,
+            Data = data
+        });
+    }
 }
 
 /// <summary>

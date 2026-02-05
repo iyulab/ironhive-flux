@@ -86,4 +86,20 @@ public class DeepResearchOptions
     /// false: 기본 HttpClient + ContentProcessor 사용 (경량)
     /// </summary>
     public bool UseWebFluxPackage { get; set; } = false;
+
+    /// <summary>
+    /// 보고서 생성 전 필요한 최소 소스 수
+    /// 이 수 이상의 소스를 얻을 때까지 검색을 계속 시도
+    /// </summary>
+    public int MinSourcesBeforeReport { get; set; } = 1;
+
+    /// <summary>
+    /// 검색 결과 없을 때 재시도 대기 시간 (봇 보호 우회용)
+    /// </summary>
+    public TimeSpan RetryDelayOnNoResults { get; set; } = TimeSpan.FromSeconds(2);
+
+    /// <summary>
+    /// 소스 없이 최대 재시도 횟수 (반복당)
+    /// </summary>
+    public int MaxSearchRetriesPerIteration { get; set; } = 3;
 }
