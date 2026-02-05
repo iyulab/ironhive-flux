@@ -85,21 +85,21 @@ services.AddSingleton<ITextGenerationService>(sp =>
     return new IronHiveTextGenerationAdapter(generator, modelId);
 });
 
+// Tavily API 키 확인
+if (string.IsNullOrEmpty(tavilyKey))
+{
+    Console.WriteLine("[ERROR] TAVILY_API_KEY가 설정되지 않았습니다.");
+    Console.WriteLine("Tavily API 키를 발급받아 설정하세요: https://tavily.com");
+    Console.WriteLine("  set TAVILY_API_KEY=tvly-xxxxxxxx");
+    return;
+}
+
 // DeepResearch 서비스 등록
 services.AddIronHiveFluxDeepResearch(options =>
 {
-    // Tavily API 키가 있으면 Tavily, 없으면 DuckDuckGo 사용
-    if (!string.IsNullOrEmpty(tavilyKey))
-    {
-        options.DefaultSearchProvider = "tavily";
-        options.SearchApiKeys["tavily"] = tavilyKey;
-        Console.WriteLine("[CONFIG] 검색: Tavily");
-    }
-    else
-    {
-        options.DefaultSearchProvider = "duckduckgo";
-        Console.WriteLine("[CONFIG] 검색: DuckDuckGo (무료, API 키 불필요)");
-    }
+    options.DefaultSearchProvider = "tavily";
+    options.SearchApiKeys["tavily"] = tavilyKey;
+    Console.WriteLine("[CONFIG] 검색: Tavily");
 
     // WebFlux 패키지 사용 여부 (고급 콘텐츠 추출)
     options.UseWebFluxPackage = useWebFlux;

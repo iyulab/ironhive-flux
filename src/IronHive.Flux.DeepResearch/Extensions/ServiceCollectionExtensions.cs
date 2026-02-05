@@ -41,16 +41,13 @@ public static class ServiceCollectionExtensions
 
         // 검색 프로바이더 HTTP 클라이언트 등록 (Resilience 포함)
         AddResilientHttpClient<TavilySearchProvider>(services, options);
-        AddResilientHttpClient<DuckDuckGoSearchProvider>(services, options);
 
         // 검색 프로바이더 등록
         services.AddSingleton<ISearchProvider, TavilySearchProvider>();
-        services.AddSingleton<ISearchProvider, DuckDuckGoSearchProvider>();
 
-        // TODO: 추가 프로바이더 (Phase 7)
-        // services.AddSingleton<ISearchProvider, SerperSearchProvider>();
+        // TODO: 추가 프로바이더
         // services.AddSingleton<ISearchProvider, BraveSearchProvider>();
-        // services.AddSingleton<ISearchProvider, SemanticScholarProvider>();
+        // services.AddSingleton<ISearchProvider, SerperSearchProvider>();
 
         // 검색 프로바이더 팩토리 등록
         services.AddSingleton<SearchProviderFactory>();

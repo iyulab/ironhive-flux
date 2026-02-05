@@ -128,17 +128,8 @@ public class SearchCoordinatorAgent
         var failedSearches = new List<FailedSearch>();
         var seenUrls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        // DuckDuckGo 사용 시 순차 실행 (봇 보호 우회)
-        var provider = SelectProvider(queries.FirstOrDefault() ?? new SearchQuery { Query = "" }, options);
-        var effectiveParallelism = provider.ProviderId == "duckduckgo" ? 1 : options.MaxParallelSearches;
-
-        if (effectiveParallelism == 1 && queries.Count > 1)
-        {
-            _logger.LogInformation("DuckDuckGo 감지: 순차 실행 모드로 전환 (봇 보호 우회)");
-        }
-
         // 병렬 실행 제어
-        using var semaphore = new SemaphoreSlim(effectiveParallelism);
+        using var semaphore = new SemaphoreSlim(options.MaxParallelSearches);
         var completedCount = 0;
         var inProgressCount = 0;
 
