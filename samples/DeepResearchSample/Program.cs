@@ -1,10 +1,8 @@
 using System.Text.Json;
-using DeepResearchSample;
-using IronHive.Abstractions.Messages;
-using IronHive.Flux.DeepResearch;
-using IronHive.Flux.DeepResearch.Abstractions;
-using IronHive.Flux.DeepResearch.Extensions;
-using IronHive.Flux.DeepResearch.Models.Research;
+using IronHive.DeepResearch;
+using IronHive.DeepResearch.Abstractions;
+using IronHive.DeepResearch.Extensions;
+using IronHive.DeepResearch.Models.Research;
 using IronHive.Providers.OpenAI;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -66,7 +64,14 @@ else
     return;
 }
 
-// Tavily 키 확인은 서비스 등록에서 처리
+// Tavily 키 확인
+if (string.IsNullOrEmpty(tavilyKey))
+{
+    Console.WriteLine("[ERROR] TAVILY_API_KEY가 설정되지 않았습니다.");
+    Console.WriteLine("Tavily API 키를 발급받아 설정하세요: https://tavily.com");
+    Console.WriteLine("  set TAVILY_API_KEY=tvly-xxxxxxxx");
+    return;
+}
 
 // DI 컨테이너 구성
 var services = new ServiceCollection();
@@ -78,30 +83,14 @@ services.AddLogging(builder =>
     builder.SetMinimumLevel(LogLevel.Information);
 });
 
-// DeepResearch ITextGenerationService 어댑터 등록
-services.AddSingleton<ITextGenerationService>(sp =>
-{
-    var generator = new OpenAIChatMessageGenerator(llmConfig);
-    return new IronHiveTextGenerationAdapter(generator, modelId);
-});
-
-// Tavily API 키 확인
-if (string.IsNullOrEmpty(tavilyKey))
-{
-    Console.WriteLine("[ERROR] TAVILY_API_KEY가 설정되지 않았습니다.");
-    Console.WriteLine("Tavily API 키를 발급받아 설정하세요: https://tavily.com");
-    Console.WriteLine("  set TAVILY_API_KEY=tvly-xxxxxxxx");
-    return;
-}
-
-// DeepResearch 서비스 등록
-services.AddIronHiveFluxDeepResearch(options =>
+// IMessageGenerator 기반으로 DeepResearch 등록 (어댑터 내장)
+var generator = new OpenAIChatMessageGenerator(llmConfig);
+services.AddDeepResearch(generator, modelId, options =>
 {
     options.DefaultSearchProvider = "tavily";
     options.SearchApiKeys["tavily"] = tavilyKey;
     Console.WriteLine("[CONFIG] 검색: Tavily");
 
-    // WebFlux 패키지 사용 여부 (고급 콘텐츠 추출)
     options.UseWebFluxPackage = useWebFlux;
     if (useWebFlux)
     {
@@ -112,7 +101,7 @@ services.AddIronHiveFluxDeepResearch(options =>
         Console.WriteLine("[CONFIG] 콘텐츠 추출: 기본 (경량)");
     }
 
-    options.DefaultMaxIterations = 2; // 테스트용으로 낮게 설정
+    options.DefaultMaxIterations = 2;
     options.SufficiencyThreshold = 0.7m;
     options.HttpTimeout = TimeSpan.FromSeconds(60);
 });

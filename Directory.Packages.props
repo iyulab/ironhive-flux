@@ -4,18 +4,18 @@
   </PropertyGroup>
 
   <ItemGroup Label="IronHive">
-    <PackageVersion Include="IronHive.Abstractions" Version="0.3.0" />
-    <PackageVersion Include="IronHive.Core" Version="0.3.0" />
-    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.3.0" />
+    <PackageVersion Include="IronHive.Abstractions" Version="0.3.1" />
+    <PackageVersion Include="IronHive.Core" Version="0.3.1" />
+    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.3.1" />
     <PackageVersion Include="Ironbees.Ironhive" Version="0.3.0" />
   </ItemGroup>
 
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.8.0" />
+    <PackageVersion Include="FileFlux" Version="0.10.1" />
     <PackageVersion Include="FileFlux.Core" Version="0.8.0" />
     <PackageVersion Include="WebFlux" Version="0.2.1" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.4.0" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.4.0" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.8.0" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.8.0" />
   </ItemGroup>
 
   <ItemGroup Label="Microsoft">

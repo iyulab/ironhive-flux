@@ -7,7 +7,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\IronHive.Flux\IronHive.Flux.csproj" />
-    <ProjectReference Include="..\..\src\IronHive.Flux.DeepResearch\IronHive.Flux.DeepResearch.csproj" />
   </ItemGroup>
 
   <ItemGroup>

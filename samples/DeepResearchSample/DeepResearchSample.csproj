@@ -6,8 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\IronHive.Flux.DeepResearch\IronHive.Flux.DeepResearch.csproj" />
-    <ProjectReference Include="..\..\src\IronHive.Flux.Core\IronHive.Flux.Core.csproj" />
+    <!-- IronHive.DeepResearch는 ironhive-agent로 이동됨 -->
+    <!-- 로컬 개발 시 상대경로 ProjectReference 사용 -->
+    <ProjectReference Include="..\..\..\ironhive-agent\src\IronHive.DeepResearch\IronHive.DeepResearch.csproj" />
   </ItemGroup>
 
   <ItemGroup>
