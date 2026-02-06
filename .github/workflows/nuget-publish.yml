@@ -1,0 +1,150 @@
+name: NuGet Publish
+
+on:
+  push:
+    branches: [main]
+    paths: ['Directory.Build.props']
+  workflow_dispatch:
+    inputs:
+      force_publish:
+        description: 'Force publish even if version exists'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  detect-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version
+        id: version
+        run: |
+          VERSION=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Detected version: $VERSION"
+
+  build-and-test:
+    needs: detect-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore IronHive.Flux.slnx
+
+      - name: Build
+        run: dotnet build IronHive.Flux.slnx --no-restore -c Release
+
+      - name: Test
+        run: dotnet test tests/IronHive.Flux.Tests --no-build -c Release
+
+  publish:
+    needs: [detect-version, build-and-test]
+    runs-on: ubuntu-latest
+    environment: nuget-production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore IronHive.Flux.slnx
+
+      - name: Build
+        run: dotnet build IronHive.Flux.slnx --no-restore -c Release
+
+      - name: Check existing versions on NuGet
+        id: check
+        run: |
+          VERSION="${{ needs.detect-version.outputs.version }}"
+          PACKAGES=("IronHive.Flux.Core" "IronHive.Flux.Agent" "IronHive.Flux.Rag" "IronHive.Flux")
+          NEED_PUBLISH=false
+
+          for PACKAGE in "${PACKAGES[@]}"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "https://api.nuget.org/v3-flatcontainer/${PACKAGE,,}/${VERSION}/${PACKAGE,,}.${VERSION}.nupkg")
+            if [ "$STATUS" != "200" ]; then
+              echo "$PACKAGE $VERSION not found on NuGet (status: $STATUS)"
+              NEED_PUBLISH=true
+            else
+              echo "$PACKAGE $VERSION already exists on NuGet"
+            fi
+          done
+
+          if [ "${{ inputs.force_publish }}" == "true" ]; then
+            NEED_PUBLISH=true
+            echo "Force publish enabled"
+          fi
+
+          echo "need_publish=$NEED_PUBLISH" >> $GITHUB_OUTPUT
+
+      - name: Pack
+        if: steps.check.outputs.need_publish == 'true'
+        run: |
+          for csproj in src/*/IronHive.Flux*.csproj; do
+            echo "Packing $csproj..."
+            dotnet pack "$csproj" --no-build -c Release -o ./nupkgs
+          done
+
+      - name: Publish to NuGet
+        if: steps.check.outputs.need_publish == 'true'
+        run: |
+          dotnet nuget push ./nupkgs/*.nupkg \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate \
+            --no-symbols
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Upload packages
+        if: steps.check.outputs.need_publish == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: nupkgs
+          path: nupkgs/*.nupkg
+          retention-days: 30
+
+      - name: Create Git tag
+        if: steps.check.outputs.need_publish == 'true'
+        run: |
+          VERSION="${{ needs.detect-version.outputs.version }}"
+          TAG="v${VERSION}"
+          if ! git rev-parse "$TAG" >/dev/null 2>&1; then
+            git tag "$TAG"
+            git push origin "$TAG"
+            echo "Created tag: $TAG"
+          else
+            echo "Tag $TAG already exists"
+          fi
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.need_publish == 'true'
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ needs.detect-version.outputs.version }}
+          name: v${{ needs.detect-version.outputs.version }}
+          body: |
+            ## IronHive.Flux v${{ needs.detect-version.outputs.version }}
+
+            ### Packages
+            - [IronHive.Flux.Core](https://www.nuget.org/packages/IronHive.Flux.Core/${{ needs.detect-version.outputs.version }})
+            - [IronHive.Flux.Agent](https://www.nuget.org/packages/IronHive.Flux.Agent/${{ needs.detect-version.outputs.version }})
+            - [IronHive.Flux.Rag](https://www.nuget.org/packages/IronHive.Flux.Rag/${{ needs.detect-version.outputs.version }})
+            - [IronHive.Flux](https://www.nuget.org/packages/IronHive.Flux/${{ needs.detect-version.outputs.version }}) (metapackage)
+          files: nupkgs/*.nupkg
+          prerelease: ${{ contains(needs.detect-version.outputs.version, '-') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
