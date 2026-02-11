@@ -67,4 +67,3 @@ appsettings.local.json
 appsettings.*.local.json
 local-docs/
 nul
-samples/DeepResearchSample/reports/

@@ -70,7 +70,7 @@ jobs:
         id: check
         run: |
           VERSION="${{ needs.detect-version.outputs.version }}"
-          PACKAGES=("IronHive.Flux.Core" "IronHive.Flux.Agent" "IronHive.Flux.Rag" "IronHive.Flux")
+          PACKAGES=("IronHive.Flux.Core" "IronHive.Flux.Rag" "IronHive.Flux")
           NEED_PUBLISH=false
 
           for PACKAGE in "${PACKAGES[@]}"; do
@@ -141,7 +141,6 @@ jobs:
 
             ### Packages
             - [IronHive.Flux.Core](https://www.nuget.org/packages/IronHive.Flux.Core/${{ needs.detect-version.outputs.version }})
-            - [IronHive.Flux.Agent](https://www.nuget.org/packages/IronHive.Flux.Agent/${{ needs.detect-version.outputs.version }})
             - [IronHive.Flux.Rag](https://www.nuget.org/packages/IronHive.Flux.Rag/${{ needs.detect-version.outputs.version }})
             - [IronHive.Flux](https://www.nuget.org/packages/IronHive.Flux/${{ needs.detect-version.outputs.version }}) (metapackage)
           files: nupkgs/*.nupkg

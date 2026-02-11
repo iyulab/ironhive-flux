@@ -4,26 +4,25 @@
   </PropertyGroup>
 
   <ItemGroup Label="IronHive">
-    <PackageVersion Include="IronHive.Abstractions" Version="0.3.1" />
-    <PackageVersion Include="IronHive.Core" Version="0.3.1" />
-    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.3.1" />
-    <PackageVersion Include="Ironbees.Ironhive" Version="0.3.0" />
+    <PackageVersion Include="IronHive.Abstractions" Version="0.3.3" />
+    <PackageVersion Include="IronHive.Core" Version="0.3.3" />
+    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.3.3" />
   </ItemGroup>
 
   <ItemGroup Label="Flux Ecosystem">
     <PackageVersion Include="FileFlux" Version="0.10.1" />
     <PackageVersion Include="FileFlux.Core" Version="0.8.0" />
-    <PackageVersion Include="WebFlux" Version="0.2.1" />
+    <PackageVersion Include="WebFlux" Version="0.3.0" />
     <PackageVersion Include="FluxIndex.Core" Version="0.8.0" />
     <PackageVersion Include="FluxIndex.SDK" Version="0.8.0" />
   </ItemGroup>
 
   <ItemGroup Label="Microsoft">
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.2" />
-    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Http" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.2" />

@@ -1,7 +1,6 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/IronHive.Flux.Core/IronHive.Flux.Core.csproj" />
-    <Project Path="src/IronHive.Flux.Agent/IronHive.Flux.Agent.csproj" />
     <Project Path="src/IronHive.Flux.Rag/IronHive.Flux.Rag.csproj" />
     <Project Path="src/IronHive.Flux/IronHive.Flux.csproj" />
   </Folder>
@@ -9,7 +8,6 @@
     <Project Path="tests/IronHive.Flux.Tests/IronHive.Flux.Tests.csproj" />
   </Folder>
   <Folder Name="/samples/">
-    <Project Path="samples/AgentWorkerSample/AgentWorkerSample.csproj" />
     <Project Path="samples/RagChatbotSample/RagChatbotSample.csproj" />
   </Folder>
 </Solution>
