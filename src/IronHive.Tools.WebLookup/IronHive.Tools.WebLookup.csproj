@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IronHive.Tools.WebLookup</PackageId>
+    <Description>IronHive FunctionTool wrapper for WebLookup — web search and site exploration as agent tools</Description>
+    <PackageTags>iyulab;AI;LLM;Agent;IronHive;WebLookup;WebSearch;FunctionTool;SiteExplorer</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IronHive.Core" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="WebLookup" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+  </ItemGroup>
+
+</Project>
