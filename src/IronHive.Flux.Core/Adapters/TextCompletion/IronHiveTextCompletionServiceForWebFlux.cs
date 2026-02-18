@@ -14,7 +14,7 @@ namespace IronHive.Flux.Core.Adapters.TextCompletion;
 /// <summary>
 /// IronHive IMessageGenerator를 WebFlux ITextCompletionService로 어댑트
 /// </summary>
-public class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.ITextCompletionService
+public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.ITextCompletionService
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
@@ -36,13 +36,15 @@ public class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.I
         TextCompletionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("WebFlux 텍스트 완성 시작 - PromptLength: {Length}", prompt.Length);
+        if (_logger is not null)
+            LogTextCompletionStarted(_logger, prompt.Length);
 
         var request = CreateRequest(prompt, options);
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
         var result = ExtractTextFromResponse(response);
 
-        _logger?.LogDebug("WebFlux 텍스트 완성 완료 - ResultLength: {Length}", result.Length);
+        if (_logger is not null)
+            LogTextCompletionCompleted(_logger, result.Length);
         return result;
     }
 
@@ -52,7 +54,8 @@ public class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.I
         TextCompletionOptions? options = null,
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("WebFlux 스트리밍 텍스트 완성 시작 - PromptLength: {Length}", prompt.Length);
+        if (_logger is not null)
+            LogStreamingTextCompletionStarted(_logger, prompt.Length);
 
         var request = CreateRequest(prompt, options);
 
@@ -65,7 +68,8 @@ public class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.I
             }
         }
 
-        _logger?.LogDebug("WebFlux 스트리밍 텍스트 완성 완료");
+        if (_logger is not null)
+            LogStreamingTextCompletionCompleted(_logger);
     }
 
     /// <inheritdoc />
@@ -75,7 +79,8 @@ public class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.I
         CancellationToken cancellationToken = default)
     {
         var promptList = prompts.ToList();
-        _logger?.LogDebug("WebFlux 배치 텍스트 완성 시작 - Count: {Count}", promptList.Count);
+        if (_logger is not null)
+            LogBatchTextCompletionStarted(_logger, promptList.Count);
 
         var results = new List<string>();
         foreach (var prompt in promptList)
@@ -84,7 +89,8 @@ public class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.I
             results.Add(result);
         }
 
-        _logger?.LogDebug("WebFlux 배치 텍스트 완성 완료 - Count: {Count}", results.Count);
+        if (_logger is not null)
+            LogBatchTextCompletionCompleted(_logger, results.Count);
         return results;
     }
 
@@ -136,4 +142,26 @@ public class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.I
 
         return textContents != null ? string.Join("", textContents) : string.Empty;
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 텍스트 완성 시작 - PromptLength: {Length}")]
+    private static partial void LogTextCompletionStarted(ILogger logger, int Length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 텍스트 완성 완료 - ResultLength: {Length}")]
+    private static partial void LogTextCompletionCompleted(ILogger logger, int Length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 스트리밍 텍스트 완성 시작 - PromptLength: {Length}")]
+    private static partial void LogStreamingTextCompletionStarted(ILogger logger, int Length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 스트리밍 텍스트 완성 완료")]
+    private static partial void LogStreamingTextCompletionCompleted(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 텍스트 완성 시작 - Count: {Count}")]
+    private static partial void LogBatchTextCompletionStarted(ILogger logger, int Count);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 텍스트 완성 완료 - Count: {Count}")]
+    private static partial void LogBatchTextCompletionCompleted(ILogger logger, int Count);
+
+    #endregion
 }

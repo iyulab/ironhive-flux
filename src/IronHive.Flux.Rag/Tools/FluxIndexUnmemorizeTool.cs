@@ -10,8 +10,10 @@ namespace IronHive.Flux.Rag.Tools;
 /// <summary>
 /// FluxIndex 문서 삭제 도구 - 지식 베이스에서 문서 삭제
 /// </summary>
-public class FluxIndexUnmemorizeTool
+public partial class FluxIndexUnmemorizeTool
 {
+    private static readonly JsonSerializerOptions s_indentedJsonOptions = new() { WriteIndented = true };
+
     private readonly FluxRagToolsOptions _options;
     private readonly ILogger<FluxIndexUnmemorizeTool>? _logger;
 
@@ -36,35 +38,32 @@ public class FluxIndexUnmemorizeTool
         [Description("인덱스 이름")] string? indexName = null,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogInformation("문서 삭제 시작 - DocumentId: {DocId}", documentId);
+        if (_logger is not null)
+            LogUnmemorizeStarted(_logger, documentId);
 
         try
         {
             var index = indexName ?? _options.DefaultIndexName;
-
-            // 실제 삭제는 FluxIndex SDK 사용
-            // 여기서는 간단한 구현
-            var deleted = false;
-
-            // Note: 실제 구현에서는 FluxIndexSearchTool의 storage에 접근하여 삭제
-            // 현재는 시연을 위한 간단한 응답
+            var deleted = FluxIndexSearchTool.RemoveDocument(index, documentId);
 
             var result = new
             {
-                success = true,
+                success = deleted,
                 documentId,
                 indexName = index,
                 deleted,
-                deletedAt = DateTime.UtcNow.ToString("O"),
+                deletedAt = deleted ? DateTime.UtcNow.ToString("O") : null,
                 message = deleted ? "문서가 성공적으로 삭제되었습니다." : "문서를 찾을 수 없거나 이미 삭제되었습니다."
             };
 
-            _logger?.LogInformation("문서 삭제 완료 - DocumentId: {DocId}, Deleted: {Deleted}", documentId, deleted);
-            return Task.FromResult(JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
+            if (_logger is not null)
+                LogUnmemorizeCompleted(_logger, documentId, deleted);
+            return Task.FromResult(JsonSerializer.Serialize(result, s_indentedJsonOptions));
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "문서 삭제 실패 - DocumentId: {DocId}", documentId);
+            if (_logger is not null)
+                LogUnmemorizeFailed(_logger, ex, documentId);
             return Task.FromResult(JsonSerializer.Serialize(new
             {
                 success = false,
@@ -73,4 +72,17 @@ public class FluxIndexUnmemorizeTool
             }));
         }
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "문서 삭제 시작 - DocumentId: {DocId}")]
+    private static partial void LogUnmemorizeStarted(ILogger logger, string DocId);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "문서 삭제 완료 - DocumentId: {DocId}, Deleted: {Deleted}")]
+    private static partial void LogUnmemorizeCompleted(ILogger logger, string DocId, bool Deleted);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "문서 삭제 실패 - DocumentId: {DocId}")]
+    private static partial void LogUnmemorizeFailed(ILogger logger, Exception ex, string DocId);
+
+    #endregion
 }

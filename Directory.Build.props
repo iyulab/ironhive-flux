@@ -4,13 +4,17 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+    <NoWarn>$(NoWarn);CS1573</NoWarn>
     <Version>0.2.0</Version>
     <!-- 기본적으로 NuGet 패키지 생성 비활성화 -->
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <!-- 라이브러리 프로젝트 공통 설정 -->
-  <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('IronHive.Flux'))">
+  <PropertyGroup Condition="$(MSBuildProjectName.StartsWith('IronHive.'))">
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>

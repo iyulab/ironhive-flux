@@ -1,23 +1,27 @@
 using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TokenMeter;
 
 namespace IronHive.Flux.Rag.Context;
 
 /// <summary>
 /// RAG 컨텍스트 빌더 - FluxIndex 검색 결과를 LLM 컨텍스트로 변환
 /// </summary>
-public class RagContextBuilder
+public partial class RagContextBuilder
 {
     private readonly FluxRagToolsOptions _options;
     private readonly ILogger<RagContextBuilder>? _logger;
+    private readonly ITokenCounter? _tokenCounter;
 
     public RagContextBuilder(
         IOptions<FluxRagToolsOptions> options,
-        ILogger<RagContextBuilder>? logger = null)
+        ILogger<RagContextBuilder>? logger = null,
+        ITokenCounter? tokenCounter = null)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
+        _tokenCounter = tokenCounter;
     }
 
     /// <summary>
@@ -31,7 +35,8 @@ public class RagContextBuilder
         RagContextOptions? options = null)
     {
         var results = searchResults.ToList();
-        _logger?.LogDebug("RAG 컨텍스트 빌드 시작 - ResultCount: {Count}", results.Count);
+        if (_logger is not null)
+            LogContextBuildStarted(_logger, results.Count);
 
         var maxTokens = options?.MaxTokens ?? _options.MaxContextTokens;
         var minScore = options?.MinScore ?? _options.DefaultMinScore;
@@ -68,8 +73,8 @@ public class RagContextBuilder
             SearchStrategy = options?.Strategy ?? _options.DefaultSearchStrategy
         };
 
-        _logger?.LogDebug("RAG 컨텍스트 빌드 완료 - SelectedCount: {Count}, Tokens: {Tokens}",
-            selectedResults.Count, currentTokens);
+        if (_logger is not null)
+            LogContextBuildCompleted(_logger, selectedResults.Count, currentTokens);
 
         return context;
     }
@@ -92,7 +97,7 @@ public class RagContextBuilder
         return BuildContext(searchResults, options);
     }
 
-    private string BuildContextText(IReadOnlyList<RagSearchResult> results)
+    private string BuildContextText(List<RagSearchResult> results)
     {
         if (results.Count == 0)
             return "관련 정보를 찾을 수 없습니다.";
@@ -112,14 +117,29 @@ public class RagContextBuilder
         return string.Join(_options.ChunkSeparator, contextParts);
     }
 
-    private static int EstimateTokens(string text)
+    private int EstimateTokens(string text)
     {
-        // 대략적인 토큰 추정: 1 토큰 ≈ 4 문자 (영어 기준)
-        // 한국어의 경우 더 많은 토큰이 사용됨
+        // Use TokenMeter for accurate counting when available
+        if (_tokenCounter is not null)
+        {
+            return _tokenCounter.CountTokens(text);
+        }
+
+        // Fallback: character-based heuristic
         var koreanCount = text.Count(c => c >= 0xAC00 && c <= 0xD7A3);
         var otherCount = text.Length - koreanCount;
 
-        // 한국어: 약 1.5 토큰/문자, 영어: 약 0.25 토큰/문자
+        // 한국어: ~1.5 토큰/문자, 영어: ~0.25 토큰/문자
         return (int)(koreanCount * 1.5 + otherCount * 0.25);
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "RAG 컨텍스트 빌드 시작 - ResultCount: {Count}")]
+    private static partial void LogContextBuildStarted(ILogger logger, int Count);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "RAG 컨텍스트 빌드 완료 - SelectedCount: {Count}, Tokens: {Tokens}")]
+    private static partial void LogContextBuildCompleted(ILogger logger, int Count, int Tokens);
+
+    #endregion
 }

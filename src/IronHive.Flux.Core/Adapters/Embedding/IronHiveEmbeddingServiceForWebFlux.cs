@@ -9,7 +9,7 @@ namespace IronHive.Flux.Core.Adapters.Embedding;
 /// <summary>
 /// IronHive IEmbeddingGenerator를 WebFlux ITextEmbeddingService로 어댑트
 /// </summary>
-public class IronHiveEmbeddingServiceForWebFlux : ITextEmbeddingService
+public partial class IronHiveEmbeddingServiceForWebFlux : ITextEmbeddingService
 {
     private readonly IEmbeddingGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
@@ -38,14 +38,16 @@ public class IronHiveEmbeddingServiceForWebFlux : ITextEmbeddingService
         string text,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("WebFlux 임베딩 생성 시작 - TextLength: {Length}", text.Length);
+        if (_logger is not null)
+            LogEmbeddingStarted(_logger, text.Length);
 
         var embedding = await _generator.EmbedAsync(
             _options.EmbeddingModelId,
             text,
             cancellationToken);
 
-        _logger?.LogDebug("WebFlux 임베딩 생성 완료 - Dimension: {Dimension}", embedding.Length);
+        if (_logger is not null)
+            LogEmbeddingCompleted(_logger, embedding.Length);
         return embedding;
     }
 
@@ -54,7 +56,8 @@ public class IronHiveEmbeddingServiceForWebFlux : ITextEmbeddingService
         IReadOnlyList<string> texts,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("WebFlux 배치 임베딩 생성 시작 - Count: {Count}", texts.Count);
+        if (_logger is not null)
+            LogBatchEmbeddingStarted(_logger, texts.Count);
 
         var results = await _generator.EmbedBatchAsync(
             _options.EmbeddingModelId,
@@ -62,7 +65,24 @@ public class IronHiveEmbeddingServiceForWebFlux : ITextEmbeddingService
             cancellationToken);
 
         var embeddings = results.Select(r => r.Embedding ?? Array.Empty<float>()).ToList();
-        _logger?.LogDebug("WebFlux 배치 임베딩 생성 완료 - Count: {Count}", embeddings.Count);
+        if (_logger is not null)
+            LogBatchEmbeddingCompleted(_logger, embeddings.Count);
         return embeddings;
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 임베딩 생성 시작 - TextLength: {Length}")]
+    private static partial void LogEmbeddingStarted(ILogger logger, int Length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 임베딩 생성 완료 - Dimension: {Dimension}")]
+    private static partial void LogEmbeddingCompleted(ILogger logger, int Dimension);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 임베딩 생성 시작 - Count: {Count}")]
+    private static partial void LogBatchEmbeddingStarted(ILogger logger, int Count);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 임베딩 생성 완료 - Count: {Count}")]
+    private static partial void LogBatchEmbeddingCompleted(ILogger logger, int Count);
+
+    #endregion
 }

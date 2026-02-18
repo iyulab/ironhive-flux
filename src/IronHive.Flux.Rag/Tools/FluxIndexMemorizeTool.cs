@@ -11,8 +11,10 @@ namespace IronHive.Flux.Rag.Tools;
 /// <summary>
 /// FluxIndex 문서 저장 도구 - 지식 베이스에 문서 저장
 /// </summary>
-public class FluxIndexMemorizeTool
+public partial class FluxIndexMemorizeTool
 {
+    private static readonly JsonSerializerOptions s_indentedJsonOptions = new() { WriteIndented = true };
+
     private readonly FluxRagToolsOptions _options;
     private readonly IEmbeddingService? _embeddingService;
     private readonly ILogger<FluxIndexMemorizeTool>? _logger;
@@ -46,8 +48,9 @@ public class FluxIndexMemorizeTool
         [Description("인덱스 이름")] string? indexName = null,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogInformation("문서 저장 시작 - DocumentId: {DocId}, ContentLength: {Length}",
-            documentId ?? "(auto)", content.Length);
+        var docIdDisplay = documentId ?? "(auto)";
+        if (_logger is not null)
+            LogMemorizeStarted(_logger, docIdDisplay, content.Length);
 
         try
         {
@@ -64,7 +67,8 @@ public class FluxIndexMemorizeTool
                 }
                 catch
                 {
-                    _logger?.LogWarning("메타데이터 파싱 실패, 무시됨");
+                    if (_logger is not null)
+                        LogMetadataParseFailed(_logger);
                 }
             }
 
@@ -103,12 +107,14 @@ public class FluxIndexMemorizeTool
                 memorizedAt = DateTime.UtcNow.ToString("O")
             };
 
-            _logger?.LogInformation("문서 저장 완료 - DocumentId: {DocId}", docId);
-            return JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+            if (_logger is not null)
+                LogMemorizeCompleted(_logger, docId);
+            return JsonSerializer.Serialize(result, s_indentedJsonOptions);
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "문서 저장 실패 - DocumentId: {DocId}", documentId);
+            if (_logger is not null)
+                LogMemorizeFailed(_logger, ex, documentId);
             return JsonSerializer.Serialize(new
             {
                 success = false,
@@ -117,4 +123,20 @@ public class FluxIndexMemorizeTool
             });
         }
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "문서 저장 시작 - DocumentId: {DocId}, ContentLength: {Length}")]
+    private static partial void LogMemorizeStarted(ILogger logger, string DocId, int Length);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "메타데이터 파싱 실패, 무시됨")]
+    private static partial void LogMetadataParseFailed(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "문서 저장 완료 - DocumentId: {DocId}")]
+    private static partial void LogMemorizeCompleted(ILogger logger, string DocId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "문서 저장 실패 - DocumentId: {DocId}")]
+    private static partial void LogMemorizeFailed(ILogger logger, Exception ex, string? DocId);
+
+    #endregion
 }

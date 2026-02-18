@@ -2,7 +2,10 @@
   <Folder Name="/src/">
     <Project Path="src/IronHive.Flux.Core/IronHive.Flux.Core.csproj" />
     <Project Path="src/IronHive.Flux.Rag/IronHive.Flux.Rag.csproj" />
+    <Project Path="src/IronHive.Flux.WebLookup/IronHive.Flux.WebLookup.csproj" />
     <Project Path="src/IronHive.Flux/IronHive.Flux.csproj" />
+    <Project Path="src/IronHive.Tools.SystemHarness/IronHive.Tools.SystemHarness.csproj" />
+    <Project Path="src/IronHive.Tools.WebLookup/IronHive.Tools.WebLookup.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/IronHive.Flux.Tests/IronHive.Flux.Tests.csproj" />

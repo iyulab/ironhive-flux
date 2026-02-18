@@ -11,7 +11,7 @@ namespace IronHive.Flux.Core.Adapters.TextCompletion;
 /// <summary>
 /// IronHive IMessageGenerator를 FluxIndex ITextCompletionService로 어댑트
 /// </summary>
-public class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Application.Interfaces.ITextCompletionService
+public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Application.Interfaces.ITextCompletionService
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
@@ -34,8 +34,8 @@ public class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Applicat
         float temperature = 0.7f,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("FluxIndex 텍스트 완성 시작 - PromptLength: {Length}, MaxTokens: {MaxTokens}",
-            prompt.Length, maxTokens);
+        if (_logger is not null)
+            LogTextCompletionStarted(_logger, prompt.Length, maxTokens);
 
         var request = new MessageGenerationRequest
         {
@@ -48,7 +48,8 @@ public class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Applicat
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
         var result = ExtractTextFromResponse(response);
 
-        _logger?.LogDebug("FluxIndex 텍스트 완성 완료 - ResultLength: {Length}", result.Length);
+        if (_logger is not null)
+            LogTextCompletionCompleted(_logger, result.Length);
         return result;
     }
 
@@ -58,7 +59,8 @@ public class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Applicat
         int maxTokens = 500,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("FluxIndex JSON 완성 시작 - PromptLength: {Length}", prompt.Length);
+        if (_logger is not null)
+            LogJsonCompletionStarted(_logger, prompt.Length);
 
         var systemPrompt = "You are a JSON generator. Always respond with valid JSON only, no additional text or markdown.";
 
@@ -76,7 +78,8 @@ public class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Applicat
 
         result = ExtractJsonFromText(result);
 
-        _logger?.LogDebug("FluxIndex JSON 완성 완료 - ResultLength: {Length}", result.Length);
+        if (_logger is not null)
+            LogJsonCompletionCompleted(_logger, result.Length);
         return result;
     }
 
@@ -98,12 +101,12 @@ public class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Applicat
     private static string ExtractJsonFromText(string text)
     {
         text = text.Trim();
-        if (text.StartsWith("```json"))
+        if (text.StartsWith("```json", StringComparison.Ordinal))
             text = text[7..];
-        else if (text.StartsWith("```"))
+        else if (text.StartsWith("```", StringComparison.Ordinal))
             text = text[3..];
 
-        if (text.EndsWith("```"))
+        if (text.EndsWith("```", StringComparison.Ordinal))
             text = text[..^3];
 
         text = text.Trim();
@@ -119,4 +122,20 @@ public class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Applicat
 
         return text;
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 텍스트 완성 시작 - PromptLength: {Length}, MaxTokens: {MaxTokens}")]
+    private static partial void LogTextCompletionStarted(ILogger logger, int Length, int MaxTokens);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 텍스트 완성 완료 - ResultLength: {Length}")]
+    private static partial void LogTextCompletionCompleted(ILogger logger, int Length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex JSON 완성 시작 - PromptLength: {Length}")]
+    private static partial void LogJsonCompletionStarted(ILogger logger, int Length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex JSON 완성 완료 - ResultLength: {Length}")]
+    private static partial void LogJsonCompletionCompleted(ILogger logger, int Length);
+
+    #endregion
 }

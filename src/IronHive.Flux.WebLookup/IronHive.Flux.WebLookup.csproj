@@ -1,23 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PackageId>IronHive.Flux.Rag</PackageId>
-    <Description>RAG tools for IronHive using FluxIndex capabilities</Description>
-    <PackageTags>iyulab;AI;LLM;RAG;Agent;IronHive;Flux;Tools;FluxIndex;Search;Vector</PackageTags>
+    <PackageId>IronHive.Flux.WebLookup</PackageId>
+    <Description>WebLookup → WebFlux → FluxIndex RAG pipeline for discovering, processing, and indexing web content</Description>
+    <PackageTags>iyulab;AI;LLM;RAG;Agent;IronHive;Flux;WebLookup;WebFlux;FluxIndex;Pipeline</PackageTags>
   </PropertyGroup>
-
-  <ItemGroup>
-    <InternalsVisibleTo Include="IronHive.Flux.Tests" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IronHive.Flux.Core\IronHive.Flux.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IronHive.Core" />
+    <PackageReference Include="WebLookup" />
+    <PackageReference Include="WebFlux" />
     <PackageReference Include="FluxIndex.SDK" />
-    <PackageReference Include="TokenMeter" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
   </ItemGroup>

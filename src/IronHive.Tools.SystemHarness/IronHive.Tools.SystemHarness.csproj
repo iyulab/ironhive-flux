@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageId>IronHive.Tools.SystemHarness</PackageId>
+    <Description>IronHive convenience extension for system-harness MCP server integration (computer control, file ops, screen capture, OCR, etc.)</Description>
+    <PackageTags>iyulab;AI;LLM;Agent;IronHive;SystemHarness;MCP;ComputerControl;Automation</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="IronHive.Plugins.MCP" />
+  </ItemGroup>
+
+</Project>

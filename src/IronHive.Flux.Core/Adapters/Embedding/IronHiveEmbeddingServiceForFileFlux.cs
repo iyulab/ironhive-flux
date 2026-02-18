@@ -9,7 +9,7 @@ namespace IronHive.Flux.Core.Adapters.Embedding;
 /// <summary>
 /// IronHive IEmbeddingGenerator를 FileFlux IEmbeddingService로 어댑트
 /// </summary>
-public class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingService
+public partial class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingService
 {
     private readonly IEmbeddingGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
@@ -42,15 +42,16 @@ public class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingService
         EmbeddingPurpose purpose = EmbeddingPurpose.Analysis,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("FileFlux 임베딩 생성 시작 - Purpose: {Purpose}, TextLength: {Length}",
-            purpose, text.Length);
+        if (_logger is not null)
+            LogEmbeddingStarted(_logger, purpose, text.Length);
 
         var embedding = await _generator.EmbedAsync(
             _options.EmbeddingModelId,
             text,
             cancellationToken);
 
-        _logger?.LogDebug("FileFlux 임베딩 생성 완료 - Dimension: {Dimension}", embedding.Length);
+        if (_logger is not null)
+            LogEmbeddingCompleted(_logger, embedding.Length);
         return embedding;
     }
 
@@ -61,8 +62,8 @@ public class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingService
         CancellationToken cancellationToken = default)
     {
         var textList = texts.ToList();
-        _logger?.LogDebug("FileFlux 배치 임베딩 생성 시작 - Purpose: {Purpose}, Count: {Count}",
-            purpose, textList.Count);
+        if (_logger is not null)
+            LogBatchEmbeddingStarted(_logger, purpose, textList.Count);
 
         var results = await _generator.EmbedBatchAsync(
             _options.EmbeddingModelId,
@@ -70,7 +71,8 @@ public class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingService
             cancellationToken);
 
         var embeddings = results.Select(r => r.Embedding ?? Array.Empty<float>()).ToList();
-        _logger?.LogDebug("FileFlux 배치 임베딩 생성 완료 - Count: {Count}", embeddings.Count);
+        if (_logger is not null)
+            LogBatchEmbeddingCompleted(_logger, embeddings.Count);
         return embeddings;
     }
 
@@ -94,4 +96,20 @@ public class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingService
         var denominator = Math.Sqrt(norm1) * Math.Sqrt(norm2);
         return denominator == 0 ? 0 : dotProduct / denominator;
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 임베딩 생성 시작 - Purpose: {Purpose}, TextLength: {Length}")]
+    private static partial void LogEmbeddingStarted(ILogger logger, EmbeddingPurpose Purpose, int Length);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 임베딩 생성 완료 - Dimension: {Dimension}")]
+    private static partial void LogEmbeddingCompleted(ILogger logger, int Dimension);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 배치 임베딩 생성 시작 - Purpose: {Purpose}, Count: {Count}")]
+    private static partial void LogBatchEmbeddingStarted(ILogger logger, EmbeddingPurpose Purpose, int Count);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 배치 임베딩 생성 완료 - Count: {Count}")]
+    private static partial void LogBatchEmbeddingCompleted(ILogger logger, int Count);
+
+    #endregion
 }

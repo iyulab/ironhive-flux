@@ -11,8 +11,10 @@ namespace IronHive.Flux.Rag.Tools;
 /// <summary>
 /// FluxIndex 검색 도구 - 지식 베이스에서 관련 정보 검색
 /// </summary>
-public class FluxIndexSearchTool
+public partial class FluxIndexSearchTool
 {
+    private static readonly JsonSerializerOptions s_indentedJsonOptions = new() { WriteIndented = true };
+
     private readonly FluxRagToolsOptions _options;
     private readonly RagContextBuilder _contextBuilder;
     private readonly ILogger<FluxIndexSearchTool>? _logger;
@@ -50,7 +52,8 @@ public class FluxIndexSearchTool
         [Description("인덱스 이름")] string? indexName = null,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogInformation("지식 베이스 검색 시작 - Query: {Query}", query);
+        if (_logger is not null)
+            LogSearchStarted(_logger, query);
 
         try
         {
@@ -92,12 +95,14 @@ public class FluxIndexSearchTool
                 })
             };
 
-            _logger?.LogInformation("지식 베이스 검색 완료 - ResultCount: {Count}", context.Sources.Count);
-            return Task.FromResult(JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true }));
+            if (_logger is not null)
+                LogSearchCompleted(_logger, context.Sources.Count);
+            return Task.FromResult(JsonSerializer.Serialize(result, s_indentedJsonOptions));
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "지식 베이스 검색 실패 - Query: {Query}", query);
+            if (_logger is not null)
+                LogSearchFailed(_logger, ex, query);
             return Task.FromResult(JsonSerializer.Serialize(new
             {
                 success = false,
@@ -107,7 +112,7 @@ public class FluxIndexSearchTool
         }
     }
 
-    private List<RagSearchResult> PerformSearch(string query, int maxResults, string strategy, float minScore, string indexName)
+    private static List<RagSearchResult> PerformSearch(string query, int maxResults, string strategy, float minScore, string indexName)
     {
         lock (_storageLock)
         {
@@ -117,12 +122,12 @@ public class FluxIndexSearchTool
             }
 
             // 간단한 키워드 매칭 검색 (실제로는 벡터 검색 사용)
-            var queryWords = query.ToLower().Split([' ', '\t', '\n'], StringSplitOptions.RemoveEmptyEntries);
+            var queryWords = query.ToLowerInvariant().Split([' ', '\t', '\n'], StringSplitOptions.RemoveEmptyEntries);
 
             var results = documents
                 .Select(doc =>
                 {
-                    var contentLower = doc.Content.ToLower();
+                    var contentLower = doc.Content.ToLowerInvariant();
                     var matchCount = queryWords.Count(w => contentLower.Contains(w));
                     var score = queryWords.Length > 0 ? (float)matchCount / queryWords.Length : 0;
 
@@ -159,14 +164,42 @@ public class FluxIndexSearchTool
         }
     }
 
+    internal static bool RemoveDocument(string indexName, string documentId)
+    {
+        lock (_storageLock)
+        {
+            if (!_storage.TryGetValue(indexName, out var documents))
+            {
+                return false;
+            }
+
+            return documents.RemoveAll(d => d.Id == documentId) > 0;
+        }
+    }
+
     internal static void ClearIndex(string indexName)
     {
         lock (_storageLock)
         {
-            if (_storage.ContainsKey(indexName))
-                _storage[indexName].Clear();
+            if (_storage.TryGetValue(indexName, out var documents))
+            {
+                documents.Clear();
+            }
         }
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "지식 베이스 검색 시작 - Query: {Query}")]
+    private static partial void LogSearchStarted(ILogger logger, string Query);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "지식 베이스 검색 완료 - ResultCount: {Count}")]
+    private static partial void LogSearchCompleted(ILogger logger, int Count);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "지식 베이스 검색 실패 - Query: {Query}")]
+    private static partial void LogSearchFailed(ILogger logger, Exception ex, string Query);
+
+    #endregion
 }
 
 internal class StoredDocument

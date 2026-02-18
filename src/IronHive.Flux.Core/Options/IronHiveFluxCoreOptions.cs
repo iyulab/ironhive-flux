@@ -23,7 +23,7 @@ public class IronHiveFluxCoreOptions
     /// <summary>
     /// 임베딩 벡터 차원 수 (0이면 모델 기본값 사용)
     /// </summary>
-    public int EmbeddingDimension { get; set; } = 0;
+    public int EmbeddingDimension { get; set; }
 
     /// <summary>
     /// 최대 토큰 수 (기본값: 8191)

@@ -12,7 +12,7 @@ namespace IronHive.Flux.Core.Adapters.ImageToText;
 /// <summary>
 /// IronHive IMessageGenerator를 FileFlux IImageToTextService로 어댑트
 /// </summary>
-public class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTextService
+public partial class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTextService
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
@@ -40,7 +40,8 @@ public class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTextServic
         ImageToTextOptions? options = null,
         CancellationToken cancellationToken = default)
     {
-        _logger?.LogDebug("FileFlux 이미지 텍스트 추출 시작 - Size: {Size} bytes", imageData.Length);
+        if (_logger is not null)
+            LogImageExtractStarted(_logger, imageData.Length);
         var stopwatch = Stopwatch.StartNew();
 
         var base64 = Convert.ToBase64String(imageData);
@@ -52,7 +53,8 @@ public class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTextServic
         result.ProcessingTimeMs = stopwatch.ElapsedMilliseconds;
         result.Metadata.FileSize = imageData.Length;
 
-        _logger?.LogDebug("FileFlux 이미지 텍스트 추출 완료 - Time: {Time}ms", result.ProcessingTimeMs);
+        if (_logger is not null)
+            LogImageExtractCompleted(_logger, result.ProcessingTimeMs);
         return result;
     }
 
@@ -113,12 +115,12 @@ public class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTextServic
         return new ImageToTextResult
         {
             ExtractedText = extractedText,
-            ConfidenceScore = 0.85,
+            ConfidenceScore = string.IsNullOrWhiteSpace(extractedText) ? 0.3 : 0.85,
             DetectedLanguage = options?.Language == "auto" ? "unknown" : (options?.Language ?? "unknown"),
             ImageType = options?.ImageTypeHint ?? "unknown",
             Metadata = new FileFlux.ImageMetadata
             {
-                Format = format.ToString().ToLower()
+                Format = format.ToString().ToLowerInvariant()
             }
         };
     }
@@ -171,4 +173,14 @@ public class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTextServic
 
         return textContents != null ? string.Join("", textContents) : string.Empty;
     }
+
+    #region LoggerMessage
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 이미지 텍스트 추출 시작 - Size: {Size} bytes")]
+    private static partial void LogImageExtractStarted(ILogger logger, int Size);
+
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 이미지 텍스트 추출 완료 - Time: {Time}ms")]
+    private static partial void LogImageExtractCompleted(ILogger logger, long Time);
+
+    #endregion
 }
