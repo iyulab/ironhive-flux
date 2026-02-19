@@ -8,7 +8,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <AnalysisLevel>latest-recommended</AnalysisLevel>
     <NoWarn>$(NoWarn);CS1573</NoWarn>
-    <Version>0.2.0</Version>
+    <Version>0.3.0</Version>
     <!-- 기본적으로 NuGet 패키지 생성 비활성화 -->
     <IsPackable>false</IsPackable>
   </PropertyGroup>
