@@ -35,4 +35,9 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
+  <!-- Local development packages (auto-detected, ignored in CI) -->
+  <PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)../../local-packages')">
+    <RestoreAdditionalProjectSources>$(RestoreAdditionalProjectSources);$(MSBuildThisFileDirectory)../../local-packages</RestoreAdditionalProjectSources>
+  </PropertyGroup>
+
 </Project>
