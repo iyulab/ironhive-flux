@@ -71,7 +71,7 @@ public class FileFluxTextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
         adapter.ProviderInfo.Name.Should().Be("IronHive");
-        adapter.ProviderInfo.Type.Should().Be(TextCompletionProviderType.OpenAI);
+        adapter.ProviderInfo.Type.Should().Be(DocumentAnalysisProviderType.OpenAI);
         adapter.ProviderInfo.SupportedModels.Should().Contain("gpt-4o");
         adapter.ProviderInfo.MaxContextLength.Should().Be(128000);
     }

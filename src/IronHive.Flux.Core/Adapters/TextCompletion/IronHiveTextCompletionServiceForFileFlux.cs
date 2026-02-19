@@ -11,9 +11,9 @@ using System.Text.Json;
 namespace IronHive.Flux.Core.Adapters.TextCompletion;
 
 /// <summary>
-/// IronHive IMessageGenerator를 FileFlux ITextCompletionService로 어댑트
+/// IronHive IMessageGenerator를 FileFlux IDocumentAnalysisService로 어댑트
 /// </summary>
-public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.ITextCompletionService
+public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocumentAnalysisService
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
@@ -30,10 +30,10 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.ITextCo
     }
 
     /// <inheritdoc />
-    public TextCompletionServiceInfo ProviderInfo => new()
+    public DocumentAnalysisServiceInfo ProviderInfo => new()
     {
         Name = "IronHive",
-        Type = TextCompletionProviderType.OpenAI,
+        Type = DocumentAnalysisProviderType.OpenAI,
         SupportedModels = [_options.TextCompletionModelId],
         MaxContextLength = 128000,
         ApiVersion = "v1"

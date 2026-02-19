@@ -45,7 +45,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddIronHiveFileFluxAdapters(this IServiceCollection services)
     {
         services.TryAddSingleton<FileFlux.IEmbeddingService, IronHiveEmbeddingServiceForFileFlux>();
-        services.TryAddSingleton<FileFlux.ITextCompletionService, IronHiveTextCompletionServiceForFileFlux>();
+        services.TryAddSingleton<FileFlux.IDocumentAnalysisService, IronHiveTextCompletionServiceForFileFlux>();
         services.TryAddSingleton<FileFlux.IImageToTextService, IronHiveImageToTextServiceForFileFlux>();
         return services;
     }
