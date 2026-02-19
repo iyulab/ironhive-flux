@@ -33,10 +33,6 @@
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.2" />
   </ItemGroup>
 
-  <ItemGroup Label="Serialization">
-    <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
-  </ItemGroup>
-
   <ItemGroup Label="Resilience">
     <PackageVersion Include="Polly" Version="8.6.5" />
     <PackageVersion Include="Polly.Extensions" Version="8.6.5" />
