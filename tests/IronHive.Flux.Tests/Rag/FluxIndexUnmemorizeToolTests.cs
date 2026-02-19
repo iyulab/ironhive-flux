@@ -1,183 +1,105 @@
 using FluentAssertions;
+using FluxIndex.Extensions.FileVault.Interfaces;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;
 using Microsoft.Extensions.Options;
+using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using System.Text.Json;
 using Xunit;
 
 namespace IronHive.Flux.Tests.Rag;
 
-public class FluxIndexUnmemorizeToolTests : IDisposable
+public class FluxIndexUnmemorizeToolTests
 {
+    private readonly IVault _vault;
     private readonly FluxIndexUnmemorizeTool _tool;
-    private const string TestIndex = "unmemorize-test-index";
 
     public FluxIndexUnmemorizeToolTests()
     {
-        var options = Options.Create(new FluxRagToolsOptions
-        {
-            DefaultIndexName = TestIndex
-        });
-        _tool = new FluxIndexUnmemorizeTool(options);
-    }
-
-    public void Dispose()
-    {
-        FluxIndexSearchTool.ClearIndex(TestIndex);
-        GC.SuppressFinalize(this);
+        _vault = Substitute.For<IVault>();
+        var options = Options.Create(new FluxRagToolsOptions());
+        _tool = new FluxIndexUnmemorizeTool(_vault, options);
     }
 
     #region Constructor Tests
 
     [Fact]
+    public void Constructor_WithNullVault_ShouldThrow()
+    {
+        var options = Options.Create(new FluxRagToolsOptions());
+
+        var act = () => new FluxIndexUnmemorizeTool(null!, options);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
     public void Constructor_WithNullOptions_ShouldThrow()
     {
-        var act = () => new FluxIndexUnmemorizeTool(null!);
+        var vault = Substitute.For<IVault>();
+
+        var act = () => new FluxIndexUnmemorizeTool(vault, null!);
         act.Should().Throw<ArgumentNullException>();
     }
 
     #endregion
 
-    #region UnmemorizeAsync - Successful Deletion
+    #region UnmemorizeAsync — Successful Deletion
 
     [Fact]
-    public async Task UnmemorizeAsync_WithExistingDocument_ShouldReturnDeleted()
+    public async Task UnmemorizeAsync_ShouldReturnDeleted()
     {
-        // Arrange
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "doc-1",
-            Content = "test content"
-        });
+        var filePath = "/docs/test.md";
 
-        // Act
-        var resultJson = await _tool.UnmemorizeAsync("doc-1");
+        var resultJson = await _tool.UnmemorizeAsync(filePath);
         var result = JsonDocument.Parse(resultJson);
 
-        // Assert
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
         result.RootElement.GetProperty("deleted").GetBoolean().Should().BeTrue();
-        result.RootElement.GetProperty("documentId").GetString().Should().Be("doc-1");
+        result.RootElement.GetProperty("filePath").GetString().Should().Be(filePath);
         result.RootElement.GetProperty("deletedAt").GetString().Should().NotBeNullOrEmpty();
-        result.RootElement.GetProperty("message").GetString().Should().Contain("성공");
+        result.RootElement.GetProperty("message").GetString().Should().Contain("Successfully removed");
     }
 
     [Fact]
-    public async Task UnmemorizeAsync_ShouldActuallyRemoveFromStorage()
+    public async Task UnmemorizeAsync_ShouldCallVaultRemove()
     {
-        // Arrange
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "doc-remove",
-            Content = "to be removed"
-        });
+        var filePath = "/docs/test.md";
 
-        // Act
-        await _tool.UnmemorizeAsync("doc-remove");
+        await _tool.UnmemorizeAsync(filePath);
 
-        // Assert - Second deletion should fail (already removed)
-        var resultJson = await _tool.UnmemorizeAsync("doc-remove");
-        var result = JsonDocument.Parse(resultJson);
-        result.RootElement.GetProperty("deleted").GetBoolean().Should().BeFalse();
+        await _vault.Received(1).RemoveAsync(filePath, Arg.Any<CancellationToken>());
     }
 
     #endregion
 
-    #region UnmemorizeAsync - Non-Existent Document
+    #region UnmemorizeAsync — Error Handling
 
     [Fact]
-    public async Task UnmemorizeAsync_WithNonExistentDocument_ShouldReturnNotDeleted()
+    public async Task UnmemorizeAsync_VaultThrows_ShouldReturnError()
     {
-        // Act
-        var resultJson = await _tool.UnmemorizeAsync("non-existent");
+        _vault.RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Throws(new InvalidOperationException("Database error"));
+
+        var resultJson = await _tool.UnmemorizeAsync("/docs/test.md");
         var result = JsonDocument.Parse(resultJson);
 
-        // Assert
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
         result.RootElement.GetProperty("deleted").GetBoolean().Should().BeFalse();
-        result.RootElement.GetProperty("message").GetString().Should().Contain("찾을 수 없");
-    }
-
-    #endregion
-
-    #region UnmemorizeAsync - Index Name
-
-    [Fact]
-    public async Task UnmemorizeAsync_WithCustomIndexName_ShouldUseCustomIndex()
-    {
-        // Arrange
-        var customIndex = "custom-unmemorize-index";
-        FluxIndexSearchTool.AddDocument(customIndex, new StoredDocument
-        {
-            Id = "doc-custom",
-            Content = "custom content"
-        });
-
-        try
-        {
-            // Act
-            var resultJson = await _tool.UnmemorizeAsync("doc-custom", indexName: customIndex);
-            var result = JsonDocument.Parse(resultJson);
-
-            // Assert
-            result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
-            result.RootElement.GetProperty("indexName").GetString().Should().Be(customIndex);
-        }
-        finally
-        {
-            FluxIndexSearchTool.ClearIndex(customIndex);
-        }
+        result.RootElement.GetProperty("error").GetString().Should().Contain("Database error");
     }
 
     [Fact]
-    public async Task UnmemorizeAsync_WithDefaultIndex_ShouldUseOptionsDefault()
+    public async Task UnmemorizeAsync_FileNotInVault_VaultThrows_ShouldReturnError()
     {
-        // Arrange
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "doc-default",
-            Content = "default index content"
-        });
+        _vault.RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+            .Throws(new KeyNotFoundException("Entry not found"));
 
-        // Act
-        var resultJson = await _tool.UnmemorizeAsync("doc-default");
+        var resultJson = await _tool.UnmemorizeAsync("/non/existent.md");
         var result = JsonDocument.Parse(resultJson);
 
-        // Assert
-        result.RootElement.GetProperty("indexName").GetString().Should().Be(TestIndex);
-    }
-
-    #endregion
-
-    #region UnmemorizeAsync - Multiple Documents
-
-    [Fact]
-    public async Task UnmemorizeAsync_ShouldOnlyRemoveTargetDocument()
-    {
-        // Arrange
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "keep-me",
-            Content = "should remain"
-        });
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "delete-me",
-            Content = "should be deleted"
-        });
-
-        // Act
-        await _tool.UnmemorizeAsync("delete-me");
-
-        // Assert - "keep-me" should still be there, "delete-me" should not
-        var deleteAgain = await _tool.UnmemorizeAsync("delete-me");
-        var keepResult = JsonDocument.Parse(deleteAgain);
-        keepResult.RootElement.GetProperty("deleted").GetBoolean().Should().BeFalse();
-
-        // Verify "keep-me" still exists by trying to remove it
-        var keepJson = await _tool.UnmemorizeAsync("keep-me");
-        var keepDoc = JsonDocument.Parse(keepJson);
-        keepDoc.RootElement.GetProperty("deleted").GetBoolean().Should().BeTrue();
+        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.RootElement.GetProperty("error").GetString().Should().Contain("Entry not found");
     }
 
     #endregion

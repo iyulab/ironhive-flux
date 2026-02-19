@@ -1,220 +1,142 @@
 using FluentAssertions;
-using FluxIndex.Core.Application.Interfaces;
+using FluxIndex.Extensions.FileVault.Interfaces;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;
 using Microsoft.Extensions.Options;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using System.Text.Json;
 using Xunit;
 
 namespace IronHive.Flux.Tests.Rag;
 
-public class FluxIndexMemorizeToolTests : IDisposable
+public class FluxIndexMemorizeToolTests
 {
-    private static readonly float[] s_testEmbedding = [0.1f, 0.2f, 0.3f];
-
+    private readonly IVault _vault;
     private readonly FluxIndexMemorizeTool _tool;
-    private const string TestIndex = "memorize-test-index";
 
     public FluxIndexMemorizeToolTests()
     {
-        var options = Options.Create(new FluxRagToolsOptions
-        {
-            DefaultIndexName = TestIndex
-        });
-        _tool = new FluxIndexMemorizeTool(options);
-    }
-
-    public void Dispose()
-    {
-        FluxIndexSearchTool.ClearIndex(TestIndex);
-        GC.SuppressFinalize(this);
+        _vault = Substitute.For<IVault>();
+        var options = Options.Create(new FluxRagToolsOptions());
+        _tool = new FluxIndexMemorizeTool(_vault, options);
     }
 
     #region Constructor Tests
 
     [Fact]
-    public void Constructor_WithNullOptions_ShouldThrow()
+    public void Constructor_WithNullVault_ShouldThrow()
     {
-        var act = () => new FluxIndexMemorizeTool(null!);
+        var options = Options.Create(new FluxRagToolsOptions());
+
+        var act = () => new FluxIndexMemorizeTool(null!, options);
         act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
-    public void Constructor_WithValidOptions_ShouldNotThrow()
+    public void Constructor_WithNullOptions_ShouldThrow()
     {
+        var vault = Substitute.For<IVault>();
+
+        var act = () => new FluxIndexMemorizeTool(vault, null!);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_WithValidArgs_ShouldNotThrow()
+    {
+        var vault = Substitute.For<IVault>();
         var options = Options.Create(new FluxRagToolsOptions());
-        var tool = new FluxIndexMemorizeTool(options);
+        var tool = new FluxIndexMemorizeTool(vault, options);
         tool.Should().NotBeNull();
     }
 
     #endregion
 
-    #region MemorizeAsync — Basic
+    #region MemorizeAsync — Success
 
     [Fact]
-    public async Task MemorizeAsync_WithContent_ShouldReturnSuccess()
+    public async Task MemorizeAsync_WithExistingFile_ShouldReturnSuccess()
     {
-        var resultJson = await _tool.MemorizeAsync("Hello world content");
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
-        result.RootElement.GetProperty("contentLength").GetInt32().Should().Be(19);
-        result.RootElement.GetProperty("indexName").GetString().Should().Be(TestIndex);
-        result.RootElement.GetProperty("hasEmbedding").GetBoolean().Should().BeFalse();
-    }
-
-    [Fact]
-    public async Task MemorizeAsync_WithDocumentId_ShouldUseProvidedId()
-    {
-        var resultJson = await _tool.MemorizeAsync("content", documentId: "custom-id-123");
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("documentId").GetString().Should().Be("custom-id-123");
-    }
-
-    [Fact]
-    public async Task MemorizeAsync_WithoutDocumentId_ShouldAutoGenerateId()
-    {
-        var resultJson = await _tool.MemorizeAsync("content");
-        var result = JsonDocument.Parse(resultJson);
-
-        var docId = result.RootElement.GetProperty("documentId").GetString();
-        docId.Should().NotBeNullOrEmpty();
-        Guid.TryParse(docId, out _).Should().BeTrue();
-    }
-
-    #endregion
-
-    #region MemorizeAsync — Title & Metadata
-
-    [Fact]
-    public async Task MemorizeAsync_WithTitle_ShouldIncludeInMetadata()
-    {
-        var resultJson = await _tool.MemorizeAsync("content", title: "My Document");
-        var result = JsonDocument.Parse(resultJson);
-
-        var metadata = result.RootElement.GetProperty("metadata");
-        metadata.GetProperty("title").GetString().Should().Be("My Document");
-    }
-
-    [Fact]
-    public async Task MemorizeAsync_WithValidMetadata_ShouldParse()
-    {
-        var metadataJson = """{"category": "tech", "author": "test"}""";
-        var resultJson = await _tool.MemorizeAsync("content", metadata: metadataJson);
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
-        var metadata = result.RootElement.GetProperty("metadata");
-        metadata.GetProperty("memorizedAt").GetString().Should().NotBeNullOrEmpty();
-    }
-
-    [Fact]
-    public async Task MemorizeAsync_WithInvalidMetadata_ShouldStillSucceed()
-    {
-        // Invalid JSON metadata should be ignored gracefully
-        var resultJson = await _tool.MemorizeAsync("content", metadata: "not-valid-json");
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task MemorizeAsync_WithNullMetadata_ShouldSucceed()
-    {
-        var resultJson = await _tool.MemorizeAsync("content", metadata: null);
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
-        result.RootElement.GetProperty("metadata").GetProperty("memorizedAt").GetString().Should().NotBeNullOrEmpty();
-    }
-
-    #endregion
-
-    #region MemorizeAsync — Index Name
-
-    [Fact]
-    public async Task MemorizeAsync_WithCustomIndex_ShouldUseCustomIndex()
-    {
-        var customIndex = "custom-memorize-index";
-
+        var tempFile = Path.GetTempFileName();
         try
         {
-            var resultJson = await _tool.MemorizeAsync("content", indexName: customIndex);
+            await File.WriteAllTextAsync(tempFile, "Hello world content");
+
+            var resultJson = await _tool.MemorizeAsync(tempFile);
             var result = JsonDocument.Parse(resultJson);
 
-            result.RootElement.GetProperty("indexName").GetString().Should().Be(customIndex);
+            result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
+            result.RootElement.GetProperty("filePath").GetString().Should().Be(tempFile);
+            result.RootElement.GetProperty("message").GetString().Should().Contain("Successfully memorized");
         }
         finally
         {
-            FluxIndexSearchTool.ClearIndex(customIndex);
+            File.Delete(tempFile);
         }
     }
 
     [Fact]
-    public async Task MemorizeAsync_WithDefaultIndex_ShouldUseOptionsDefault()
+    public async Task MemorizeAsync_ShouldCallVaultMemorize()
     {
-        var resultJson = await _tool.MemorizeAsync("content");
-        var result = JsonDocument.Parse(resultJson);
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            await _tool.MemorizeAsync(tempFile);
 
-        result.RootElement.GetProperty("indexName").GetString().Should().Be(TestIndex);
+            await _vault.Received(1).MemorizeAsync(tempFile, Arg.Any<CancellationToken>());
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
     }
 
     #endregion
 
-    #region MemorizeAsync — Embedding Service
+    #region MemorizeAsync — File Not Found
 
     [Fact]
-    public async Task MemorizeAsync_WithEmbeddingService_ShouldGenerateEmbedding()
+    public async Task MemorizeAsync_WithNonExistentFile_ShouldReturnError()
     {
-        var mockEmbedding = Substitute.For<IEmbeddingService>();
-        mockEmbedding.GenerateEmbeddingAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
-            .Returns(s_testEmbedding);
-
-        var options = Options.Create(new FluxRagToolsOptions { DefaultIndexName = TestIndex });
-        var tool = new FluxIndexMemorizeTool(options, embeddingService: mockEmbedding);
-
-        var resultJson = await tool.MemorizeAsync("content with embedding");
+        var resultJson = await _tool.MemorizeAsync("/non/existent/file.txt");
         var result = JsonDocument.Parse(resultJson);
 
-        result.RootElement.GetProperty("hasEmbedding").GetBoolean().Should().BeTrue();
-        result.RootElement.GetProperty("embeddingDimension").GetInt32().Should().Be(3);
-        await mockEmbedding.Received(1).GenerateEmbeddingAsync("content with embedding", Arg.Any<CancellationToken>());
+        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.RootElement.GetProperty("error").GetString().Should().Contain("File not found");
     }
 
     [Fact]
-    public async Task MemorizeAsync_WithoutEmbeddingService_ShouldNotHaveEmbedding()
+    public async Task MemorizeAsync_WithNonExistentFile_ShouldNotCallVault()
     {
-        var resultJson = await _tool.MemorizeAsync("content");
-        var result = JsonDocument.Parse(resultJson);
+        await _tool.MemorizeAsync("/non/existent/file.txt");
 
-        result.RootElement.GetProperty("hasEmbedding").GetBoolean().Should().BeFalse();
-        result.RootElement.GetProperty("embeddingDimension").GetInt32().Should().Be(0);
+        await _vault.DidNotReceive().MemorizeAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
 
     #endregion
 
-    #region MemorizeAsync — Storage Verification
+    #region MemorizeAsync — Error Handling
 
     [Fact]
-    public async Task MemorizeAsync_ShouldStoreDocumentForLaterSearch()
+    public async Task MemorizeAsync_VaultThrows_ShouldReturnError()
     {
-        await _tool.MemorizeAsync("stored content", documentId: "stored-doc");
+        var tempFile = Path.GetTempFileName();
+        try
+        {
+            _vault.MemorizeAsync(tempFile, Arg.Any<CancellationToken>())
+                .Throws(new InvalidOperationException("Extraction failed"));
 
-        // Verify by attempting to delete (which confirms storage)
-        var deleted = FluxIndexSearchTool.RemoveDocument(TestIndex, "stored-doc");
-        deleted.Should().BeTrue();
-    }
+            var resultJson = await _tool.MemorizeAsync(tempFile);
+            var result = JsonDocument.Parse(resultJson);
 
-    [Fact]
-    public async Task MemorizeAsync_MultipleDocs_ShouldStoreAll()
-    {
-        await _tool.MemorizeAsync("first", documentId: "doc-1");
-        await _tool.MemorizeAsync("second", documentId: "doc-2");
-
-        FluxIndexSearchTool.RemoveDocument(TestIndex, "doc-1").Should().BeTrue();
-        FluxIndexSearchTool.RemoveDocument(TestIndex, "doc-2").Should().BeTrue();
+            result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
+            result.RootElement.GetProperty("error").GetString().Should().Contain("Extraction failed");
+        }
+        finally
+        {
+            File.Delete(tempFile);
+        }
     }
 
     #endregion

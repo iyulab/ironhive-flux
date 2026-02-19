@@ -103,11 +103,6 @@ public class RagContextOptions
     public int MaxTokens { get; set; } = 4000;
 
     /// <summary>
-    /// 인덱스 이름
-    /// </summary>
-    public string? IndexName { get; set; }
-
-    /// <summary>
     /// 메타데이터 필터
     /// </summary>
     public IDictionary<string, object>? MetadataFilter { get; set; }

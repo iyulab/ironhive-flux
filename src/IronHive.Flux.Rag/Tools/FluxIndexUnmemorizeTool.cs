@@ -1,3 +1,4 @@
+using FluxIndex.Extensions.FileVault.Interfaces;
 using IronHive.Core.Tools;
 using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Logging;
@@ -8,81 +9,81 @@ using System.Text.Json;
 namespace IronHive.Flux.Rag.Tools;
 
 /// <summary>
-/// FluxIndex 문서 삭제 도구 - 지식 베이스에서 문서 삭제
+/// FluxIndex 문서 삭제 도구 - IVault를 통한 인덱스 제거
 /// </summary>
 public partial class FluxIndexUnmemorizeTool
 {
     private static readonly JsonSerializerOptions s_indentedJsonOptions = new() { WriteIndented = true };
 
     private readonly FluxRagToolsOptions _options;
+    private readonly IVault _vault;
     private readonly ILogger<FluxIndexUnmemorizeTool>? _logger;
 
     public FluxIndexUnmemorizeTool(
+        IVault vault,
         IOptions<FluxRagToolsOptions> options,
         ILogger<FluxIndexUnmemorizeTool>? logger = null)
     {
+        _vault = vault ?? throw new ArgumentNullException(nameof(vault));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
     }
 
     /// <summary>
-    /// 지식 베이스에서 문서를 삭제합니다.
+    /// 지식 베이스에서 파일을 삭제(인덱스 제거)합니다.
     /// </summary>
-    /// <param name="documentId">삭제할 문서 ID</param>
-    /// <param name="indexName">인덱스 이름</param>
+    /// <param name="filePath">삭제할 파일 경로</param>
     /// <returns>삭제 결과 (JSON 문자열)</returns>
     [FunctionTool("forget_document")]
-    [Description("지식 베이스에서 특정 문서를 삭제(forget)합니다.")]
-    public Task<string> UnmemorizeAsync(
-        [Description("삭제할 문서 ID")] string documentId,
-        [Description("인덱스 이름")] string? indexName = null,
+    [Description("지식 베이스에서 특정 파일을 삭제(forget)합니다. 파일의 벡터 데이터와 인덱스를 제거합니다.")]
+    public async Task<string> UnmemorizeAsync(
+        [Description("삭제할 파일의 전체 경로")] string filePath,
         CancellationToken cancellationToken = default)
     {
         if (_logger is not null)
-            LogUnmemorizeStarted(_logger, documentId);
+            LogUnmemorizeStarted(_logger, filePath);
 
         try
         {
-            var index = indexName ?? _options.DefaultIndexName;
-            var deleted = FluxIndexSearchTool.RemoveDocument(index, documentId);
+            await _vault.RemoveAsync(filePath, cancellationToken);
 
             var result = new
             {
-                success = deleted,
-                documentId,
-                indexName = index,
-                deleted,
-                deletedAt = deleted ? DateTime.UtcNow.ToString("O") : null,
-                message = deleted ? "문서가 성공적으로 삭제되었습니다." : "문서를 찾을 수 없거나 이미 삭제되었습니다."
+                success = true,
+                filePath,
+                deleted = true,
+                deletedAt = DateTime.UtcNow.ToString("O"),
+                message = $"Successfully removed '{Path.GetFileName(filePath)}' from knowledge base."
             };
 
             if (_logger is not null)
-                LogUnmemorizeCompleted(_logger, documentId, deleted);
-            return Task.FromResult(JsonSerializer.Serialize(result, s_indentedJsonOptions));
+                LogUnmemorizeCompleted(_logger, filePath, true);
+            return JsonSerializer.Serialize(result, s_indentedJsonOptions);
         }
         catch (Exception ex)
         {
             if (_logger is not null)
-                LogUnmemorizeFailed(_logger, ex, documentId);
-            return Task.FromResult(JsonSerializer.Serialize(new
+                LogUnmemorizeFailed(_logger, ex, filePath);
+            return JsonSerializer.Serialize(new
             {
                 success = false,
-                documentId,
+                filePath,
+                deleted = false,
                 error = ex.Message
-            }));
+            }, s_indentedJsonOptions);
         }
     }
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "문서 삭제 시작 - DocumentId: {DocId}")]
-    private static partial void LogUnmemorizeStarted(ILogger logger, string DocId);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Document unmemorize started - FilePath: {FilePath}")]
+    private static partial void LogUnmemorizeStarted(ILogger logger, string FilePath);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "문서 삭제 완료 - DocumentId: {DocId}, Deleted: {Deleted}")]
-    private static partial void LogUnmemorizeCompleted(ILogger logger, string DocId, bool Deleted);
+    [LoggerMessage(Level = LogLevel.Information, Message = "Document unmemorize completed - FilePath: {FilePath}, Deleted: {Deleted}")]
+    private static partial void LogUnmemorizeCompleted(ILogger logger, string FilePath, bool Deleted);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "문서 삭제 실패 - DocumentId: {DocId}")]
-    private static partial void LogUnmemorizeFailed(ILogger logger, Exception ex, string DocId);
+    [LoggerMessage(Level = LogLevel.Error, Message = "Document unmemorize failed - FilePath: {FilePath}")]
+    private static partial void LogUnmemorizeFailed(ILogger logger, Exception ex, string FilePath);
 
     #endregion
 }

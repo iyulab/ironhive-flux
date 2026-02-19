@@ -15,6 +15,7 @@ public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// IronHive.Flux.Rag 도구를 등록합니다.
+    /// IVault가 DI 컨테이너에 미리 등록되어 있어야 합니다.
     /// </summary>
     /// <param name="services">서비스 컬렉션</param>
     /// <param name="configure">옵션 구성 액션</param>
@@ -33,17 +34,16 @@ public static class ServiceCollectionExtensions
             opt.DefaultMinScore = options.DefaultMinScore;
             opt.MaxContextTokens = options.MaxContextTokens;
             opt.ChunkSeparator = options.ChunkSeparator;
-            opt.DefaultIndexName = options.DefaultIndexName;
             opt.ToolTimeout = options.ToolTimeout;
         });
 
         // 컨텍스트 빌더 등록
         services.TryAddSingleton<RagContextBuilder>();
 
-        // 도구 클래스 등록
-        services.TryAddSingleton<FluxIndexSearchTool>();
-        services.TryAddSingleton<FluxIndexMemorizeTool>();
-        services.TryAddSingleton<FluxIndexUnmemorizeTool>();
+        // 도구 클래스 등록 (IVault는 Scoped이므로 도구도 Scoped)
+        services.TryAddScoped<FluxIndexSearchTool>();
+        services.TryAddScoped<FluxIndexMemorizeTool>();
+        services.TryAddScoped<FluxIndexUnmemorizeTool>();
 
         return services;
     }

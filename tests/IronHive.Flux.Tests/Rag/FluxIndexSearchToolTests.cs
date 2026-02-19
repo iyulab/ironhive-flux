@@ -1,64 +1,75 @@
 using FluentAssertions;
+using FluxIndex.Extensions.FileVault.Interfaces;
 using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;
 using Microsoft.Extensions.Options;
+using NSubstitute;
 using System.Text.Json;
 using Xunit;
 
 namespace IronHive.Flux.Tests.Rag;
 
-public class FluxIndexSearchToolTests : IDisposable
+public class FluxIndexSearchToolTests
 {
+    private readonly IVault _vault;
     private readonly FluxIndexSearchTool _tool;
     private readonly RagContextBuilder _contextBuilder;
-    private const string TestIndex = "search-test-index";
 
     public FluxIndexSearchToolTests()
     {
+        _vault = Substitute.For<IVault>();
         var options = Options.Create(new FluxRagToolsOptions
         {
-            DefaultIndexName = TestIndex,
-            DefaultMinScore = 0.0f // Low threshold for testing keyword matching
+            DefaultMinScore = 0.0f
         });
         _contextBuilder = new RagContextBuilder(options);
-        _tool = new FluxIndexSearchTool(options, _contextBuilder);
-    }
-
-    public void Dispose()
-    {
-        FluxIndexSearchTool.ClearIndex(TestIndex);
-        GC.SuppressFinalize(this);
+        _tool = new FluxIndexSearchTool(_vault, options, _contextBuilder);
     }
 
     #region Constructor Tests
 
     [Fact]
-    public void Constructor_WithNullOptions_ShouldThrow()
+    public void Constructor_WithNullVault_ShouldThrow()
     {
         var options = Options.Create(new FluxRagToolsOptions());
         var builder = new RagContextBuilder(options);
 
-        var act = () => new FluxIndexSearchTool(null!, builder);
+        var act = () => new FluxIndexSearchTool(null!, options, builder);
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_WithNullOptions_ShouldThrow()
+    {
+        var vault = Substitute.For<IVault>();
+        var options = Options.Create(new FluxRagToolsOptions());
+        var builder = new RagContextBuilder(options);
+
+        var act = () => new FluxIndexSearchTool(vault, null!, builder);
         act.Should().Throw<ArgumentNullException>();
     }
 
     [Fact]
     public void Constructor_WithNullContextBuilder_ShouldThrow()
     {
+        var vault = Substitute.For<IVault>();
         var options = Options.Create(new FluxRagToolsOptions());
 
-        var act = () => new FluxIndexSearchTool(options, null!);
+        var act = () => new FluxIndexSearchTool(vault, options, null!);
         act.Should().Throw<ArgumentNullException>();
     }
 
     #endregion
 
-    #region SearchAsync — Empty Index
+    #region SearchAsync — Empty Results
 
     [Fact]
-    public async Task SearchAsync_EmptyIndex_ShouldReturnSuccess()
+    public async Task SearchAsync_EmptyResults_ShouldReturnSuccess()
     {
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(VaultSearchResult.Empty("test query"));
+
         var resultJson = await _tool.SearchAsync("test query");
         var result = JsonDocument.Parse(resultJson);
 
@@ -67,8 +78,11 @@ public class FluxIndexSearchToolTests : IDisposable
     }
 
     [Fact]
-    public async Task SearchAsync_EmptyIndex_ShouldReturnNotFoundContext()
+    public async Task SearchAsync_EmptyResults_ShouldReturnNotFoundContext()
     {
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(VaultSearchResult.Empty("test"));
+
         var resultJson = await _tool.SearchAsync("test query");
         var result = JsonDocument.Parse(resultJson);
 
@@ -78,17 +92,32 @@ public class FluxIndexSearchToolTests : IDisposable
 
     #endregion
 
-    #region SearchAsync — With Documents
+    #region SearchAsync — With Results
 
     [Fact]
     public async Task SearchAsync_WithMatchingDocument_ShouldReturnResults()
     {
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
+        var searchResult = new VaultSearchResult
         {
-            Id = "doc-1",
-            Content = "The weather in Seattle is rainy",
-            Metadata = new Dictionary<string, object> { ["title"] = "Weather Report" }
-        });
+            Query = "weather Seattle",
+            Items =
+            [
+                new VaultSearchResultItem
+                {
+                    Entry = null!,
+                    SourcePath = "/docs/weather.md",
+                    FileName = "weather.md",
+                    Content = "The weather in Seattle is rainy",
+                    Score = 0.85f,
+                    ChunkIndex = 0
+                }
+            ],
+            TotalCount = 1,
+            IsSuccess = true
+        };
+
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(searchResult);
 
         var resultJson = await _tool.SearchAsync("weather Seattle");
         var result = JsonDocument.Parse(resultJson);
@@ -98,74 +127,51 @@ public class FluxIndexSearchToolTests : IDisposable
     }
 
     [Fact]
-    public async Task SearchAsync_NoMatchingDocument_ShouldReturnEmpty()
+    public async Task SearchAsync_ShouldPassOptionsToVault()
     {
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "doc-1",
-            Content = "This document is about cooking"
-        });
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(VaultSearchResult.Empty("test"));
 
-        // High min score ensures no match with unrelated query words
-        var resultJson = await _tool.SearchAsync("quantum physics", minScore: 0.9f);
-        var result = JsonDocument.Parse(resultJson);
+        await _tool.SearchAsync("test", maxResults: 10, minScore: 0.7f, pathScope: "/docs");
 
-        result.RootElement.GetProperty("resultCount").GetInt32().Should().Be(0);
+        await _vault.Received(1).SearchAsync(
+            "test",
+            Arg.Is<VaultSearchOptions>(o =>
+                o.TopK == 10 &&
+                o.MinScore == 0.7f &&
+                o.PathScope.Count == 1 &&
+                o.PathScope[0] == "/docs"),
+            Arg.Any<CancellationToken>());
     }
 
     #endregion
 
-    #region SearchAsync — Parameters
+    #region SearchAsync — Error Handling
 
     [Fact]
-    public async Task SearchAsync_WithCustomMaxResults_ShouldLimitResults()
+    public async Task SearchAsync_VaultError_ShouldReturnError()
     {
-        for (var i = 0; i < 10; i++)
-        {
-            FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-            {
-                Id = $"doc-{i}",
-                Content = $"document about test topic number {i}"
-            });
-        }
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(VaultSearchResult.Error("test", "Index not available"));
 
-        var resultJson = await _tool.SearchAsync("test topic", maxResults: 3);
+        var resultJson = await _tool.SearchAsync("test");
         var result = JsonDocument.Parse(resultJson);
 
-        result.RootElement.GetProperty("resultCount").GetInt32().Should().BeLessThanOrEqualTo(3);
+        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.RootElement.GetProperty("error").GetString().Should().Contain("Index not available");
     }
 
     [Fact]
-    public async Task SearchAsync_WithCustomStrategy_ShouldIncludeInResult()
+    public async Task SearchAsync_VaultThrows_ShouldReturnError()
     {
-        var resultJson = await _tool.SearchAsync("test", strategy: "vector");
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns<VaultSearchResult>(_ => throw new InvalidOperationException("Connection failed"));
+
+        var resultJson = await _tool.SearchAsync("test");
         var result = JsonDocument.Parse(resultJson);
 
-        result.RootElement.GetProperty("strategy").GetString().Should().Be("vector");
-    }
-
-    [Fact]
-    public async Task SearchAsync_WithCustomIndex_ShouldSearchCustomIndex()
-    {
-        var customIndex = "custom-search-index";
-
-        try
-        {
-            FluxIndexSearchTool.AddDocument(customIndex, new StoredDocument
-            {
-                Id = "custom-doc",
-                Content = "custom index content about specific topic"
-            });
-
-            var resultJson = await _tool.SearchAsync("specific topic", indexName: customIndex);
-            var result = JsonDocument.Parse(resultJson);
-
-            result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
-        }
-        finally
-        {
-            FluxIndexSearchTool.ClearIndex(customIndex);
-        }
+        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.RootElement.GetProperty("error").GetString().Should().Contain("Connection failed");
     }
 
     #endregion
@@ -175,6 +181,9 @@ public class FluxIndexSearchToolTests : IDisposable
     [Fact]
     public async Task SearchAsync_ShouldReturnQueryInResponse()
     {
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(VaultSearchResult.Empty("my search query"));
+
         var resultJson = await _tool.SearchAsync("my search query");
         var result = JsonDocument.Parse(resultJson);
 
@@ -184,98 +193,71 @@ public class FluxIndexSearchToolTests : IDisposable
     [Fact]
     public async Task SearchAsync_WithResults_ShouldIncludeSourcePreviews()
     {
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
+        var searchResult = new VaultSearchResult
         {
-            Id = "doc-preview",
-            Content = "Short content about search testing",
-            Metadata = new Dictionary<string, object> { ["title"] = "Test Doc" }
-        });
+            Query = "search testing",
+            Items =
+            [
+                new VaultSearchResultItem
+                {
+                    Entry = null!,
+                    SourcePath = "/docs/test.md",
+                    FileName = "test.md",
+                    Content = "Short content about search testing",
+                    Score = 0.9f,
+                    ChunkIndex = 0
+                }
+            ],
+            TotalCount = 1,
+            IsSuccess = true
+        };
+
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(searchResult);
 
         var resultJson = await _tool.SearchAsync("search testing");
         var result = JsonDocument.Parse(resultJson);
 
-        if (result.RootElement.GetProperty("resultCount").GetInt32() > 0)
-        {
-            var sources = result.RootElement.GetProperty("sources");
-            var firstSource = sources.EnumerateArray().First();
-            firstSource.GetProperty("documentId").GetString().Should().Be("doc-preview");
-        }
+        var sources = result.RootElement.GetProperty("sources");
+        var firstSource = sources.EnumerateArray().First();
+        firstSource.GetProperty("documentId").GetString().Should().Be("/docs/test.md");
+        firstSource.GetProperty("title").GetString().Should().Be("test.md");
     }
 
     [Fact]
     public async Task SearchAsync_LongContent_ShouldTruncatePreview()
     {
         var longContent = new string('x', 300) + " matching keyword";
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
+        var searchResult = new VaultSearchResult
         {
-            Id = "doc-long",
-            Content = longContent
-        });
+            Query = "keyword",
+            Items =
+            [
+                new VaultSearchResultItem
+                {
+                    Entry = null!,
+                    SourcePath = "/docs/long.md",
+                    FileName = "long.md",
+                    Content = longContent,
+                    Score = 0.8f,
+                    ChunkIndex = 0
+                }
+            ],
+            TotalCount = 1,
+            IsSuccess = true
+        };
+
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(searchResult);
 
         var resultJson = await _tool.SearchAsync("keyword");
         var result = JsonDocument.Parse(resultJson);
 
-        if (result.RootElement.GetProperty("resultCount").GetInt32() > 0)
-        {
-            var sources = result.RootElement.GetProperty("sources");
-            var firstSource = sources.EnumerateArray().First();
-            var preview = firstSource.GetProperty("preview").GetString();
-            preview.Should().EndWith("...");
-            preview!.Length.Should().BeLessThanOrEqualTo(203); // 200 + "..."
-        }
-    }
-
-    #endregion
-
-    #region Static Storage Methods
-
-    [Fact]
-    public void AddDocument_ShouldStoreInIndex()
-    {
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "add-test",
-            Content = "test content"
-        });
-
-        FluxIndexSearchTool.RemoveDocument(TestIndex, "add-test").Should().BeTrue();
-    }
-
-    [Fact]
-    public void RemoveDocument_NonExistentIndex_ShouldReturnFalse()
-    {
-        FluxIndexSearchTool.RemoveDocument("non-existent-index", "doc-1").Should().BeFalse();
-    }
-
-    [Fact]
-    public void RemoveDocument_NonExistentDoc_ShouldReturnFalse()
-    {
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument
-        {
-            Id = "existing",
-            Content = "content"
-        });
-
-        FluxIndexSearchTool.RemoveDocument(TestIndex, "non-existent-doc").Should().BeFalse();
-    }
-
-    [Fact]
-    public void ClearIndex_ShouldRemoveAllDocuments()
-    {
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument { Id = "a", Content = "a" });
-        FluxIndexSearchTool.AddDocument(TestIndex, new StoredDocument { Id = "b", Content = "b" });
-
-        FluxIndexSearchTool.ClearIndex(TestIndex);
-
-        FluxIndexSearchTool.RemoveDocument(TestIndex, "a").Should().BeFalse();
-        FluxIndexSearchTool.RemoveDocument(TestIndex, "b").Should().BeFalse();
-    }
-
-    [Fact]
-    public void ClearIndex_NonExistentIndex_ShouldNotThrow()
-    {
-        var act = () => FluxIndexSearchTool.ClearIndex("never-existed-index");
-        act.Should().NotThrow();
+        var sources = result.RootElement.GetProperty("sources");
+        var firstSource = sources.EnumerateArray().First();
+        var preview = firstSource.GetProperty("preview").GetString();
+        preview.Should().EndWith("...");
+        preview!.Length.Should().BeLessThanOrEqualTo(203); // 200 + "..."
     }
 
     #endregion

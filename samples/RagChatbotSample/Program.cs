@@ -98,13 +98,11 @@ Console.WriteLine("\n--- Memorize/Search 시뮬레이션 ---\n");
 var memorizeTool = provider.GetRequiredService<FluxIndexMemorizeTool>();
 var searchTool = provider.GetRequiredService<FluxIndexSearchTool>();
 
-// 문서 저장
+// 문서 저장 (파일 경로 기반)
 Console.WriteLine("문서 저장 중...");
-var memorizeResult = await memorizeTool.MemorizeAsync(
-    content: "IronHive.Flux는 AI 에이전트와 RAG 시스템을 위한 통합 SDK입니다.",
-    documentId: "test-doc-001",
-    title: "테스트 문서"
-);
+var sampleFile = Path.Combine(Path.GetTempPath(), "flux-sample.md");
+await File.WriteAllTextAsync(sampleFile, "IronHive.Flux는 AI 에이전트와 RAG 시스템을 위한 통합 SDK입니다.");
+var memorizeResult = await memorizeTool.MemorizeAsync(filePath: sampleFile);
 Console.WriteLine($"저장 결과: {memorizeResult}\n");
 
 // 검색

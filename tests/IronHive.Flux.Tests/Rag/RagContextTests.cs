@@ -121,7 +121,6 @@ public class RagContextTests
         options.Strategy.Should().Be("hybrid");
         options.MinScore.Should().Be(0.5f);
         options.MaxTokens.Should().Be(4000);
-        options.IndexName.Should().BeNull();
         options.MetadataFilter.Should().BeNull();
     }
 
@@ -136,7 +135,6 @@ public class RagContextTests
             Strategy = "vector",
             MinScore = 0.8f,
             MaxTokens = 8000,
-            IndexName = "custom-index",
             MetadataFilter = filter
         };
 
@@ -145,7 +143,6 @@ public class RagContextTests
         options.Strategy.Should().Be("vector");
         options.MinScore.Should().Be(0.8f);
         options.MaxTokens.Should().Be(8000);
-        options.IndexName.Should().Be("custom-index");
         options.MetadataFilter.Should().ContainKey("category");
     }
 
@@ -163,7 +160,6 @@ public class RagContextTests
         options.DefaultMinScore.Should().Be(0.5f);
         options.MaxContextTokens.Should().Be(4000);
         options.ChunkSeparator.Should().Be("\n\n---\n\n");
-        options.DefaultIndexName.Should().Be("default");
         options.ToolTimeout.Should().Be(60);
     }
 
@@ -177,7 +173,6 @@ public class RagContextTests
             DefaultMinScore = 0.3f,
             MaxContextTokens = 16000,
             ChunkSeparator = "\n---\n",
-            DefaultIndexName = "my-index",
             ToolTimeout = 120
         };
 
@@ -186,7 +181,6 @@ public class RagContextTests
         options.DefaultMinScore.Should().Be(0.3f);
         options.MaxContextTokens.Should().Be(16000);
         options.ChunkSeparator.Should().Be("\n---\n");
-        options.DefaultIndexName.Should().Be("my-index");
         options.ToolTimeout.Should().Be(120);
     }
 

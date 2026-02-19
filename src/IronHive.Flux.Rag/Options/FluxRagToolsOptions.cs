@@ -31,11 +31,6 @@ public class FluxRagToolsOptions
     public string ChunkSeparator { get; set; } = "\n\n---\n\n";
 
     /// <summary>
-    /// 메모리 인덱스 이름
-    /// </summary>
-    public string DefaultIndexName { get; set; } = "default";
-
-    /// <summary>
     /// 도구 실행 타임아웃 (초)
     /// </summary>
     public int ToolTimeout { get; set; } = 60;
