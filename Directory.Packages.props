@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.10.3" />
+    <PackageVersion Include="FileFlux" Version="0.10.4" />
     <PackageVersion Include="FileFlux.Core" Version="0.10.3" />
     <PackageVersion Include="WebFlux" Version="0.4.1" />
     <PackageVersion Include="WebLookup" Version="0.2.1" />
