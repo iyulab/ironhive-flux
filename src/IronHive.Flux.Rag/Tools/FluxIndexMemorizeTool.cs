@@ -10,22 +10,26 @@ namespace IronHive.Flux.Rag.Tools;
 
 /// <summary>
 /// FluxIndex 문서 저장 도구 - IVault를 통한 파일 인덱싱
+/// 보안 검증 (경로, 크기, 심링크) 포함
 /// </summary>
 public partial class FluxIndexMemorizeTool
 {
     private static readonly JsonSerializerOptions s_indentedJsonOptions = new() { WriteIndented = true };
 
     private readonly FluxRagToolsOptions _options;
+    private readonly VaultSecurityOptions _securityOptions;
     private readonly IVault _vault;
     private readonly ILogger<FluxIndexMemorizeTool>? _logger;
 
     public FluxIndexMemorizeTool(
         IVault vault,
         IOptions<FluxRagToolsOptions> options,
+        IOptions<VaultSecurityOptions>? securityOptions = null,
         ILogger<FluxIndexMemorizeTool>? logger = null)
     {
         _vault = vault ?? throw new ArgumentNullException(nameof(vault));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _securityOptions = securityOptions?.Value ?? new VaultSecurityOptions();
         _logger = logger;
     }
 
@@ -46,6 +50,21 @@ public partial class FluxIndexMemorizeTool
 
         try
         {
+            // Security validation
+            var validationError = ValidateFileSecurity(filePath);
+            if (validationError is not null)
+            {
+                if (_logger is not null)
+                    LogSecurityValidationFailed(_logger, filePath, validationError);
+
+                return JsonSerializer.Serialize(new
+                {
+                    success = false,
+                    filePath,
+                    error = validationError
+                }, s_indentedJsonOptions);
+            }
+
             if (!File.Exists(filePath))
             {
                 return JsonSerializer.Serialize(new
@@ -84,6 +103,88 @@ public partial class FluxIndexMemorizeTool
         }
     }
 
+    #region Security Validation
+
+    /// <summary>
+    /// 파일 보안 검증을 수행합니다. 통과하면 null, 실패하면 에러 메시지를 반환합니다.
+    /// </summary>
+    internal string? ValidateFileSecurity(string filePath)
+    {
+        // 1. Path normalization
+        string normalizedPath;
+        try
+        {
+            normalizedPath = Path.GetFullPath(filePath);
+        }
+        catch (Exception ex)
+        {
+            return $"Invalid file path: {ex.Message}";
+        }
+
+        // 2. Check if file exists before further checks
+        if (!File.Exists(normalizedPath))
+        {
+            // Let the caller handle file-not-found separately
+            return null;
+        }
+
+        // 3. Symlink/junction rejection
+        if (_securityOptions.RejectSymlinks)
+        {
+            var fileInfo = new FileInfo(normalizedPath);
+            if ((fileInfo.Attributes & FileAttributes.ReparsePoint) != 0)
+            {
+                return $"Symlinks and junction points are not allowed: {normalizedPath}";
+            }
+
+            // Also check parent directories for symlinks
+            var directory = fileInfo.Directory;
+            while (directory is not null)
+            {
+                if ((directory.Attributes & FileAttributes.ReparsePoint) != 0)
+                {
+                    return $"File path contains a symlink or junction directory: {directory.FullName}";
+                }
+                directory = directory.Parent;
+            }
+        }
+
+        // 4. File size check
+        {
+            var fileInfo = new FileInfo(normalizedPath);
+            if (fileInfo.Length > _securityOptions.MaxFileSizeBytes)
+            {
+                var sizeMb = fileInfo.Length / (1024.0 * 1024.0);
+                var maxMb = _securityOptions.MaxFileSizeBytes / (1024.0 * 1024.0);
+                return $"File size ({sizeMb:F1}MB) exceeds maximum allowed size ({maxMb:F1}MB)";
+            }
+        }
+
+        // 5. AllowedBasePaths ACL
+        if (_securityOptions.AllowedBasePaths.Count > 0)
+        {
+            var isAllowed = false;
+            foreach (var basePath in _securityOptions.AllowedBasePaths)
+            {
+                var normalizedBase = Path.GetFullPath(basePath);
+                if (normalizedPath.StartsWith(normalizedBase, StringComparison.OrdinalIgnoreCase))
+                {
+                    isAllowed = true;
+                    break;
+                }
+            }
+
+            if (!isAllowed)
+            {
+                return $"File path is not within any allowed base path: {normalizedPath}";
+            }
+        }
+
+        return null;
+    }
+
+    #endregion
+
     #region LoggerMessage
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Document memorize started - FilePath: {FilePath}")]
@@ -94,6 +195,9 @@ public partial class FluxIndexMemorizeTool
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Document memorize failed - FilePath: {FilePath}")]
     private static partial void LogMemorizeFailed(ILogger logger, Exception ex, string FilePath);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Security validation failed for {FilePath}: {Reason}")]
+    private static partial void LogSecurityValidationFailed(ILogger logger, string FilePath, string Reason);
 
     #endregion
 }

@@ -37,6 +37,9 @@ public static class ServiceCollectionExtensions
             opt.ToolTimeout = options.ToolTimeout;
         });
 
+        // VaultSecurityOptions (defaults if not configured externally)
+        services.TryAddSingleton(Microsoft.Extensions.Options.Options.Create(new VaultSecurityOptions()));
+
         // 컨텍스트 빌더 등록
         services.TryAddSingleton<RagContextBuilder>();
 
@@ -45,6 +48,20 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<FluxIndexMemorizeTool>();
         services.TryAddScoped<FluxIndexUnmemorizeTool>();
 
+        return services;
+    }
+
+    /// <summary>
+    /// Vault 보안 옵션을 구성합니다.
+    /// </summary>
+    /// <param name="services">서비스 컬렉션</param>
+    /// <param name="configure">보안 옵션 구성 액션</param>
+    /// <returns>서비스 컬렉션</returns>
+    public static IServiceCollection ConfigureVaultSecurity(
+        this IServiceCollection services,
+        Action<VaultSecurityOptions> configure)
+    {
+        services.Configure(configure);
         return services;
     }
 

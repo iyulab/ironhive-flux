@@ -70,6 +70,33 @@ public record RagSearchResult
     /// 원본 문서 제목
     /// </summary>
     public string? Title { get; init; }
+
+    // === Rich Metadata (from FileFlux enrichment) ===
+
+    /// <summary>
+    /// 문서 계층 구조 경로 (heading breadcrumb)
+    /// </summary>
+    public string? Breadcrumb { get; init; }
+
+    /// <summary>
+    /// 문서 주제
+    /// </summary>
+    public string? DocumentTopic { get; init; }
+
+    /// <summary>
+    /// 문서 키워드
+    /// </summary>
+    public string? Keywords { get; init; }
+
+    /// <summary>
+    /// 청크 품질 점수
+    /// </summary>
+    public double? QualityScore { get; init; }
+
+    /// <summary>
+    /// 구조적 역할 (paragraph, heading, table, list 등)
+    /// </summary>
+    public string? StructuralRole { get; init; }
 }
 
 /// <summary>
