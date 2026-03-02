@@ -6,6 +6,7 @@ using IronHive.Flux.Core.Adapters.TextCompletion;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Options;
 using NSubstitute;
+using TokenMeter;
 using Xunit;
 
 namespace IronHive.Flux.Tests.Core;
@@ -135,13 +136,46 @@ public class TextCompletionAdapterTests
     }
 
     [Fact]
-    public void FluxIndex_CountTokens_ReturnsLengthDividedByFour()
+    public void FluxIndex_CountTokens_WithoutTokenCounter_UsesCjkAwareHeuristic()
     {
         var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
 
-        adapter.CountTokens("12345678").Should().Be(2); // 8 / 4 = 2
-        adapter.CountTokens("Hello").Should().Be(1); // 5 / 4 = 1 (integer division)
+        // English text: ~0.25 tokens/char
+        adapter.CountTokens("Hello World Test").Should().Be((int)(16 * 0.25)); // 4
         adapter.CountTokens("").Should().Be(0);
+    }
+
+    [Fact]
+    public void FluxIndex_CountTokens_WithKorean_UsesCjkHeuristic()
+    {
+        var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+
+        // Korean text: ~1.5 tokens/char
+        var koreanText = "\uD55C\uAD6D\uC5B4"; // 한국어 (3 Korean chars)
+        var expected = (int)(3 * 1.5); // 4
+        adapter.CountTokens(koreanText).Should().Be(expected);
+    }
+
+    [Fact]
+    public void FluxIndex_CountTokens_WithTokenCounter_UsesTokenCounter()
+    {
+        var tokenCounter = Substitute.For<ITokenCounter>();
+        tokenCounter.CountTokens("test text").Returns(42);
+        var adapter = new IronHiveTextCompletionServiceForFluxIndex(
+            _mockGenerator, _options, tokenCounter);
+
+        adapter.CountTokens("test text").Should().Be(42);
+        tokenCounter.Received(1).CountTokens("test text");
+    }
+
+    [Fact]
+    public void FluxIndex_CountTokens_WithNullTokenCounter_FallsBackToHeuristic()
+    {
+        var adapter = new IronHiveTextCompletionServiceForFluxIndex(
+            _mockGenerator, _options, tokenCounter: null);
+
+        // Should not throw, uses heuristic fallback
+        adapter.CountTokens("Hello World").Should().BeGreaterThan(0);
     }
 
     [Fact]

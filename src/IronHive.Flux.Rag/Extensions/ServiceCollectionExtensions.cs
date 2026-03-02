@@ -47,6 +47,9 @@ public static class ServiceCollectionExtensions
         services.TryAddScoped<FluxIndexSearchTool>();
         services.TryAddScoped<FluxIndexMemorizeTool>();
         services.TryAddScoped<FluxIndexUnmemorizeTool>();
+        services.TryAddScoped<FluxIndexBatchMemorizeTool>();
+        services.TryAddScoped<FluxIndexWebMemorizeTool>();
+        services.TryAddScoped<FluxIndexStatusTool>();
 
         return services;
     }
@@ -102,6 +105,18 @@ public static class ServiceCollectionExtensions
         var unmemorizeTool = provider.GetService<FluxIndexUnmemorizeTool>();
         if (unmemorizeTool != null)
             tools.AddRange(FunctionToolFactory.CreateFrom(unmemorizeTool.GetType()));
+
+        var batchMemorizeTool = provider.GetService<FluxIndexBatchMemorizeTool>();
+        if (batchMemorizeTool != null)
+            tools.AddRange(FunctionToolFactory.CreateFrom(batchMemorizeTool.GetType()));
+
+        var webMemorizeTool = provider.GetService<FluxIndexWebMemorizeTool>();
+        if (webMemorizeTool != null)
+            tools.AddRange(FunctionToolFactory.CreateFrom(webMemorizeTool.GetType()));
+
+        var statusTool = provider.GetService<FluxIndexStatusTool>();
+        if (statusTool != null)
+            tools.AddRange(FunctionToolFactory.CreateFrom(statusTool.GetType()));
 
         return tools;
     }

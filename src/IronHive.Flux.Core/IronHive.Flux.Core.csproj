@@ -11,6 +11,7 @@
     <PackageReference Include="FileFlux" />
     <PackageReference Include="WebFlux" />
     <PackageReference Include="FluxIndex.Core" />
+    <PackageReference Include="TokenMeter" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Options" />

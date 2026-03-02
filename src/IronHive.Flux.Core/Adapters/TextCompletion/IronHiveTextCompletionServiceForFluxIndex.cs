@@ -5,6 +5,7 @@ using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using TokenMeter;
 
 namespace IronHive.Flux.Core.Adapters.TextCompletion;
 
@@ -15,15 +16,18 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
+    private readonly TokenMeter.ITokenCounter? _tokenCounter;
     private readonly ILogger<IronHiveTextCompletionServiceForFluxIndex>? _logger;
 
     public IronHiveTextCompletionServiceForFluxIndex(
         IMessageGenerator generator,
         IOptions<IronHiveFluxCoreOptions> options,
+        TokenMeter.ITokenCounter? tokenCounter = null,
         ILogger<IronHiveTextCompletionServiceForFluxIndex>? logger = null)
     {
         _generator = generator ?? throw new ArgumentNullException(nameof(generator));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _tokenCounter = tokenCounter;
         _logger = logger;
     }
 
@@ -86,7 +90,17 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.
     /// <inheritdoc />
     public int CountTokens(string text)
     {
-        return text.Length / 4;
+        // Use TokenMeter for accurate counting when available
+        if (_tokenCounter is not null)
+        {
+            return _tokenCounter.CountTokens(text);
+        }
+
+        // CJK-aware heuristic fallback
+        // Korean: ~1.5 tokens/char, English: ~0.25 tokens/char
+        var koreanCount = text.Count(c => c >= 0xAC00 && c <= 0xD7A3);
+        var otherCount = text.Length - koreanCount;
+        return (int)(koreanCount * 1.5 + otherCount * 0.25);
     }
 
     private static string ExtractTextFromResponse(MessageResponse response)
