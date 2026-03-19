@@ -2,14 +2,12 @@
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
-
   <ItemGroup Label="IronHive">
     <PackageVersion Include="IronHive.Abstractions" Version="0.4.4" />
     <PackageVersion Include="IronHive.Core" Version="0.4.4" />
     <PackageVersion Include="IronHive.Plugins.MCP" Version="0.4.4" />
     <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.4.4" />
   </ItemGroup>
-
   <ItemGroup Label="Flux Ecosystem">
     <PackageVersion Include="FileFlux" Version="0.10.5" />
     <PackageVersion Include="FileFlux.Core" Version="0.10.3" />
@@ -20,11 +18,10 @@
     <PackageVersion Include="FluxIndex.SDK" Version="0.10.5" />
     <PackageVersion Include="TokenMeter" Version="0.3.1" />
   </ItemGroup>
-
   <ItemGroup Label="Microsoft">
     <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="10.0.3" />
-    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.3" />
-    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.5" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.5" />
     <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Options" Version="10.0.3" />
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.2" />
@@ -32,12 +29,10 @@
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Caching.Memory" Version="10.0.2" />
   </ItemGroup>
-
   <ItemGroup Label="Resilience">
     <PackageVersion Include="Polly" Version="8.6.5" />
     <PackageVersion Include="Polly.Extensions" Version="8.6.5" />
   </ItemGroup>
-
   <ItemGroup Label="Testing">
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
     <PackageVersion Include="coverlet.collector" Version="8.0.0" />
@@ -46,5 +41,4 @@
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
   </ItemGroup>
-
 </Project>
