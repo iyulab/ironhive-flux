@@ -35,6 +35,11 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
+  <!-- Override vulnerable transitive dependencies (GHSA-73j8-2gch-69rq) -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Bcl.Memory" />
+  </ItemGroup>
+
   <!-- Local development packages (auto-detected, ignored in CI) -->
   <PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)../../local-packages')">
     <RestoreAdditionalProjectSources>$(RestoreAdditionalProjectSources);$(MSBuildThisFileDirectory)../../local-packages</RestoreAdditionalProjectSources>

@@ -137,7 +137,7 @@ public class EmbeddingAdapterTests
     }
 
     [Fact]
-    public void FileFluxAdapter_EmbeddingDimension_ZeroConfig_ReturnsDefault1536()
+    public void FileFluxAdapter_EmbeddingDimension_ZeroConfig_ReturnsZero()
     {
         var options = Options.Create(new IronHiveFluxCoreOptions
         {
@@ -147,7 +147,7 @@ public class EmbeddingAdapterTests
         });
         var adapter = new IronHiveEmbeddingServiceForFileFlux(_mockGenerator, options);
 
-        adapter.EmbeddingDimension.Should().Be(1536);
+        adapter.EmbeddingDimension.Should().Be(0);
     }
 
     [Fact]
@@ -321,7 +321,7 @@ public class EmbeddingAdapterTests
     }
 
     [Fact]
-    public void FluxIndexAdapter_GetEmbeddingDimension_ZeroConfig_ReturnsDefault1536()
+    public void FluxIndexAdapter_GetEmbeddingDimension_ZeroConfig_ReturnsZero()
     {
         var options = Options.Create(new IronHiveFluxCoreOptions
         {
@@ -331,7 +331,7 @@ public class EmbeddingAdapterTests
         });
         var adapter = new IronHiveEmbeddingServiceForFluxIndex(_mockGenerator, options);
 
-        adapter.GetEmbeddingDimension().Should().Be(1536);
+        adapter.GetEmbeddingDimension().Should().Be(0);
     }
 
     [Fact]

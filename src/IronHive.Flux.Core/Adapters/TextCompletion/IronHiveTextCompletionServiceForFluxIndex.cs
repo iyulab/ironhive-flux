@@ -1,3 +1,4 @@
+using Flux.Abstractions;
 using FluxIndex.Core.Application.Interfaces;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
@@ -85,6 +86,31 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.
         if (_logger is not null)
             LogJsonCompletionCompleted(_logger, result.Length);
         return result;
+    }
+
+    /// <inheritdoc />
+    public Task<string> CompleteAsync(
+        string prompt,
+        TextCompletionOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return GenerateCompletionAsync(
+            prompt,
+            options?.MaxTokens ?? 500,
+            options?.Temperature ?? 0.7f,
+            cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public Task<string> CompleteJsonAsync(
+        string prompt,
+        TextCompletionOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        return GenerateJsonCompletionAsync(
+            prompt,
+            options?.MaxTokens ?? 500,
+            cancellationToken);
     }
 
     /// <inheritdoc />

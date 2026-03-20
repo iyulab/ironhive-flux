@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using WebFlux.Core.Interfaces;
 using WebFlux.Core.Models;
 using WebFlux.Core.Options;
+using FluxTextCompletionOptions = Flux.Abstractions.TextCompletionOptions;
 
 namespace IronHive.Flux.Core.Adapters.TextCompletion;
 
@@ -33,13 +34,13 @@ public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Inte
     /// <inheritdoc />
     public async Task<string> CompleteAsync(
         string prompt,
-        TextCompletionOptions? options = null,
+        FluxTextCompletionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         if (_logger is not null)
             LogTextCompletionStarted(_logger, prompt.Length);
 
-        var request = CreateRequest(prompt, options);
+        var request = CreateRequest(prompt, options as TextCompletionOptions);
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
         var result = ExtractTextFromResponse(response);
 
@@ -123,7 +124,7 @@ public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Inte
         };
     }
 
-    private MessageGenerationRequest CreateRequest(string prompt, TextCompletionOptions? options)
+    private MessageGenerationRequest CreateRequest(string prompt, FluxTextCompletionOptions? options)
     {
         return new MessageGenerationRequest
         {

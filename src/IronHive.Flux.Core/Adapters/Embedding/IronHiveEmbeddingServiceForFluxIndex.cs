@@ -68,7 +68,7 @@ public partial class IronHiveEmbeddingServiceForFluxIndex : FluxIndex.Core.Appli
     {
         return _options.EmbeddingDimension > 0
             ? _options.EmbeddingDimension
-            : 1536;
+            : 0; // 미설정 시 0 반환 — 소비자가 명시적으로 설정해야 함
     }
 
     /// <inheritdoc />

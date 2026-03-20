@@ -116,7 +116,7 @@ public class WebFluxTextCompletionAdapterTests
 
         var customOptions = new TextCompletionOptions
         {
-            Temperature = 0.3,
+            Temperature = 0.3f,
             MaxTokens = 200
         };
         await adapter.CompleteAsync("test", customOptions);
