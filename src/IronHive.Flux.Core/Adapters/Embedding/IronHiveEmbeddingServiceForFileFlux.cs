@@ -28,7 +28,7 @@ public partial class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingSe
     /// <inheritdoc />
     public int EmbeddingDimension => _options.EmbeddingDimension > 0
         ? _options.EmbeddingDimension
-        : 1536; // OpenAI text-embedding-3-small 기본값
+        : 0; // 미설정 시 0 반환 — 소비자가 명시적으로 설정해야 함
 
     /// <inheritdoc />
     public int MaxTokens => _options.MaxTokens;

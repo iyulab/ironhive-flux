@@ -33,7 +33,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
     public DocumentAnalysisServiceInfo ProviderInfo => new()
     {
         Name = "IronHive",
-        Type = DocumentAnalysisProviderType.OpenAI,
+        Type = DocumentAnalysisProviderType.Custom,
         SupportedModels = [_options.TextCompletionModelId],
         MaxContextLength = 128000,
         ApiVersion = "v1"
