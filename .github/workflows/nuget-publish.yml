@@ -109,14 +109,6 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
-      - name: Upload packages
-        if: steps.check.outputs.need_publish == 'true'
-        uses: actions/upload-artifact@v4
-        with:
-          name: nupkgs
-          path: nupkgs/*.nupkg
-          retention-days: 30
-
       - name: Create Git tag
         if: steps.check.outputs.need_publish == 'true'
         run: |
@@ -143,7 +135,6 @@ jobs:
             - [IronHive.Flux.Core](https://www.nuget.org/packages/IronHive.Flux.Core/${{ needs.detect-version.outputs.version }})
             - [IronHive.Flux.Rag](https://www.nuget.org/packages/IronHive.Flux.Rag/${{ needs.detect-version.outputs.version }})
             - [IronHive.Flux](https://www.nuget.org/packages/IronHive.Flux/${{ needs.detect-version.outputs.version }}) (metapackage)
-          files: nupkgs/*.nupkg
           prerelease: ${{ contains(needs.detect-version.outputs.version, '-') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
