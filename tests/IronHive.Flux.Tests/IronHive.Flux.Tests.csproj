@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\IronHive.Flux\IronHive.Flux.csproj" />
+    <ProjectReference Include="..\..\src\IronHive.Flux.WebLookup\IronHive.Flux.WebLookup.csproj" />
+    <ProjectReference Include="..\..\src\IronHive.Tools.WebLookup\IronHive.Tools.WebLookup.csproj" />
   </ItemGroup>
 
   <ItemGroup>

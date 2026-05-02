@@ -176,10 +176,10 @@ public partial class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTe
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 이미지 텍스트 추출 시작 - Size: {Size} bytes")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux image text extraction started - Size: {Size} bytes")]
     private static partial void LogImageExtractStarted(ILogger logger, int Size);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 이미지 텍스트 추출 완료 - Time: {Time}ms")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux image text extraction completed - Time: {Time}ms")]
     private static partial void LogImageExtractCompleted(ILogger logger, long Time);
 
     #endregion

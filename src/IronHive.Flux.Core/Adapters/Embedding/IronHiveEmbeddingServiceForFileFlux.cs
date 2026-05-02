@@ -99,16 +99,16 @@ public partial class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingSe
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 임베딩 생성 시작 - Purpose: {Purpose}, TextLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux embedding generation started - Purpose: {Purpose}, TextLength: {Length}")]
     private static partial void LogEmbeddingStarted(ILogger logger, EmbeddingPurpose Purpose, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 임베딩 생성 완료 - Dimension: {Dimension}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux embedding generation completed - Dimension: {Dimension}")]
     private static partial void LogEmbeddingCompleted(ILogger logger, int Dimension);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 배치 임베딩 생성 시작 - Purpose: {Purpose}, Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux batch embedding generation started - Purpose: {Purpose}, Count: {Count}")]
     private static partial void LogBatchEmbeddingStarted(ILogger logger, EmbeddingPurpose Purpose, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 배치 임베딩 생성 완료 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux batch embedding generation completed - Count: {Count}")]
     private static partial void LogBatchEmbeddingCompleted(ILogger logger, int Count);
 
     #endregion

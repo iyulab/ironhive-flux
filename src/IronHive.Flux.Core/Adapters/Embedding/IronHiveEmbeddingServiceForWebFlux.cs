@@ -72,16 +72,16 @@ public partial class IronHiveEmbeddingServiceForWebFlux : ITextEmbeddingService
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 임베딩 생성 시작 - TextLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux embedding generation started - TextLength: {Length}")]
     private static partial void LogEmbeddingStarted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 임베딩 생성 완료 - Dimension: {Dimension}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux embedding generation completed - Dimension: {Dimension}")]
     private static partial void LogEmbeddingCompleted(ILogger logger, int Dimension);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 임베딩 생성 시작 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux batch embedding generation started - Count: {Count}")]
     private static partial void LogBatchEmbeddingStarted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 임베딩 생성 완료 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux batch embedding generation completed - Count: {Count}")]
     private static partial void LogBatchEmbeddingCompleted(ILogger logger, int Count);
 
     #endregion

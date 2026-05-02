@@ -135,10 +135,10 @@ public partial class RagContextBuilder
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "RAG 컨텍스트 빌드 시작 - ResultCount: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "RAG context build started - ResultCount: {Count}")]
     private static partial void LogContextBuildStarted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "RAG 컨텍스트 빌드 완료 - SelectedCount: {Count}, Tokens: {Tokens}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "RAG context build completed - SelectedCount: {Count}, Tokens: {Tokens}")]
     private static partial void LogContextBuildCompleted(ILogger logger, int Count, int Tokens);
 
     #endregion

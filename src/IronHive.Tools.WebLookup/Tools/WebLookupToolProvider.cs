@@ -176,22 +176,22 @@ public partial class WebLookupToolProvider
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "웹 검색 시작 - Query: {Query}")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Web search started - Query: {Query}")]
     private static partial void LogWebSearchStarted(ILogger logger, string Query);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "웹 검색 완료 - ResultCount: {Count}")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Web search completed - ResultCount: {Count}")]
     private static partial void LogWebSearchCompleted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "웹 검색 실패 - Query: {Query}")]
+    [LoggerMessage(Level = LogLevel.Error, Message = "Web search failed - Query: {Query}")]
     private static partial void LogWebSearchFailed(ILogger logger, Exception ex, string Query);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "사이트 탐색 시작 - URL: {Url}")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Site exploration started - URL: {Url}")]
     private static partial void LogSiteExploreStarted(ILogger logger, string Url);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "사이트 탐색 완료 - URL: {Url}, Sitemaps: {Count}")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Site exploration completed - URL: {Url}, Sitemaps: {Count}")]
     private static partial void LogSiteExploreCompleted(ILogger logger, string Url, int Count);
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "사이트 탐색 실패 - URL: {Url}")]
+    [LoggerMessage(Level = LogLevel.Error, Message = "Site exploration failed - URL: {Url}")]
     private static partial void LogSiteExploreFailed(ILogger logger, Exception ex, string Url);
 
     #endregion

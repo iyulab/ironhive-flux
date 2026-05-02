@@ -142,16 +142,16 @@ public partial class WebLookupRagPipeline
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "URL 발견 시작 - Query: {Query}, MaxResults: {Max}")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "URL discovery started - Query: {Query}, MaxResults: {Max}")]
     private static partial void LogUrlDiscoveryStarted(ILogger logger, string Query, int Max);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "URL 발견 완료 - {Count}개 URL")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "URL discovery completed - {Count} URLs found")]
     private static partial void LogUrlDiscoveryCompleted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Sitemap URL 발견 시작 - BaseUrl: {Url}")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Sitemap URL discovery started - BaseUrl: {Url}")]
     private static partial void LogSitemapDiscoveryStarted(ILogger logger, string Url);
 
-    [LoggerMessage(Level = LogLevel.Information, Message = "Sitemap URL 발견 완료 - {Count}개 URL")]
+    [LoggerMessage(Level = LogLevel.Information, Message = "Sitemap URL discovery completed - {Count} URLs found")]
     private static partial void LogSitemapDiscoveryCompleted(ILogger logger, int Count);
 
     #endregion

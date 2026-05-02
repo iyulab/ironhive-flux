@@ -165,16 +165,16 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 텍스트 완성 시작 - PromptLength: {Length}, MaxTokens: {MaxTokens}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex text completion started - PromptLength: {Length}, MaxTokens: {MaxTokens}")]
     private static partial void LogTextCompletionStarted(ILogger logger, int Length, int MaxTokens);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 텍스트 완성 완료 - ResultLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex text completion completed - ResultLength: {Length}")]
     private static partial void LogTextCompletionCompleted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex JSON 완성 시작 - PromptLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex JSON completion started - PromptLength: {Length}")]
     private static partial void LogJsonCompletionStarted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex JSON 완성 완료 - ResultLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex JSON completion completed - ResultLength: {Length}")]
     private static partial void LogJsonCompletionCompleted(ILogger logger, int Length);
 
     #endregion

@@ -344,37 +344,37 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 텍스트 완성 시작 - PromptLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux text completion started - PromptLength: {Length}")]
     private static partial void LogTextCompletionStarted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 텍스트 완성 완료 - ResultLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux text completion completed - ResultLength: {Length}")]
     private static partial void LogTextCompletionCompleted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 구조 분석 시작 - DocumentType: {Type}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux structure analysis started - DocumentType: {Type}")]
     private static partial void LogStructureAnalysisStarted(ILogger logger, DocumentType Type);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 구조 분석 완료 - TokensUsed: {Tokens}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux structure analysis completed - TokensUsed: {Tokens}")]
     private static partial void LogStructureAnalysisCompleted(ILogger logger, int Tokens);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 요약 시작 - MaxLength: {MaxLength}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux summarization started - MaxLength: {MaxLength}")]
     private static partial void LogSummarizeStarted(ILogger logger, int MaxLength);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 요약 완료 - SummaryLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux summarization completed - SummaryLength: {Length}")]
     private static partial void LogSummarizeCompleted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 메타데이터 추출 시작 - DocumentType: {Type}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux metadata extraction started - DocumentType: {Type}")]
     private static partial void LogMetadataExtractionStarted(ILogger logger, DocumentType Type);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 메타데이터 추출 완료 - Keywords: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux metadata extraction completed - Keywords: {Count}")]
     private static partial void LogMetadataExtractionCompleted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "메타데이터 JSON 파싱 실패")]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Metadata JSON parse failed")]
     private static partial void LogMetadataJsonParseFailed(ILogger logger, Exception ex);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 품질 평가 시작")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux quality assessment started")]
     private static partial void LogQualityAssessmentStarted(ILogger logger);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux 품질 평가 완료 - OverallScore: {Score}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FileFlux quality assessment completed - OverallScore: {Score}")]
     private static partial void LogQualityAssessmentCompleted(ILogger logger, double Score);
 
     #endregion

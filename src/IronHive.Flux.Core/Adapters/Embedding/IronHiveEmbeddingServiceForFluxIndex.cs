@@ -1,4 +1,5 @@
 using FluxIndex.Core.Application.Interfaces;
+using FluxIndex.Core.Domain.ValueObjects;
 using IronHive.Abstractions.Embedding;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
@@ -84,6 +85,14 @@ public partial class IronHiveEmbeddingServiceForFluxIndex : FluxIndex.Core.Appli
     }
 
     /// <inheritdoc />
+    public EmbeddingIdentity GetIdentity() => new()
+    {
+        Provider = "IronHive",
+        Model = _options.EmbeddingModelId,
+        Dimension = GetEmbeddingDimension()
+    };
+
+    /// <inheritdoc />
     public async Task<int> CountTokensAsync(
         string text,
         CancellationToken cancellationToken = default)
@@ -103,22 +112,22 @@ public partial class IronHiveEmbeddingServiceForFluxIndex : FluxIndex.Core.Appli
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 임베딩 생성 시작 - TextLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex embedding generation started - TextLength: {Length}")]
     private static partial void LogEmbeddingStarted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 임베딩 생성 완료 - Dimension: {Dimension}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex embedding generation completed - Dimension: {Dimension}")]
     private static partial void LogEmbeddingCompleted(ILogger logger, int Dimension);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 배치 임베딩 생성 시작 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex batch embedding generation started - Count: {Count}")]
     private static partial void LogBatchEmbeddingStarted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 배치 임베딩 생성 완료 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex batch embedding generation completed - Count: {Count}")]
     private static partial void LogBatchEmbeddingCompleted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 토큰 카운트 시작 - TextLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex token count started - TextLength: {Length}")]
     private static partial void LogTokenCountStarted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex 토큰 카운트 완료 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "FluxIndex token count completed - Count: {Count}")]
     private static partial void LogTokenCountCompleted(ILogger logger, int Count);
 
     #endregion

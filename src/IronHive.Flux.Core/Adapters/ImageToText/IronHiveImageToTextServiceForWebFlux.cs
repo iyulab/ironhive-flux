@@ -218,22 +218,22 @@ public partial class IronHiveImageToTextServiceForWebFlux : WebFlux.Core.Interfa
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux URL 이미지 텍스트 변환 시작 - URL: {Url}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux URL image text conversion started - URL: {Url}")]
     private static partial void LogUrlImageConvertStarted(ILogger logger, string Url);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 이미지 텍스트 변환 시작 - Size: {Size} bytes, MimeType: {MimeType}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux image text conversion started - Size: {Size} bytes, MimeType: {MimeType}")]
     private static partial void LogImageConvertStarted(ILogger logger, int Size, string MimeType);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 이미지 텍스트 변환 완료 - ResultLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux image text conversion completed - ResultLength: {Length}")]
     private static partial void LogImageConvertCompleted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 이미지 변환 시작 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux batch image conversion started - Count: {Count}")]
     private static partial void LogBatchImageConvertStarted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 배치 이미지 변환 완료 - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux batch image conversion completed - Count: {Count}")]
     private static partial void LogBatchImageConvertCompleted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux 웹 이미지 텍스트 추출 시작 - URL: {Url}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux web image text extraction started - URL: {Url}")]
     private static partial void LogWebImageExtractStarted(ILogger logger, string Url);
 
     #endregion
