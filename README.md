@@ -13,8 +13,11 @@ IronHive와 Flux 생태계(FileFlux, WebFlux, FluxIndex)를 연결하는 브릿�
 | Package | Description |
 |---------|-------------|
 | `IronHive.Flux.Core` | 핵심 어댑터 (Embedding, TextCompletion, ImageToText) |
-| `IronHive.Flux.Rag` | RAG 도구 (검색, 메모라이즈) |
+| `IronHive.Flux.Rag` | RAG 도구 (검색, 메모라이즈, 상태 조회) |
 | `IronHive.Flux` | 메타패키지 |
+| `IronHive.Flux.WebLookup` | WebLookup → WebFlux → FluxIndex RAG 파이프라인 |
+| `IronHive.Tools.WebLookup` | 에이전트용 웹 검색/탐색 FunctionTool |
+| `IronHive.Tools.SystemHarness` | system-harness MCP 서버 통합 확장 |
 
 ## 시나리오
 

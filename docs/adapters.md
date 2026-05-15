@@ -12,9 +12,9 @@
 
 | 클래스 | 타겟 | 주요 메서드 |
 |--------|------|------------|
-| `IronHiveTextCompletionServiceForFileFlux` | FileFlux | `AnalyzeStructureAsync`, `SummarizeContentAsync`, `ExtractMetadataAsync` |
-| `IronHiveTextCompletionServiceForWebFlux` | WebFlux | `CompleteAsync`, `CompleteStreamAsync` |
-| `IronHiveTextCompletionServiceForFluxIndex` | FluxIndex | `GenerateCompletionAsync`, `GenerateJsonCompletionAsync` |
+| `IronHiveTextCompletionServiceForFileFlux` | `FileFlux.IDocumentAnalysisService` | `GenerateAsync`, `AnalyzeStructureAsync`, `SummarizeContentAsync`, `ExtractMetadataAsync`, `AssessQualityAsync` |
+| `IronHiveTextCompletionServiceForWebFlux` | `WebFlux.ITextCompletionService` | `CompleteAsync`, `CompleteStreamAsync` |
+| `IronHiveTextCompletionServiceForFluxIndex` | `FluxIndex.ITextCompletionService` | `GenerateCompletionAsync`, `GenerateJsonCompletionAsync` |
 
 ## ImageToText 어댑터
 

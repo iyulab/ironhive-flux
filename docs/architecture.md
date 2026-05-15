@@ -1,6 +1,6 @@
 # IronHive.Flux Architecture
 
-**Version:** 0.1.0
+**Version:** 0.3.3
 **Target Framework:** .NET 10
 **License:** MIT
 
@@ -42,14 +42,14 @@ IronHive.Flux는 **IronHive**(AI/LLM 프레임워크)와 **Flux 생태계**(File
 ```
 IronHive.Flux (metapackage)
 ├── IronHive.Flux.Core
-│   ├── IronHive.Abstractions (0.3.0)
-│   ├── FileFlux (0.8.0)
-│   ├── WebFlux (0.2.1)
-│   └── FluxIndex.Core (0.4.0)
+│   ├── IronHive.Abstractions (0.5.4)
+│   ├── FileFlux (0.10.6)
+│   ├── WebFlux (0.5.1)
+│   └── FluxIndex.Core (0.13.3)
 │
 └── IronHive.Flux.Rag
     ├── IronHive.Flux.Core
-    └── FluxIndex.SDK (0.4.0)
+    └── FluxIndex.SDK (0.13.3)
 ```
 
 ### 2.2 Package Responsibilities
@@ -59,6 +59,9 @@ IronHive.Flux (metapackage)
 | `IronHive.Flux.Core` | IronHive <-> Flux 어댑터 (Embedding, TextCompletion, ImageToText) | Yes |
 | `IronHive.Flux.Rag` | RAG 도구 (벡터 검색, 메모라이즈, 컨텍스트 빌더) | Yes |
 | `IronHive.Flux` | 위 2개를 포함하는 메타패키지 | Yes |
+| `IronHive.Flux.WebLookup` | WebLookup → WebFlux → FluxIndex RAG 파이프라인 (웹 콘텐츠 발견 및 인덱싱) | Yes |
+| `IronHive.Tools.WebLookup` | 에이전트용 웹 검색/탐색 FunctionTool 래퍼 | Yes |
+| `IronHive.Tools.SystemHarness` | system-harness MCP 서버 통합 확장 (파일, 앱, 화면, 키보드 제어) | Yes |
 
 ---
 
@@ -76,10 +79,13 @@ ironhive-flux/
 │   │   ├── Options/
 │   │   └── Extensions/
 │   ├── IronHive.Flux.Rag/
-│   │   ├── Tools/                             # Search, Memorize, Unmemorise
+│   │   ├── Tools/                             # Search, Memorize, BatchMemorize, WebMemorize, Unmemorise, Status
 │   │   ├── Context/                           # RagContext, RagContextBuilder
 │   │   ├── Options/
 │   │   └── Extensions/
+│   ├── IronHive.Flux.WebLookup/               # WebLookup → WebFlux → FluxIndex RAG pipeline
+│   ├── IronHive.Tools.WebLookup/              # Agent FunctionTool wrapper for WebLookup
+│   ├── IronHive.Tools.SystemHarness/          # system-harness MCP server integration
 ├── samples/
 │   └── RagChatbotSample/                      # RAG Chatbot scenario demo
 ├── tests/
@@ -112,7 +118,7 @@ IEmbeddingGenerator    ──┬───>  FileFlux.IEmbeddingService
                          ├───>  WebFlux.ITextEmbeddingService
                          └───>  FluxIndex.IEmbeddingService
 
-IMessageGenerator      ──┬───>  FileFlux.ITextCompletionService
+IMessageGenerator      ──┬───>  FileFlux.IDocumentAnalysisService
                          ├───>  WebFlux.ITextCompletionService
                          ├───>  FluxIndex.ITextCompletionService
                          ├───>  FileFlux.IImageToTextService
@@ -133,7 +139,7 @@ IMessageGenerator      ──┬───>  FileFlux.ITextCompletionService
 
 | Adapter | Source | Target | Key Methods |
 |---------|--------|--------|-------------|
-| `IronHiveTextCompletionServiceForFileFlux` | `IMessageGenerator` | `FileFlux.ITextCompletionService` | `AnalyzeStructureAsync`, `SummarizeContentAsync`, `ExtractMetadataAsync` |
+| `IronHiveTextCompletionServiceForFileFlux` | `IMessageGenerator` | `FileFlux.IDocumentAnalysisService` | `GenerateAsync`, `AnalyzeStructureAsync`, `SummarizeContentAsync`, `ExtractMetadataAsync`, `AssessQualityAsync` |
 | `IronHiveTextCompletionServiceForWebFlux` | `IMessageGenerator` | `WebFlux.ITextCompletionService` | `CompleteAsync`, `CompleteStreamAsync` |
 | `IronHiveTextCompletionServiceForFluxIndex` | `IMessageGenerator` | `FluxIndex.ITextCompletionService` | `GenerateCompletionAsync`, `GenerateJsonCompletionAsync` |
 
@@ -207,11 +213,14 @@ User Query
 
 ### 5.3 RAG Tools
 
-| Tool | Function Name | Description |
-|------|--------------|-------------|
-| `FluxIndexSearchTool` | `search_knowledge_base` | 벡터/하이브리드/키워드 검색 |
-| `FluxIndexMemorizeTool` | `memorize_document` | 문서를 인덱스에 저장 |
-| `FluxIndexUnmemorizeTool` | `forget_document` | 문서를 인덱스에서 삭제 |
+| Tool | Description |
+|------|-------------|
+| `FluxIndexSearchTool` | 벡터/하이브리드/키워드 검색 |
+| `FluxIndexMemorizeTool` | 파일을 인덱스에 저장 |
+| `FluxIndexUnmemorizeTool` | 파일을 인덱스에서 삭제 |
+| `FluxIndexBatchMemorizeTool` | 여러 파일 또는 디렉토리를 일괄 저장 |
+| `FluxIndexWebMemorizeTool` | 웹 페이지 URL 콘텐츠를 저장 |
+| `FluxIndexStatusTool` | 지식 베이스 상태 조회 및 문서 목록 확인 |
 
 ### 5.4 RagContext Model
 
@@ -236,7 +245,6 @@ public class FluxRagToolsOptions
     public float DefaultMinScore { get; set; } = 0.5f;
     public int MaxContextTokens { get; set; } = 4000;
     public string ChunkSeparator { get; set; } = "\n\n---\n\n";
-    public string DefaultIndexName { get; set; } = "default";
     public int ToolTimeout { get; set; } = 60;
 }
 ```
@@ -315,7 +323,7 @@ Rag -----------> Core --> FileFlux, WebFlux, FluxIndex
 - **Language:** C# latest
 - **Nullable:** enabled
 - **Implicit Usings:** enabled
-- **Version:** 0.1.0
+- **Version:** 0.3.3
 - `src/` 하위 프로젝트: `IsPackable=true` (NuGet 배포)
 - `tests/`, `samples/`: `IsPackable=false`
 
@@ -323,13 +331,14 @@ Rag -----------> Core --> FileFlux, WebFlux, FluxIndex
 
 | Category | Packages | Version |
 |----------|----------|---------|
-| IronHive | Abstractions, Core, Providers.OpenAI | 0.3.0 |
-| Flux | FileFlux, FileFlux.Core | 0.8.0 |
-| Flux | WebFlux | 0.2.1 |
-| Flux | FluxIndex.Core, FluxIndex.SDK | 0.4.0 |
-| Microsoft | Extensions.DI, Logging, Options, Http, Caching.Memory | 10.0.2 |
+| IronHive | Abstractions, Core, Plugins.MCP, Providers.OpenAI | 0.5.4 |
+| Flux | FileFlux, FileFlux.Core | 0.10.6 |
+| Flux | WebFlux | 0.5.1 |
+| Flux | FluxIndex.Core, FluxIndex.SDK, FluxIndex.Extensions.FileVault | 0.13.3 |
+| Flux | TokenMeter | 0.3.1 |
+| Microsoft | Extensions.DI, Logging, Options, Http, Caching.Memory | 10.0.x |
 | Resilience | Polly, Polly.Extensions | 8.6.5 |
-| Testing | xUnit, FluentAssertions, Moq, coverlet | various |
+| Testing | xUnit, FluentAssertions, NSubstitute, coverlet | various |
 
 ### 9.3 Build Commands
 
