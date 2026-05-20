@@ -1,3 +1,4 @@
+using Flux.Abstractions;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
 using IronHive.Abstractions.Messages.Roles;
@@ -5,17 +6,13 @@ using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Runtime.CompilerServices;
-using WebFlux.Core.Interfaces;
-using WebFlux.Core.Models;
-using WebFlux.Core.Options;
-using FluxTextCompletionOptions = Flux.Abstractions.TextCompletionOptions;
 
 namespace IronHive.Flux.Core.Adapters.TextCompletion;
 
 /// <summary>
 /// IronHive IMessageGenerator를 WebFlux ITextCompletionService로 어댑트
 /// </summary>
-public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Interfaces.ITextCompletionService
+public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionService
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
@@ -34,18 +31,23 @@ public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Inte
     /// <inheritdoc />
     public async Task<string> CompleteAsync(
         string prompt,
-        FluxTextCompletionOptions? options = null,
+        TextCompletionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         if (_logger is not null)
+        {
             LogTextCompletionStarted(_logger, prompt.Length);
+        }
 
-        var request = CreateRequest(prompt, options as TextCompletionOptions);
+        var request = CreateRequest(prompt, options);
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
         var result = ExtractTextFromResponse(response);
 
         if (_logger is not null)
+        {
             LogTextCompletionCompleted(_logger, result.Length);
+        }
+
         return result;
     }
 
@@ -56,7 +58,9 @@ public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Inte
         [EnumeratorCancellation] CancellationToken cancellationToken = default)
     {
         if (_logger is not null)
+        {
             LogStreamingTextCompletionStarted(_logger, prompt.Length);
+        }
 
         var request = CreateRequest(prompt, options);
 
@@ -70,7 +74,9 @@ public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Inte
         }
 
         if (_logger is not null)
+        {
             LogStreamingTextCompletionCompleted(_logger);
+        }
     }
 
     /// <inheritdoc />
@@ -81,7 +87,9 @@ public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Inte
     {
         var promptList = prompts.ToList();
         if (_logger is not null)
+        {
             LogBatchTextCompletionStarted(_logger, promptList.Count);
+        }
 
         var results = new List<string>();
         foreach (var prompt in promptList)
@@ -91,40 +99,14 @@ public partial class IronHiveTextCompletionServiceForWebFlux : WebFlux.Core.Inte
         }
 
         if (_logger is not null)
+        {
             LogBatchTextCompletionCompleted(_logger, results.Count);
+        }
+
         return results;
     }
 
-    /// <inheritdoc />
-    public async Task<bool> IsAvailableAsync(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            var request = new MessageGenerationRequest
-            {
-                Model = _options.TextCompletionModelId,
-                Messages = [new UserMessage { Content = [new TextMessageContent { Value = "ping" }] }],
-                MaxTokens = 1
-            };
-            await _generator.GenerateMessageAsync(request, cancellationToken);
-            return true;
-        }
-        catch
-        {
-            return false;
-        }
-    }
-
-    /// <inheritdoc />
-    public ServiceHealthInfo GetHealthInfo()
-    {
-        return new ServiceHealthInfo
-        {
-            ServiceName = "IronHive TextCompletionService for WebFlux"
-        };
-    }
-
-    private MessageGenerationRequest CreateRequest(string prompt, FluxTextCompletionOptions? options)
+    private MessageGenerationRequest CreateRequest(string prompt, TextCompletionOptions? options)
     {
         return new MessageGenerationRequest
         {

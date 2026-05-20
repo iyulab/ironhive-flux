@@ -1,7 +1,6 @@
 using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using TokenMeter;
 
 namespace IronHive.Flux.Rag.Context;
 
@@ -12,16 +11,13 @@ public partial class RagContextBuilder
 {
     private readonly FluxRagToolsOptions _options;
     private readonly ILogger<RagContextBuilder>? _logger;
-    private readonly ITokenCounter? _tokenCounter;
 
     public RagContextBuilder(
         IOptions<FluxRagToolsOptions> options,
-        ILogger<RagContextBuilder>? logger = null,
-        ITokenCounter? tokenCounter = null)
+        ILogger<RagContextBuilder>? logger = null)
     {
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
-        _tokenCounter = tokenCounter;
     }
 
     /// <summary>
@@ -117,19 +113,11 @@ public partial class RagContextBuilder
         return string.Join(_options.ChunkSeparator, contextParts);
     }
 
-    private int EstimateTokens(string text)
+    private static int EstimateTokens(string text)
     {
-        // Use TokenMeter for accurate counting when available
-        if (_tokenCounter is not null)
-        {
-            return _tokenCounter.CountTokens(text);
-        }
-
-        // Fallback: character-based heuristic
+        // CJK-aware heuristic: Korean ~1.5 tokens/char, other ~0.25 tokens/char
         var koreanCount = text.Count(c => c >= 0xAC00 && c <= 0xD7A3);
         var otherCount = text.Length - koreanCount;
-
-        // 한국어: ~1.5 토큰/문자, 영어: ~0.25 토큰/문자
         return (int)(koreanCount * 1.5 + otherCount * 0.25);
     }
 

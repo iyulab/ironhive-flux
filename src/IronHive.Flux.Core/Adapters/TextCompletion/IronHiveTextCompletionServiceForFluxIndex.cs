@@ -1,73 +1,74 @@
 using Flux.Abstractions;
-using FluxIndex.Core.Application.Interfaces;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
 using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using TokenMeter;
 
 namespace IronHive.Flux.Core.Adapters.TextCompletion;
 
 /// <summary>
 /// IronHive IMessageGenerator를 FluxIndex ITextCompletionService로 어댑트
 /// </summary>
-public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.Application.Interfaces.ITextCompletionService
+public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletionService
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
-    private readonly TokenMeter.ITokenCounter? _tokenCounter;
     private readonly ILogger<IronHiveTextCompletionServiceForFluxIndex>? _logger;
 
     public IronHiveTextCompletionServiceForFluxIndex(
         IMessageGenerator generator,
         IOptions<IronHiveFluxCoreOptions> options,
-        TokenMeter.ITokenCounter? tokenCounter = null,
         ILogger<IronHiveTextCompletionServiceForFluxIndex>? logger = null)
     {
         _generator = generator ?? throw new ArgumentNullException(nameof(generator));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
-        _tokenCounter = tokenCounter;
         _logger = logger;
     }
 
     /// <inheritdoc />
-    public async Task<string> GenerateCompletionAsync(
+    public async Task<string> CompleteAsync(
         string prompt,
-        int maxTokens = 500,
-        float temperature = 0.7f,
+        TextCompletionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         if (_logger is not null)
-            LogTextCompletionStarted(_logger, prompt.Length, maxTokens);
+        {
+            LogTextCompletionStarted(_logger, prompt.Length, options?.MaxTokens ?? 500);
+        }
 
         var request = new MessageGenerationRequest
         {
             Model = _options.TextCompletionModelId,
             Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
-            Temperature = temperature,
-            MaxTokens = maxTokens
+            Temperature = options?.Temperature ?? 0.7f,
+            MaxTokens = options?.MaxTokens ?? 500
         };
 
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
         var result = ExtractTextFromResponse(response);
 
         if (_logger is not null)
+        {
             LogTextCompletionCompleted(_logger, result.Length);
+        }
+
         return result;
     }
 
     /// <inheritdoc />
-    public async Task<string> GenerateJsonCompletionAsync(
+    public async Task<string> CompleteJsonAsync(
         string prompt,
-        int maxTokens = 500,
+        TextCompletionOptions? options = null,
         CancellationToken cancellationToken = default)
     {
         if (_logger is not null)
+        {
             LogJsonCompletionStarted(_logger, prompt.Length);
+        }
 
-        var systemPrompt = "You are a JSON generator. Always respond with valid JSON only, no additional text or markdown.";
+        const string systemPrompt = "You are a JSON generator. Always respond with valid JSON only, no additional text or markdown.";
 
         var request = new MessageGenerationRequest
         {
@@ -75,58 +76,18 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.
             System = systemPrompt,
             Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
             Temperature = 0.1f,
-            MaxTokens = maxTokens
+            MaxTokens = options?.MaxTokens ?? 500
         };
 
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
-        var result = ExtractTextFromResponse(response);
-
-        result = ExtractJsonFromText(result);
+        var result = ExtractJsonFromText(ExtractTextFromResponse(response));
 
         if (_logger is not null)
-            LogJsonCompletionCompleted(_logger, result.Length);
-        return result;
-    }
-
-    /// <inheritdoc />
-    public Task<string> CompleteAsync(
-        string prompt,
-        TextCompletionOptions? options = null,
-        CancellationToken cancellationToken = default)
-    {
-        return GenerateCompletionAsync(
-            prompt,
-            options?.MaxTokens ?? 500,
-            options?.Temperature ?? 0.7f,
-            cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public Task<string> CompleteJsonAsync(
-        string prompt,
-        TextCompletionOptions? options = null,
-        CancellationToken cancellationToken = default)
-    {
-        return GenerateJsonCompletionAsync(
-            prompt,
-            options?.MaxTokens ?? 500,
-            cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public int CountTokens(string text)
-    {
-        // Use TokenMeter for accurate counting when available
-        if (_tokenCounter is not null)
         {
-            return _tokenCounter.CountTokens(text);
+            LogJsonCompletionCompleted(_logger, result.Length);
         }
 
-        // CJK-aware heuristic fallback
-        // Korean: ~1.5 tokens/char, English: ~0.25 tokens/char
-        var koreanCount = text.Count(c => c >= 0xAC00 && c <= 0xD7A3);
-        var otherCount = text.Length - koreanCount;
-        return (int)(koreanCount * 1.5 + otherCount * 0.25);
+        return result;
     }
 
     private static string ExtractTextFromResponse(MessageResponse response)
@@ -142,23 +103,34 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : FluxIndex.Core.
     {
         text = text.Trim();
         if (text.StartsWith("```json", StringComparison.Ordinal))
+        {
             text = text[7..];
+        }
         else if (text.StartsWith("```", StringComparison.Ordinal))
+        {
             text = text[3..];
+        }
 
         if (text.EndsWith("```", StringComparison.Ordinal))
+        {
             text = text[..^3];
+        }
 
         text = text.Trim();
 
         var jsonStart = text.IndexOfAny(['{', '[']);
-        if (jsonStart < 0) return text;
+        if (jsonStart < 0)
+        {
+            return text;
+        }
 
         var jsonEndChar = text[jsonStart] == '{' ? '}' : ']';
         var jsonEnd = text.LastIndexOf(jsonEndChar);
 
         if (jsonEnd > jsonStart)
+        {
             return text[jsonStart..(jsonEnd + 1)];
+        }
 
         return text;
     }

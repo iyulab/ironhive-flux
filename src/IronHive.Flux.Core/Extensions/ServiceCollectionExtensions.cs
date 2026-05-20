@@ -1,3 +1,4 @@
+using Flux.Abstractions;
 using IronHive.Flux.Core.Adapters.Embedding;
 using IronHive.Flux.Core.Adapters.ImageToText;
 using IronHive.Flux.Core.Adapters.TextCompletion;
@@ -56,7 +57,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddIronHiveWebFluxAdapters(this IServiceCollection services)
     {
         services.TryAddSingleton<WebFlux.Core.Interfaces.ITextEmbeddingService, IronHiveEmbeddingServiceForWebFlux>();
-        services.TryAddSingleton<WebFlux.Core.Interfaces.ITextCompletionService, IronHiveTextCompletionServiceForWebFlux>();
+        services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionServiceForWebFlux>();
         services.TryAddSingleton<WebFlux.Core.Interfaces.IImageToTextService, IronHiveImageToTextServiceForWebFlux>();
         return services;
     }
@@ -67,7 +68,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddIronHiveFluxIndexAdapters(this IServiceCollection services)
     {
         services.TryAddSingleton<FluxIndex.Core.Application.Interfaces.IEmbeddingService, IronHiveEmbeddingServiceForFluxIndex>();
-        services.TryAddSingleton<FluxIndex.Core.Application.Interfaces.ITextCompletionService, IronHiveTextCompletionServiceForFluxIndex>();
+        services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionServiceForFluxIndex>();
         return services;
     }
 

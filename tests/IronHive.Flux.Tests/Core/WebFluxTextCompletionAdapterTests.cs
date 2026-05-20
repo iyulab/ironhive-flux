@@ -301,47 +301,6 @@ public class WebFluxTextCompletionAdapterTests
 
     #endregion
 
-    #region IsAvailableAsync
-
-    [Fact]
-    public async Task IsAvailableAsync_WhenGeneratorSucceeds_ReturnsTrue()
-    {
-        SetupGeneratorResponse("pong");
-        var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
-
-        var available = await adapter.IsAvailableAsync();
-
-        available.Should().BeTrue();
-    }
-
-    [Fact]
-    public async Task IsAvailableAsync_WhenGeneratorThrows_ReturnsFalse()
-    {
-        _mockGenerator
-            .GenerateMessageAsync(Arg.Any<MessageGenerationRequest>(), Arg.Any<CancellationToken>())
-            .Returns<MessageResponse>(_ => throw new InvalidOperationException("service down"));
-        var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
-
-        var available = await adapter.IsAvailableAsync();
-
-        available.Should().BeFalse();
-    }
-
-    #endregion
-
-    #region GetHealthInfo
-
-    [Fact]
-    public void GetHealthInfo_ReturnsCorrectServiceName()
-    {
-        var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
-
-        var healthInfo = adapter.GetHealthInfo();
-
-        healthInfo.ServiceName.Should().Be("IronHive TextCompletionService for WebFlux");
-    }
-
-    #endregion
 
     #region Helpers
 

@@ -3,7 +3,6 @@ using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Options;
 using NSubstitute;
-using TokenMeter;
 using Xunit;
 
 namespace IronHive.Flux.Tests.Rag;
@@ -269,28 +268,10 @@ public class RagContextBuilderTests
 
     #endregion
 
-    #region TokenMeter Integration
+    #region Token Estimation
 
     [Fact]
-    public void BuildContext_WithTokenCounter_ShouldUseAccurateTokenCounting()
-    {
-        var mockCounter = Substitute.For<ITokenCounter>();
-        mockCounter.CountTokens(Arg.Any<string>()).Returns(10);
-
-        var builder = new RagContextBuilder(CreateOptions(), tokenCounter: mockCounter);
-        var results = new[]
-        {
-            CreateResult("1", "some content", 0.9f)
-        };
-
-        var context = builder.BuildContext(results);
-
-        context.TokenCount.Should().Be(10);
-        mockCounter.Received(1).CountTokens("some content");
-    }
-
-    [Fact]
-    public void BuildContext_WithoutTokenCounter_ShouldUseFallbackHeuristic()
+    public void BuildContext_ShouldUseCjkAwareHeuristic()
     {
         var builder = new RagContextBuilder(CreateOptions());
         var results = new[]
@@ -300,30 +281,8 @@ public class RagContextBuilderTests
 
         var context = builder.BuildContext(results);
 
-        // Fallback heuristic: English ~0.25 tokens/char → "hello world" (11 chars) ≈ 2-3 tokens
+        // CJK-aware heuristic: English ~0.25 tokens/char → "hello world" (11 chars) ≈ 2-3 tokens
         context.TokenCount.Should().BeGreaterThan(0);
-    }
-
-    [Fact]
-    public void BuildContext_WithTokenCounter_ShouldRespectTokenBudget()
-    {
-        var mockCounter = Substitute.For<ITokenCounter>();
-        mockCounter.CountTokens("first").Returns(5);
-        mockCounter.CountTokens("second").Returns(100);
-
-        var opts = new FluxRagToolsOptions { MaxContextTokens = 20 };
-        var builder = new RagContextBuilder(CreateOptions(opts), tokenCounter: mockCounter);
-        var results = new[]
-        {
-            CreateResult("1", "first", 0.9f),
-            CreateResult("2", "second", 0.8f)
-        };
-
-        var context = builder.BuildContext(results);
-
-        // First fits (5 <= 20), second doesn't (5 + 100 > 20)
-        context.Sources.Should().HaveCount(1);
-        context.Sources[0].DocumentId.Should().Be("1");
     }
 
     #endregion
