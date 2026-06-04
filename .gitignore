@@ -68,3 +68,6 @@ appsettings.*.local.json
 local-docs/
 claudedocs/
 nul
+
+# IDE language server cache
+*.lscache
