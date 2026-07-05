@@ -7,6 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 IronHive와 Flux 생태계(FileFlux, WebFlux, FluxIndex)를 연결하는 브릿지 SDK.
+Flux 통합 외에, ironhive 에이전트를 위한 외부 도구/파이프라인 통합(WebLookup, system-harness)도 이 레포가 소유한다 — 별도 통합 지점을 신설하지 않고 기존 브릿지 레이어에 얹는다.
 
 ## 패키지
 
