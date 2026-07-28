@@ -1,5 +1,5 @@
 using FluentAssertions;
-using FluxIndex.Extensions.FileVault.Interfaces;
+using FluxFeed.Interfaces;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;
 using Microsoft.Extensions.Options;

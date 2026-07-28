@@ -1,6 +1,5 @@
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
-using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -66,18 +65,13 @@ public partial class IronHiveImageToTextServiceForWebFlux : WebFlux.Core.Interfa
             Model = _options.ImageToTextModelId,
             Messages =
             [
-                new UserMessage
-                {
-                    Content =
-                    [
-                        new ImageMessageContent
-                        {
-                            Format = format,
-                            Base64 = base64
-                        },
-                        new TextMessageContent { Value = prompt }
-                    ]
-                }
+                Message.User(
+                    new ImageMessageContent
+                    {
+                        Format = format,
+                        Base64 = base64
+                    },
+                    new TextMessageContent { Value = prompt })
             ],
             Temperature = 0.5f,
             MaxTokens = 1000
@@ -155,7 +149,7 @@ public partial class IronHiveImageToTextServiceForWebFlux : WebFlux.Core.Interfa
             var request = new MessageGenerationRequest
             {
                 Model = _options.ImageToTextModelId,
-                Messages = [new UserMessage { Content = [new TextMessageContent { Value = "ping" }] }],
+                Messages = [Message.User("ping")],
                 MaxTokens = 1
             };
             await _generator.GenerateMessageAsync(request, cancellationToken);
@@ -209,7 +203,7 @@ public partial class IronHiveImageToTextServiceForWebFlux : WebFlux.Core.Interfa
 
     private static string ExtractTextFromResponse(MessageResponse response)
     {
-        var textContents = response.Message.Content?
+        var textContents = response.Message?.Content?
             .OfType<TextMessageContent>()
             .Select(c => c.Value);
 

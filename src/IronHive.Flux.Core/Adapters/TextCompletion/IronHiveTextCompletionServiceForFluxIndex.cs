@@ -1,7 +1,6 @@
 using Flux.Abstractions;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
-using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -41,7 +40,7 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
         var request = new MessageGenerationRequest
         {
             Model = _options.TextCompletionModelId,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = options?.Temperature ?? 0.7f,
             MaxTokens = options?.MaxTokens ?? 500
         };
@@ -74,7 +73,7 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
         {
             Model = _options.TextCompletionModelId,
             System = systemPrompt,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = 0.1f,
             MaxTokens = options?.MaxTokens ?? 500
         };
@@ -92,7 +91,7 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
 
     private static string ExtractTextFromResponse(MessageResponse response)
     {
-        var textContents = response.Message.Content?
+        var textContents = response.Message?.Content?
             .OfType<TextMessageContent>()
             .Select(c => c.Value);
 

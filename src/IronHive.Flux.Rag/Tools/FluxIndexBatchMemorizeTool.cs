@@ -1,4 +1,4 @@
-using FluxIndex.Extensions.FileVault.Interfaces;
+using FluxFeed.Interfaces;
 using IronHive.Core.Tools;
 using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Logging;
