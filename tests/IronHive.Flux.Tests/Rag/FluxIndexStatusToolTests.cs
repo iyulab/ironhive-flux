@@ -1,7 +1,7 @@
 using FluentAssertions;
-using FluxIndex.Extensions.FileVault.Domain.Entities;
-using FluxIndex.Extensions.FileVault.Domain.Enums;
-using FluxIndex.Extensions.FileVault.Interfaces;
+using FluxFeed.Domain.Entities;
+using FluxFeed.Domain.Enums;
+using FluxFeed.Interfaces;
 using IronHive.Flux.Rag.Tools;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;

@@ -1,7 +1,6 @@
 using FluentAssertions;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
-using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Adapters.ImageToText;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Options;
@@ -33,11 +32,7 @@ public class ImageToTextAdapterTests
             .GenerateMessageAsync(Arg.Any<MessageGenerationRequest>(), Arg.Any<CancellationToken>())
             .Returns(new MessageResponse
             {
-                Id = "test-response",
-                Message = new AssistantMessage
-                {
-                    Content = [new TextMessageContent { Value = text }]
-                }
+                Message = Message.Assistant(text)
             });
     }
 

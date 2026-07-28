@@ -203,7 +203,7 @@ public partial class IronHiveImageToTextServiceForWebFlux : WebFlux.Core.Interfa
 
     private static string ExtractTextFromResponse(MessageResponse response)
     {
-        var textContents = response.Message.Content?
+        var textContents = response.Message?.Content?
             .OfType<TextMessageContent>()
             .Select(c => c.Value);
 

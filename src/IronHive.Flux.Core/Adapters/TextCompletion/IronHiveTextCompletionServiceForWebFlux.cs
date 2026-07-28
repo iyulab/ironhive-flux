@@ -118,7 +118,7 @@ public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionSe
 
     private static string ExtractTextFromResponse(MessageResponse response)
     {
-        var textContents = response.Message.Content?
+        var textContents = response.Message?.Content?
             .OfType<TextMessageContent>()
             .Select(c => c.Value);
 

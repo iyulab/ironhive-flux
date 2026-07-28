@@ -1,6 +1,6 @@
 using FluentAssertions;
 using FluxIndex.Core.Application.Interfaces;
-using FluxIndex.Extensions.FileVault.Interfaces;
+using FluxFeed.Interfaces;
 using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;

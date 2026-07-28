@@ -161,7 +161,7 @@ public partial class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTe
 
     private static string ExtractTextFromResponse(MessageResponse response)
     {
-        var textContents = response.Message.Content?
+        var textContents = response.Message?.Content?
             .OfType<TextMessageContent>()
             .Select(c => c.Value);
 
