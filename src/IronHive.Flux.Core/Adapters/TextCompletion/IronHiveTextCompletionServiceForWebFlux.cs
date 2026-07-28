@@ -1,7 +1,6 @@
 using Flux.Abstractions;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
-using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -111,7 +110,7 @@ public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionSe
         return new MessageGenerationRequest
         {
             Model = _options.TextCompletionModelId,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = (float?)(options?.Temperature) ?? _options.DefaultTemperature,
             MaxTokens = options?.MaxTokens ?? _options.DefaultCompletionMaxTokens
         };

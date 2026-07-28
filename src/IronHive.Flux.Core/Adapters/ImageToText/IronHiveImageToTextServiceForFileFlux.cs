@@ -1,7 +1,6 @@
 using FileFlux;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
-using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -92,18 +91,13 @@ public partial class IronHiveImageToTextServiceForFileFlux : FileFlux.IImageToTe
             Model = _options.ImageToTextModelId,
             Messages =
             [
-                new UserMessage
-                {
-                    Content =
-                    [
-                        new ImageMessageContent
-                        {
-                            Format = format,
-                            Base64 = base64
-                        },
-                        new TextMessageContent { Value = prompt }
-                    ]
-                }
+                Message.User(
+                    new ImageMessageContent
+                    {
+                        Format = format,
+                        Base64 = base64
+                    },
+                    new TextMessageContent { Value = prompt })
             ],
             Temperature = 0.3f,
             MaxTokens = 2000

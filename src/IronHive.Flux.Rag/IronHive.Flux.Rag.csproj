@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="IronHive.Core" />
     <PackageReference Include="FluxIndex.SDK" />
-    <PackageReference Include="FluxIndex.Extensions.FileVault" />
+    <PackageReference Include="FluxFeed" />
     <PackageReference Include="TokenMeter" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />

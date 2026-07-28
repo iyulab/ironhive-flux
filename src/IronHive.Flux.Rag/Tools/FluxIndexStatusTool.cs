@@ -1,5 +1,5 @@
-using FluxIndex.Extensions.FileVault.Domain.Enums;
-using FluxIndex.Extensions.FileVault.Interfaces;
+using FluxFeed.Domain.Enums;
+using FluxFeed.Interfaces;
 using IronHive.Core.Tools;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;

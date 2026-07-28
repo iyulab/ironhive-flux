@@ -2,7 +2,6 @@ using FileFlux;
 using FileFlux.Core;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
-using IronHive.Abstractions.Messages.Roles;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -47,7 +46,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
             var request = new MessageGenerationRequest
             {
                 Model = _options.TextCompletionModelId,
-                Messages = [new UserMessage { Content = [new TextMessageContent { Value = "ping" }] }],
+                Messages = [Message.User("ping")],
                 MaxTokens = 1
             };
             await _generator.GenerateMessageAsync(request, cancellationToken);
@@ -70,7 +69,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
         var request = new MessageGenerationRequest
         {
             Model = _options.TextCompletionModelId,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = _options.DefaultTemperature,
             MaxTokens = _options.DefaultCompletionMaxTokens
         };
@@ -98,7 +97,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
         {
             Model = _options.TextCompletionModelId,
             System = systemPrompt,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = 0.3f,
             MaxTokens = 2000
         };
@@ -134,7 +133,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
         {
             Model = _options.TextCompletionModelId,
             System = systemPrompt,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = 0.5f,
             MaxTokens = 500
         };
@@ -176,7 +175,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
         {
             Model = _options.TextCompletionModelId,
             System = systemPrompt,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = 0.3f,
             MaxTokens = 1000
         };
@@ -248,7 +247,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
         {
             Model = _options.TextCompletionModelId,
             System = systemPrompt,
-            Messages = [new UserMessage { Content = [new TextMessageContent { Value = prompt }] }],
+            Messages = [Message.User(prompt)],
             Temperature = 0.3f,
             MaxTokens = 1000
         };
