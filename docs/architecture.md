@@ -42,15 +42,26 @@ IronHive.Flux는 **IronHive**(AI/LLM 프레임워크)와 **Flux 생태계**(File
 ```
 IronHive.Flux (metapackage)
 ├── IronHive.Flux.Core
-│   ├── IronHive.Abstractions (0.5.4)
-│   ├── FileFlux (0.10.6)
-│   ├── WebFlux (0.5.1)
-│   └── FluxIndex.Core (0.13.3)
+│   ├── IronHive.Abstractions
+│   ├── FileFlux
+│   ├── WebFlux
+│   ├── FluxIndex.Core
+│   └── TokenMeter
 │
-└── IronHive.Flux.Rag
-    ├── IronHive.Flux.Core
-    └── FluxIndex.SDK (0.13.3)
+├── IronHive.Flux.Rag
+│   ├── IronHive.Core
+│   ├── FluxIndex.SDK
+│   ├── FluxFeed          # IVault — 문서 수집/파싱/적재 표면
+│   └── TokenMeter
+│
+└── IronHive.Flux.WebLookup
+    ├── WebLookup
+    ├── WebFlux
+    └── FluxIndex.SDK
 ```
+
+> 버전은 여기에 적지 않는다 — `Directory.Packages.props`가 유일한 출처다. 문서에 박아 둔 버전은
+> 반드시 낡으며, 실제로 이 블록의 모든 버전이 여러 마이너만큼 뒤처져 있었다.
 
 ### 2.2 Package Responsibilities
 
