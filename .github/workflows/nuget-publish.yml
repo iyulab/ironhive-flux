@@ -97,13 +97,30 @@ jobs:
 
           echo "need_publish=$NEED_PUBLISH" >> $GITHUB_OUTPUT
 
+      # Pack the solution, not a name-matched subset. The previous glob was src/*/IronHive.Flux*.csproj,
+      # which silently excluded IronHive.Tools.SystemHarness and IronHive.Tools.WebLookup — both packable,
+      # both shipped in this repo, neither ever published. Nothing failed, because a package that is never
+      # produced cannot fail to push; the gap was only visible to someone looking for it on nuget.org.
       - name: Pack
         if: steps.check.outputs.need_publish == 'true'
+        run: dotnet pack IronHive.Flux.slnx --no-build -c Release -o ./nupkgs
+
+      - name: Verify packages
+        if: steps.check.outputs.need_publish == 'true'
         run: |
-          for csproj in src/*/IronHive.Flux*.csproj; do
-            echo "Packing $csproj..."
-            dotnet pack "$csproj" --no-build -c Release -o ./nupkgs
+          ls -la ./nupkgs/
+          # Fail here rather than let a consumer discover a missing package. The list is derived from the
+          # solution, so adding a packable project cannot quietly fall out of the release.
+          version=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props | head -1)
+          missing=0
+          for csproj in $(grep -oP '(?<=Path=")src/[^"]+\.csproj' IronHive.Flux.slnx); do
+            id=$(basename "$csproj" .csproj)
+            if [ ! -f "./nupkgs/${id}.${version}.nupkg" ]; then
+              echo "::error::${id}.${version}.nupkg was not produced"
+              missing=1
+            fi
           done
+          [ "$missing" -eq 0 ]
 
       - name: Publish to NuGet
         if: steps.check.outputs.need_publish == 'true'
