@@ -77,7 +77,15 @@ jobs:
         id: check
         run: |
           VERSION="${{ needs.detect-version.outputs.version }}"
-          PACKAGES=("IronHive.Flux.Core" "IronHive.Flux.Rag" "IronHive.Flux")
+          # Derived from the solution, not a hand-kept list. The list used to name three packages, so a
+          # version where those three existed and the rest did not was read as "already published" and
+          # skipped — which is how IronHive.Tools.SystemHarness and IronHive.Tools.WebLookup stayed
+          # unpublished while every run reported success.
+          # Assumes PackageId matches the csproj filename, which holds in this repository (verified).
+          # If a project ever declares a differing PackageId, read it from the csproj instead — a
+          # mismatch here would report a package as missing when it was in fact produced, and a gate
+          # that cries wolf gets ignored.
+          PACKAGES=($(grep -oP '(?<=Path=")src/[^"]+\.csproj' IronHive.Flux.slnx | xargs -n1 basename | sed 's/\.csproj$//'))
           NEED_PUBLISH=false
 
           for PACKAGE in "${PACKAGES[@]}"; do
@@ -113,6 +121,10 @@ jobs:
           # solution, so adding a packable project cannot quietly fall out of the release.
           version=$(grep -oP '(?<=<Version>)[^<]+' Directory.Build.props | head -1)
           missing=0
+          # Assumes PackageId matches the csproj filename, which holds in this repository (verified).
+          # If a project ever declares a differing PackageId, read it from the csproj instead — a
+          # mismatch here would report a package as missing when it was in fact produced, and a gate
+          # that cries wolf gets ignored.
           for csproj in $(grep -oP '(?<=Path=")src/[^"]+\.csproj' IronHive.Flux.slnx); do
             id=$(basename "$csproj" .csproj)
             if [ ! -f "./nupkgs/${id}.${version}.nupkg" ]; then
@@ -158,6 +170,9 @@ jobs:
             ### Packages
             - [IronHive.Flux.Core](https://www.nuget.org/packages/IronHive.Flux.Core/${{ needs.detect-version.outputs.version }})
             - [IronHive.Flux.Rag](https://www.nuget.org/packages/IronHive.Flux.Rag/${{ needs.detect-version.outputs.version }})
+            - [IronHive.Flux.WebLookup](https://www.nuget.org/packages/IronHive.Flux.WebLookup/${{ needs.detect-version.outputs.version }})
+            - [IronHive.Tools.SystemHarness](https://www.nuget.org/packages/IronHive.Tools.SystemHarness/${{ needs.detect-version.outputs.version }})
+            - [IronHive.Tools.WebLookup](https://www.nuget.org/packages/IronHive.Tools.WebLookup/${{ needs.detect-version.outputs.version }})
             - [IronHive.Flux](https://www.nuget.org/packages/IronHive.Flux/${{ needs.detect-version.outputs.version }}) (metapackage)
           prerelease: ${{ contains(needs.detect-version.outputs.version, '-') }}
         env:
