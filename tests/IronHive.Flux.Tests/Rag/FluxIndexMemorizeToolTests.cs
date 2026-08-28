@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using FluxFeed.Interfaces;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;

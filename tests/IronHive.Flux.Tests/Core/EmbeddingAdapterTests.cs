@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using IronHive.Abstractions.Embedding;
 using Xunit;
 using IronHive.Flux.Core.Adapters.Embedding;

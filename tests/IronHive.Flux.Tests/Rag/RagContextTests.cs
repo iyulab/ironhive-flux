@@ -1,4 +1,4 @@
-using FluentAssertions;
+using AwesomeAssertions;
 using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
 using Xunit;

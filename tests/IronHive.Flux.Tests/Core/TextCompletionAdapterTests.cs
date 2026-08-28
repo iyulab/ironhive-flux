@@ -1,5 +1,5 @@
 using Flux.Abstractions;
-using FluentAssertions;
+using AwesomeAssertions;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
 using IronHive.Flux.Core.Adapters.TextCompletion;
