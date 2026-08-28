@@ -349,7 +349,7 @@ Rag -----------> Core --> FileFlux, WebFlux, FluxIndex
 | Flux | TokenMeter | 0.3.1 |
 | Microsoft | Extensions.DI, Logging, Options, Http, Caching.Memory | 10.0.x |
 | Resilience | Polly, Polly.Extensions | 8.6.5 |
-| Testing | xUnit, FluentAssertions, NSubstitute, coverlet | various |
+| Testing | xUnit, AwesomeAssertions, NSubstitute, coverlet | various |
 
 ### 9.3 Build Commands
 
