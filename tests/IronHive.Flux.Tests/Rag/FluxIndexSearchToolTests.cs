@@ -94,7 +94,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("test query"));
 
-        var resultJson = await _tool.SearchAsync("test query");
+        var resultJson = await _tool.SearchAsync("test query", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -107,7 +107,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("test"));
 
-        var resultJson = await _tool.SearchAsync("test query");
+        var resultJson = await _tool.SearchAsync("test query", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         var context = result.RootElement.GetProperty("context").GetString();
@@ -143,7 +143,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(searchResult);
 
-        var resultJson = await _tool.SearchAsync("weather Seattle");
+        var resultJson = await _tool.SearchAsync("weather Seattle", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -156,7 +156,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("test"));
 
-        await _tool.SearchAsync("test", maxResults: 10, minScore: 0.7f, pathScope: "/docs");
+        await _tool.SearchAsync("test", maxResults: 10, minScore: 0.7f, pathScope: "/docs", cancellationToken: TestContext.Current.CancellationToken);
 
         await _vault.Received(1).SearchAsync(
             "test",
@@ -178,7 +178,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Error("test", "Index not available"));
 
-        var resultJson = await _tool.SearchAsync("test");
+        var resultJson = await _tool.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -191,7 +191,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns<VaultSearchResult>(_ => throw new InvalidOperationException("Connection failed"));
 
-        var resultJson = await _tool.SearchAsync("test");
+        var resultJson = await _tool.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -208,7 +208,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("my search query"));
 
-        var resultJson = await _tool.SearchAsync("my search query");
+        var resultJson = await _tool.SearchAsync("my search query", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("query").GetString().Should().Be("my search query");
@@ -239,7 +239,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(searchResult);
 
-        var resultJson = await _tool.SearchAsync("search testing");
+        var resultJson = await _tool.SearchAsync("search testing", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         var sources = result.RootElement.GetProperty("sources");
@@ -274,7 +274,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(searchResult);
 
-        var resultJson = await _tool.SearchAsync("keyword");
+        var resultJson = await _tool.SearchAsync("keyword", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         var sources = result.RootElement.GetProperty("sources");
@@ -290,7 +290,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("test"));
 
-        var resultJson = await _tool.SearchAsync("test");
+        var resultJson = await _tool.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("reranked").GetBoolean().Should().BeFalse();
@@ -315,7 +315,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(searchResult);
 
-        var resultJson = await _tool.SearchAsync("ML concepts");
+        var resultJson = await _tool.SearchAsync("ML concepts", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         var sources = result.RootElement.GetProperty("sources");
@@ -353,7 +353,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(searchResult);
 
-        var resultJson = await _tool.SearchAsync("test");
+        var resultJson = await _tool.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         var sources = result.RootElement.GetProperty("sources");
@@ -458,7 +458,7 @@ public class FluxIndexSearchToolTests
             Arg.Any<CancellationToken>())
             .Returns(Enumerable.Empty<RerankResult>());
 
-        await toolWithReranker.SearchAsync("test", maxResults: 5);
+        await toolWithReranker.SearchAsync("test", maxResults: 5, cancellationToken: TestContext.Current.CancellationToken);
 
         // Should fetch TopK=10 (5*2) when reranker is present
         await _vault.Received(1).SearchAsync(
@@ -519,7 +519,7 @@ public class FluxIndexSearchToolTests
                 new() { Id = "/docs/a.md:0", Content = "Content A", RerankScore = 0.80f, NewRank = 2 }
             });
 
-        var resultJson = await toolWithReranker.SearchAsync("test");
+        var resultJson = await toolWithReranker.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -538,7 +538,7 @@ public class FluxIndexSearchToolTests
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("test"));
 
-        await _tool.SearchAsync("test", maxResults: 5);
+        await _tool.SearchAsync("test", maxResults: 5, cancellationToken: TestContext.Current.CancellationToken);
 
         // Without reranker, TopK should be exactly 5
         await _vault.Received(1).SearchAsync(

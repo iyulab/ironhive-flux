@@ -38,7 +38,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForFileFlux(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.GenerateEmbeddingAsync("test text");
+        var result = await adapter.GenerateEmbeddingAsync("test text", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -87,7 +87,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForWebFlux(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.GetEmbeddingAsync("test text");
+        var result = await adapter.GetEmbeddingAsync("test text", TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -106,7 +106,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.GenerateEmbeddingAsync("test text");
+        var result = await adapter.GenerateEmbeddingAsync("test text", TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -203,7 +203,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForFileFlux(_mockGenerator, _options);
 
         // Act
-        var results = (await adapter.GenerateBatchEmbeddingsAsync(["text1", "text2"])).ToList();
+        var results = (await adapter.GenerateBatchEmbeddingsAsync(["text1", "text2"], cancellationToken: TestContext.Current.CancellationToken)).ToList();
 
         // Assert
         results.Should().HaveCount(2);
@@ -225,7 +225,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForFileFlux(_mockGenerator, _options);
 
         // Act
-        var results = (await adapter.GenerateBatchEmbeddingsAsync(["text1"])).ToList();
+        var results = (await adapter.GenerateBatchEmbeddingsAsync(["text1"], cancellationToken: TestContext.Current.CancellationToken)).ToList();
 
         // Assert
         results.Should().HaveCount(1);
@@ -300,7 +300,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForWebFlux(_mockGenerator, _options);
 
         // Act
-        var results = await adapter.GetEmbeddingsAsync(["text1", "text2"]);
+        var results = await adapter.GetEmbeddingsAsync(["text1", "text2"], TestContext.Current.CancellationToken);
 
         // Assert
         results.Should().HaveCount(2);
@@ -352,7 +352,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        var count = await adapter.CountTokensAsync("test text");
+        var count = await adapter.CountTokensAsync("test text", TestContext.Current.CancellationToken);
 
         // Assert
         count.Should().Be(42);
@@ -377,7 +377,7 @@ public class EmbeddingAdapterTests
         var adapter = new IronHiveEmbeddingServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        var results = (await adapter.GenerateEmbeddingsBatchAsync(["text1", "text2"])).ToList();
+        var results = (await adapter.GenerateEmbeddingsBatchAsync(["text1", "text2"], TestContext.Current.CancellationToken)).ToList();
 
         // Assert
         results.Should().HaveCount(2);

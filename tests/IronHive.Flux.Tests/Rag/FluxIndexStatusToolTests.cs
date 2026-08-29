@@ -59,7 +59,7 @@ public class FluxIndexStatusToolTests
             TotalStorageSizeBytes = 52_428_800 // 50MB
         });
 
-        var resultJson = await _tool.GetStatusAsync();
+        var resultJson = await _tool.GetStatusAsync(TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -77,7 +77,7 @@ public class FluxIndexStatusToolTests
         _vault.StatusAsync(Arg.Any<CancellationToken>())
             .Throws(new InvalidOperationException("Database unreachable"));
 
-        var resultJson = await _tool.GetStatusAsync();
+        var resultJson = await _tool.GetStatusAsync(TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -89,7 +89,7 @@ public class FluxIndexStatusToolTests
     {
         _vault.StatusAsync(Arg.Any<CancellationToken>()).Returns(new VaultStatus());
 
-        await _tool.GetStatusAsync();
+        await _tool.GetStatusAsync(TestContext.Current.CancellationToken);
 
         await _vault.Received(1).StatusAsync(Arg.Any<CancellationToken>());
     }
@@ -104,7 +104,7 @@ public class FluxIndexStatusToolTests
         var entry = VaultEntry.Create("/test/file.pdf", "/tmp/.vault");
         _vault.GetAsync("/test/file.pdf", Arg.Any<CancellationToken>()).Returns(entry);
 
-        var resultJson = await _tool.GetDocumentInfoAsync("/test/file.pdf");
+        var resultJson = await _tool.GetDocumentInfoAsync("/test/file.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -117,7 +117,7 @@ public class FluxIndexStatusToolTests
     {
         _vault.GetAsync("/missing/file.pdf", Arg.Any<CancellationToken>()).Returns((VaultEntry?)null);
 
-        var resultJson = await _tool.GetDocumentInfoAsync("/missing/file.pdf");
+        var resultJson = await _tool.GetDocumentInfoAsync("/missing/file.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -130,7 +130,7 @@ public class FluxIndexStatusToolTests
         _vault.GetAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Throws(new InvalidOperationException("DB error"));
 
-        var resultJson = await _tool.GetDocumentInfoAsync("/test/file.pdf");
+        var resultJson = await _tool.GetDocumentInfoAsync("/test/file.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -151,7 +151,7 @@ public class FluxIndexStatusToolTests
         };
         _vault.ListAsync(null, Arg.Any<CancellationToken>()).Returns(entries);
 
-        var resultJson = await _tool.ListDocumentsAsync();
+        var resultJson = await _tool.ListDocumentsAsync(cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -166,7 +166,7 @@ public class FluxIndexStatusToolTests
         _vault.ListAsync(ProcessingStage.Memorized, Arg.Any<CancellationToken>())
             .Returns(new List<VaultEntry>());
 
-        await _tool.ListDocumentsAsync("Memorized");
+        await _tool.ListDocumentsAsync("Memorized", TestContext.Current.CancellationToken);
 
         await _vault.Received(1).ListAsync(ProcessingStage.Memorized, Arg.Any<CancellationToken>());
     }
@@ -174,7 +174,7 @@ public class FluxIndexStatusToolTests
     [Fact]
     public async Task ListDocumentsAsync_InvalidStageFilter_ShouldReturnError()
     {
-        var resultJson = await _tool.ListDocumentsAsync("InvalidStage");
+        var resultJson = await _tool.ListDocumentsAsync("InvalidStage", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -187,7 +187,7 @@ public class FluxIndexStatusToolTests
         _vault.ListAsync(ProcessingStage.Extracted, Arg.Any<CancellationToken>())
             .Returns(new List<VaultEntry>());
 
-        var resultJson = await _tool.ListDocumentsAsync("extracted");
+        var resultJson = await _tool.ListDocumentsAsync("extracted", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -199,7 +199,7 @@ public class FluxIndexStatusToolTests
         _vault.ListAsync(Arg.Any<ProcessingStage?>(), Arg.Any<CancellationToken>())
             .Throws(new InvalidOperationException("List failed"));
 
-        var resultJson = await _tool.ListDocumentsAsync();
+        var resultJson = await _tool.ListDocumentsAsync(cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -227,7 +227,7 @@ public class FluxIndexStatusToolTests
                 ChunkCount = 12
             });
 
-        var resultJson = await _tool.DetectChangesAsync("/test/file.pdf");
+        var resultJson = await _tool.DetectChangesAsync("/test/file.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -253,7 +253,7 @@ public class FluxIndexStatusToolTests
                 FileModifiedAt = DateTimeOffset.UtcNow
             });
 
-        var resultJson = await _tool.DetectChangesAsync("/test/file.pdf");
+        var resultJson = await _tool.DetectChangesAsync("/test/file.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -277,7 +277,7 @@ public class FluxIndexStatusToolTests
                 RecommendedAction = ChangeAction.Memorize
             });
 
-        var resultJson = await _tool.DetectChangesAsync("/test/newfile.pdf");
+        var resultJson = await _tool.DetectChangesAsync("/test/newfile.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -298,7 +298,7 @@ public class FluxIndexStatusToolTests
                 RecommendedAction = ChangeAction.Remove
             });
 
-        var resultJson = await _tool.DetectChangesAsync("/test/deleted.pdf");
+        var resultJson = await _tool.DetectChangesAsync("/test/deleted.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -312,7 +312,7 @@ public class FluxIndexStatusToolTests
         _vault.DetectChangesAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Throws(new InvalidOperationException("Detection failed"));
 
-        var resultJson = await _tool.DetectChangesAsync("/test/file.pdf");
+        var resultJson = await _tool.DetectChangesAsync("/test/file.pdf", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();

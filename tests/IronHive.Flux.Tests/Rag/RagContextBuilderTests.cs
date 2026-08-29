@@ -298,7 +298,7 @@ public class RagContextBuilderTests
             CreateResult("1", "async content", 0.9f)
         };
 
-        var context = await builder.BuildContextAsync(() => Task.FromResult<IEnumerable<RagSearchResult>>(results));
+        var context = await builder.BuildContextAsync(() => Task.FromResult<IEnumerable<RagSearchResult>>(results), cancellationToken: TestContext.Current.CancellationToken);
 
         context.Sources.Should().HaveCount(1);
         context.Sources[0].DocumentId.Should().Be("1");

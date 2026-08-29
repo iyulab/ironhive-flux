@@ -48,7 +48,7 @@ public class ImageToTextAdapterTests
         var imageData = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46 };
 
         // Act
-        var result = await adapter.ExtractTextAsync(imageData);
+        var result = await adapter.ExtractTextAsync(imageData, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -66,7 +66,7 @@ public class ImageToTextAdapterTests
         var pngData = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
 
         // Act
-        var result = await adapter.ExtractTextAsync(pngData);
+        var result = await adapter.ExtractTextAsync(pngData, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Metadata.Format.Should().Be("png");
@@ -81,7 +81,7 @@ public class ImageToTextAdapterTests
         var jpegData = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46 };
 
         // Act
-        var result = await adapter.ExtractTextAsync(jpegData);
+        var result = await adapter.ExtractTextAsync(jpegData, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Metadata.Format.Should().Be("jpeg");
@@ -97,7 +97,7 @@ public class ImageToTextAdapterTests
         var gifData = new byte[] { 0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00 };
 
         // Act
-        var result = await adapter.ExtractTextAsync(gifData);
+        var result = await adapter.ExtractTextAsync(gifData, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Metadata.Format.Should().Be("gif");
@@ -112,7 +112,7 @@ public class ImageToTextAdapterTests
         var imageData = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 };
 
         // Act
-        var result = await adapter.ExtractTextAsync(imageData);
+        var result = await adapter.ExtractTextAsync(imageData, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.ConfidenceScore.Should().BeLessThanOrEqualTo(0.5);
@@ -127,7 +127,7 @@ public class ImageToTextAdapterTests
         using var stream = new MemoryStream(new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10 });
 
         // Act
-        var result = await adapter.ExtractTextAsync(stream);
+        var result = await adapter.ExtractTextAsync(stream, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.ExtractedText.Should().Be("stream text");
@@ -161,7 +161,7 @@ public class ImageToTextAdapterTests
         var imageData = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 };
 
         // Act
-        var result = await adapter.ExtractTextAsync(imageData);
+        var result = await adapter.ExtractTextAsync(imageData, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.ProcessingTimeMs.Should().BeGreaterThanOrEqualTo(0);
@@ -176,7 +176,7 @@ public class ImageToTextAdapterTests
         var imageData = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10 };
 
         // Act
-        var result = await adapter.ExtractTextAsync(imageData);
+        var result = await adapter.ExtractTextAsync(imageData, cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Metadata.FileSize.Should().Be(6);

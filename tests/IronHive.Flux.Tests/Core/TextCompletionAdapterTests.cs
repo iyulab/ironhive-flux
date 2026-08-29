@@ -47,7 +47,7 @@ public class TextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.CompleteAsync("test prompt");
+        var result = await adapter.CompleteAsync("test prompt", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be("Completed text response");
@@ -61,7 +61,7 @@ public class TextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        await adapter.CompleteAsync("test", new TextCompletionOptions { MaxTokens = 100, Temperature = 0.5f });
+        await adapter.CompleteAsync("test", new TextCompletionOptions { MaxTokens = 100, Temperature = 0.5f }, TestContext.Current.CancellationToken);
 
         // Assert
         await _mockGenerator.Received(1).GenerateMessageAsync(
@@ -80,7 +80,7 @@ public class TextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.CompleteJsonAsync("generate json");
+        var result = await adapter.CompleteJsonAsync("generate json", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be("{\"key\": \"value\"}");
@@ -94,7 +94,7 @@ public class TextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.CompleteJsonAsync("generate json");
+        var result = await adapter.CompleteJsonAsync("generate json", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be("{\"name\": \"test\"}");
@@ -108,7 +108,7 @@ public class TextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.CompleteJsonAsync("generate json array");
+        var result = await adapter.CompleteJsonAsync("generate json array", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be("[1, 2, 3]");
@@ -122,7 +122,7 @@ public class TextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
 
         // Act
-        await adapter.CompleteJsonAsync("test");
+        await adapter.CompleteJsonAsync("test", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert — JSON completion should use 0.1 temperature
         await _mockGenerator.Received(1).GenerateMessageAsync(

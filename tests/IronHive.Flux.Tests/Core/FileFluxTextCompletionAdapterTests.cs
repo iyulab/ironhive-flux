@@ -81,7 +81,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("Generated text");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.GenerateAsync("test prompt");
+        var result = await adapter.GenerateAsync("test prompt", TestContext.Current.CancellationToken);
 
         result.Should().Be("Generated text");
     }
@@ -92,7 +92,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("ok");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        await adapter.GenerateAsync("test");
+        await adapter.GenerateAsync("test", TestContext.Current.CancellationToken);
 
         await _mockGenerator.Received(1).GenerateMessageAsync(
             Arg.Is<MessageGenerationRequest>(r =>
@@ -111,7 +111,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("pong");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var available = await adapter.IsAvailableAsync();
+        var available = await adapter.IsAvailableAsync(TestContext.Current.CancellationToken);
 
         available.Should().BeTrue();
     }
@@ -124,7 +124,7 @@ public class FileFluxTextCompletionAdapterTests
             .Returns<MessageResponse>(_ => throw new InvalidOperationException("service down"));
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var available = await adapter.IsAvailableAsync();
+        var available = await adapter.IsAvailableAsync(TestContext.Current.CancellationToken);
 
         available.Should().BeFalse();
     }
@@ -139,7 +139,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("Sections: Introduction, Body, Conclusion", totalTokens: 50);
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.AnalyzeStructureAsync("test document", DocumentType.Text);
+        var result = await adapter.AnalyzeStructureAsync("test document", DocumentType.Text, TestContext.Current.CancellationToken);
 
         result.Should().NotBeNull();
         result.DocumentType.Should().Be(DocumentType.Text);
@@ -154,7 +154,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.AnalyzeStructureAsync("test", DocumentType.Pdf);
+        var result = await adapter.AnalyzeStructureAsync("test", DocumentType.Pdf, TestContext.Current.CancellationToken);
 
         result.Confidence.Should().BeLessThanOrEqualTo(0.3);
     }
@@ -169,7 +169,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("Brief summary.", totalTokens: 10);
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.SummarizeContentAsync("long content here", maxLength: 200);
+        var result = await adapter.SummarizeContentAsync("long content here", maxLength: 200, cancellationToken: TestContext.Current.CancellationToken);
 
         result.Summary.Should().Be("Brief summary.");
         result.OriginalLength.Should().Be(17);
@@ -183,7 +183,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse(longText);
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.SummarizeContentAsync("content", maxLength: 200);
+        var result = await adapter.SummarizeContentAsync("content", maxLength: 200, cancellationToken: TestContext.Current.CancellationToken);
 
         result.Summary.Length.Should().BeLessThanOrEqualTo(200);
         result.Confidence.Should().Be(0.75);
@@ -195,7 +195,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("   ");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.SummarizeContentAsync("content");
+        var result = await adapter.SummarizeContentAsync("content", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Confidence.Should().Be(0.3);
     }
@@ -211,7 +211,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse(jsonResponse, totalTokens: 30);
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.ExtractMetadataAsync("test content", DocumentType.Text);
+        var result = await adapter.ExtractMetadataAsync("test content", DocumentType.Text, TestContext.Current.CancellationToken);
 
         result.Keywords.Should().Contain("AI");
         result.Keywords.Should().Contain("ML");
@@ -226,7 +226,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("no json here");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.ExtractMetadataAsync("test", DocumentType.Text);
+        var result = await adapter.ExtractMetadataAsync("test", DocumentType.Text, TestContext.Current.CancellationToken);
 
         result.Confidence.Should().BeLessThanOrEqualTo(0.3);
     }
@@ -238,7 +238,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse(jsonResponse);
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.ExtractMetadataAsync("test", DocumentType.Text);
+        var result = await adapter.ExtractMetadataAsync("test", DocumentType.Text, TestContext.Current.CancellationToken);
 
         result.Keywords.Should().Contain("test");
         result.Language.Should().Be("ko");
@@ -256,7 +256,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse(jsonResponse, totalTokens: 20);
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.AssessQualityAsync("test content");
+        var result = await adapter.AssessQualityAsync("test content", TestContext.Current.CancellationToken);
 
         result.ConfidenceScore.Should().Be(0.8);
         result.CompletenessScore.Should().Be(0.9);
@@ -270,7 +270,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("Quality is good overall.");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.AssessQualityAsync("test content");
+        var result = await adapter.AssessQualityAsync("test content", TestContext.Current.CancellationToken);
 
         // Fallback: all 0.7
         result.ConfidenceScore.Should().Be(0.7);
@@ -284,7 +284,7 @@ public class FileFluxTextCompletionAdapterTests
         SetupGeneratorResponse("");
         var adapter = new IronHiveTextCompletionServiceForFileFlux(_mockGenerator, _options);
 
-        var result = await adapter.AssessQualityAsync("test");
+        var result = await adapter.AssessQualityAsync("test", TestContext.Current.CancellationToken);
 
         result.ConfidenceScore.Should().Be(0.3);
         result.CompletenessScore.Should().Be(0.3);

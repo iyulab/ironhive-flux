@@ -86,9 +86,9 @@ public class FluxIndexMemorizeToolTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, "Hello world content");
+            await File.WriteAllTextAsync(tempFile, "Hello world content", TestContext.Current.CancellationToken);
 
-            var resultJson = await _tool.MemorizeAsync(tempFile);
+            var resultJson = await _tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -107,7 +107,7 @@ public class FluxIndexMemorizeToolTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await _tool.MemorizeAsync(tempFile);
+            await _tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
 
             await _vault.Received(1).MemorizeAsync(tempFile, Arg.Any<CancellationToken>());
         }
@@ -124,7 +124,7 @@ public class FluxIndexMemorizeToolTests
     [Fact]
     public async Task MemorizeAsync_WithNonExistentFile_ShouldReturnError()
     {
-        var resultJson = await _tool.MemorizeAsync("/non/existent/file.txt");
+        var resultJson = await _tool.MemorizeAsync("/non/existent/file.txt", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -134,7 +134,7 @@ public class FluxIndexMemorizeToolTests
     [Fact]
     public async Task MemorizeAsync_WithNonExistentFile_ShouldNotCallVault()
     {
-        await _tool.MemorizeAsync("/non/existent/file.txt");
+        await _tool.MemorizeAsync("/non/existent/file.txt", TestContext.Current.CancellationToken);
 
         await _vault.DidNotReceive().MemorizeAsync(Arg.Any<string>(), Arg.Any<CancellationToken>());
     }
@@ -152,7 +152,7 @@ public class FluxIndexMemorizeToolTests
             _vault.MemorizeAsync(tempFile, Arg.Any<CancellationToken>())
                 .Throws(new InvalidOperationException("Extraction failed"));
 
-            var resultJson = await _tool.MemorizeAsync(tempFile);
+            var resultJson = await _tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -175,7 +175,7 @@ public class FluxIndexMemorizeToolTests
         try
         {
             // Create a file and use a very small MaxFileSizeBytes limit
-            await File.WriteAllTextAsync(tempFile, "Some content that is within a tiny limit");
+            await File.WriteAllTextAsync(tempFile, "Some content that is within a tiny limit", TestContext.Current.CancellationToken);
 
             var vault = Substitute.For<IVault>();
             var options = Options.Create(new FluxRagToolsOptions());
@@ -186,7 +186,7 @@ public class FluxIndexMemorizeToolTests
             });
             var tool = new FluxIndexMemorizeTool(vault, options, security);
 
-            var resultJson = await tool.MemorizeAsync(tempFile);
+            var resultJson = await tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -206,7 +206,7 @@ public class FluxIndexMemorizeToolTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, "OK");
+            await File.WriteAllTextAsync(tempFile, "OK", TestContext.Current.CancellationToken);
 
             var vault = Substitute.For<IVault>();
             var options = Options.Create(new FluxRagToolsOptions());
@@ -217,7 +217,7 @@ public class FluxIndexMemorizeToolTests
             });
             var tool = new FluxIndexMemorizeTool(vault, options, security);
 
-            var resultJson = await tool.MemorizeAsync(tempFile);
+            var resultJson = await tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -238,7 +238,7 @@ public class FluxIndexMemorizeToolTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, "Content");
+            await File.WriteAllTextAsync(tempFile, "Content", TestContext.Current.CancellationToken);
 
             var vault = Substitute.For<IVault>();
             var options = Options.Create(new FluxRagToolsOptions());
@@ -249,7 +249,7 @@ public class FluxIndexMemorizeToolTests
             });
             var tool = new FluxIndexMemorizeTool(vault, options, security);
 
-            var resultJson = await tool.MemorizeAsync(tempFile);
+            var resultJson = await tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -268,7 +268,7 @@ public class FluxIndexMemorizeToolTests
         var tempDir = Path.GetDirectoryName(tempFile)!;
         try
         {
-            await File.WriteAllTextAsync(tempFile, "Content");
+            await File.WriteAllTextAsync(tempFile, "Content", TestContext.Current.CancellationToken);
 
             var vault = Substitute.For<IVault>();
             var options = Options.Create(new FluxRagToolsOptions());
@@ -279,7 +279,7 @@ public class FluxIndexMemorizeToolTests
             });
             var tool = new FluxIndexMemorizeTool(vault, options, security);
 
-            var resultJson = await tool.MemorizeAsync(tempFile);
+            var resultJson = await tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -296,7 +296,7 @@ public class FluxIndexMemorizeToolTests
         var tempFile = Path.GetTempFileName();
         try
         {
-            await File.WriteAllTextAsync(tempFile, "Content");
+            await File.WriteAllTextAsync(tempFile, "Content", TestContext.Current.CancellationToken);
 
             var vault = Substitute.For<IVault>();
             var options = Options.Create(new FluxRagToolsOptions());
@@ -307,7 +307,7 @@ public class FluxIndexMemorizeToolTests
             });
             var tool = new FluxIndexMemorizeTool(vault, options, security);
 
-            var resultJson = await tool.MemorizeAsync(tempFile);
+            var resultJson = await tool.MemorizeAsync(tempFile, TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();

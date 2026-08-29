@@ -76,7 +76,7 @@ public class FluxIndexWebMemorizeToolTests : IDisposable
     [Fact]
     public async Task MemorizeWebPageAsync_WithInvalidUrl_ShouldReturnError()
     {
-        var resultJson = await _tool.MemorizeWebPageAsync("not-a-valid-url");
+        var resultJson = await _tool.MemorizeWebPageAsync("not-a-valid-url", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -86,7 +86,7 @@ public class FluxIndexWebMemorizeToolTests : IDisposable
     [Fact]
     public async Task MemorizeWebPageAsync_WithFtpUrl_ShouldReturnError()
     {
-        var resultJson = await _tool.MemorizeWebPageAsync("ftp://example.com/file.txt");
+        var resultJson = await _tool.MemorizeWebPageAsync("ftp://example.com/file.txt", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -96,7 +96,7 @@ public class FluxIndexWebMemorizeToolTests : IDisposable
     [Fact]
     public async Task MemorizeWebPageAsync_WithRelativeUrl_ShouldReturnError()
     {
-        var resultJson = await _tool.MemorizeWebPageAsync("/relative/path");
+        var resultJson = await _tool.MemorizeWebPageAsync("/relative/path", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -372,7 +372,7 @@ public class FluxIndexWebMemorizeToolTests : IDisposable
         // The URL validation tests above cover the early exit paths.
 
         // Test: HTTP download failure (invalid host)
-        var resultJson = await _tool.MemorizeWebPageAsync("https://this-domain-does-not-exist-12345.invalid/page");
+        var resultJson = await _tool.MemorizeWebPageAsync("https://this-domain-does-not-exist-12345.invalid/page", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();

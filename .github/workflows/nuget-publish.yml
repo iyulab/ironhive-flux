@@ -51,7 +51,7 @@ jobs:
         run: dotnet build IronHive.Flux.slnx --no-restore -c Release
 
       - name: Test
-        run: dotnet test tests/IronHive.Flux.Tests --no-build -c Release --blame-hang --blame-hang-timeout 5m
+        run: dotnet test tests/IronHive.Flux.Tests --no-build -c Release --hangdump --hangdump-timeout 5m
 
   publish:
     needs: [detect-version, build-and-test]

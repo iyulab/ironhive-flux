@@ -92,7 +92,7 @@ public class WebFluxImageToTextAdapterTests : IDisposable
         var imageBytes = new byte[] { 0xFF, 0xD8, 0xFF, 0xE0 }; // JPEG magic bytes
 
         // Act
-        var result = await adapter.ConvertImageToTextAsync(imageBytes, "image/jpeg");
+        var result = await adapter.ConvertImageToTextAsync(imageBytes, "image/jpeg", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().Be("A photo of a cat");
@@ -107,7 +107,7 @@ public class WebFluxImageToTextAdapterTests : IDisposable
         var imageBytes = new byte[] { 0x89, 0x50, 0x4E, 0x47 }; // PNG magic bytes
 
         // Act
-        await adapter.ConvertImageToTextAsync(imageBytes, "image/png");
+        await adapter.ConvertImageToTextAsync(imageBytes, "image/png", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         await _mockGenerator.Received(1).GenerateMessageAsync(
@@ -124,7 +124,7 @@ public class WebFluxImageToTextAdapterTests : IDisposable
         var imageBytes = new byte[] { 0x01, 0x02, 0x03, 0x04 };
 
         // Act
-        await adapter.ConvertImageToTextAsync(imageBytes, "image/jpeg");
+        await adapter.ConvertImageToTextAsync(imageBytes, "image/jpeg", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         await _mockGenerator.Received(1).GenerateMessageAsync(
@@ -141,7 +141,7 @@ public class WebFluxImageToTextAdapterTests : IDisposable
         var imageBytes = new byte[] { 0xFF, 0xD8 };
 
         // Act
-        var result = await adapter.ConvertImageToTextAsync(imageBytes, "image/jpeg");
+        var result = await adapter.ConvertImageToTextAsync(imageBytes, "image/jpeg", cancellationToken: TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().BeEmpty();
@@ -210,7 +210,7 @@ public class WebFluxImageToTextAdapterTests : IDisposable
         var adapter = new IronHiveImageToTextServiceForWebFlux(_mockGenerator, _options, _httpClient);
 
         // Act
-        var result = await adapter.IsAvailableAsync();
+        var result = await adapter.IsAvailableAsync(TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().BeTrue();
@@ -226,7 +226,7 @@ public class WebFluxImageToTextAdapterTests : IDisposable
         var adapter = new IronHiveImageToTextServiceForWebFlux(_mockGenerator, _options, _httpClient);
 
         // Act
-        var result = await adapter.IsAvailableAsync();
+        var result = await adapter.IsAvailableAsync(TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().BeFalse();

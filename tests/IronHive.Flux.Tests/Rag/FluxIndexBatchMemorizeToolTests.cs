@@ -77,7 +77,7 @@ public class FluxIndexBatchMemorizeToolTests
         var tempFiles = CreateTempFiles(3);
         try
         {
-            var resultJson = await _tool.MemorizeDocumentsAsync(tempFiles);
+            var resultJson = await _tool.MemorizeDocumentsAsync(tempFiles, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -97,7 +97,7 @@ public class FluxIndexBatchMemorizeToolTests
         var tempFiles = CreateTempFiles(2);
         try
         {
-            await _tool.MemorizeDocumentsAsync(tempFiles);
+            await _tool.MemorizeDocumentsAsync(tempFiles, cancellationToken: TestContext.Current.CancellationToken);
 
             foreach (var file in tempFiles)
             {
@@ -117,7 +117,7 @@ public class FluxIndexBatchMemorizeToolTests
     [Fact]
     public async Task MemorizeDocumentsAsync_EmptyList_ShouldReturnError()
     {
-        var resultJson = await _tool.MemorizeDocumentsAsync(new List<string>());
+        var resultJson = await _tool.MemorizeDocumentsAsync(new List<string>(), cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -131,7 +131,7 @@ public class FluxIndexBatchMemorizeToolTests
             .Select(i => $"/fake/file{i}.txt")
             .ToList();
 
-        var resultJson = await _tool.MemorizeDocumentsAsync(tooMany);
+        var resultJson = await _tool.MemorizeDocumentsAsync(tooMany, cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -151,7 +151,7 @@ public class FluxIndexBatchMemorizeToolTests
         {
             var files = new List<string> { tempFile, "/definitely/missing/file.txt" };
 
-            var resultJson = await _tool.MemorizeDocumentsAsync(files);
+            var resultJson = await _tool.MemorizeDocumentsAsync(files, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -174,7 +174,7 @@ public class FluxIndexBatchMemorizeToolTests
             _vault.MemorizeAsync(tempFiles[1], Arg.Any<CancellationToken>())
                 .Throws(new InvalidOperationException("Pipeline error"));
 
-            var resultJson = await _tool.MemorizeDocumentsAsync(tempFiles);
+            var resultJson = await _tool.MemorizeDocumentsAsync(tempFiles, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -199,11 +199,11 @@ public class FluxIndexBatchMemorizeToolTests
         try
         {
             // Should not throw with extreme values
-            var resultJson = await _tool.MemorizeDocumentsAsync(new List<string> { tempFile }, maxConcurrent: 0);
+            var resultJson = await _tool.MemorizeDocumentsAsync(new List<string> { tempFile }, maxConcurrent: 0, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
 
-            resultJson = await _tool.MemorizeDocumentsAsync(new List<string> { tempFile }, maxConcurrent: 999);
+            resultJson = await _tool.MemorizeDocumentsAsync(new List<string> { tempFile }, maxConcurrent: 999, cancellationToken: TestContext.Current.CancellationToken);
             result = JsonDocument.Parse(resultJson);
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
         }
@@ -227,7 +227,7 @@ public class FluxIndexBatchMemorizeToolTests
             File.WriteAllText(Path.Combine(tempDir, "a.txt"), "AAA");
             File.WriteAllText(Path.Combine(tempDir, "b.txt"), "BBB");
 
-            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.txt");
+            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.txt", cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -243,7 +243,7 @@ public class FluxIndexBatchMemorizeToolTests
     [Fact]
     public async Task MemorizeDirectoryAsync_DirectoryNotFound_ShouldReturnError()
     {
-        var resultJson = await _tool.MemorizeDirectoryAsync("/non/existent/directory");
+        var resultJson = await _tool.MemorizeDirectoryAsync("/non/existent/directory", cancellationToken: TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -257,7 +257,7 @@ public class FluxIndexBatchMemorizeToolTests
         Directory.CreateDirectory(tempDir);
         try
         {
-            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.pdf");
+            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.pdf", cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -281,7 +281,7 @@ public class FluxIndexBatchMemorizeToolTests
             File.WriteAllText(Path.Combine(tempDir, "root.txt"), "ROOT");
             File.WriteAllText(Path.Combine(subDir, "child.txt"), "CHILD");
 
-            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.txt", recursive: false);
+            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.txt", recursive: false, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("totalFound").GetInt32().Should().Be(1);
@@ -303,7 +303,7 @@ public class FluxIndexBatchMemorizeToolTests
             File.WriteAllText(Path.Combine(tempDir, "root.txt"), "ROOT");
             File.WriteAllText(Path.Combine(subDir, "child.txt"), "CHILD");
 
-            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.txt", recursive: true);
+            var resultJson = await _tool.MemorizeDirectoryAsync(tempDir, "*.txt", recursive: true, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("totalFound").GetInt32().Should().Be(2);
@@ -334,7 +334,7 @@ public class FluxIndexBatchMemorizeToolTests
             });
             var tool = new FluxIndexBatchMemorizeTool(vault, options, security);
 
-            var resultJson = await tool.MemorizeDocumentsAsync(new List<string> { tempFile });
+            var resultJson = await tool.MemorizeDocumentsAsync(new List<string> { tempFile }, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -362,7 +362,7 @@ public class FluxIndexBatchMemorizeToolTests
             });
             var tool = new FluxIndexBatchMemorizeTool(vault, options, security);
 
-            var resultJson = await tool.MemorizeDocumentsAsync(new List<string> { tempFile });
+            var resultJson = await tool.MemorizeDocumentsAsync(new List<string> { tempFile }, cancellationToken: TestContext.Current.CancellationToken);
             var result = JsonDocument.Parse(resultJson);
 
             result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();

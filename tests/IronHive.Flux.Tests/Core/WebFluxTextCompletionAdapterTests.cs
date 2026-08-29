@@ -82,7 +82,7 @@ public class WebFluxTextCompletionAdapterTests
         SetupGeneratorResponse("Completed text");
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
-        var result = await adapter.CompleteAsync("test prompt");
+        var result = await adapter.CompleteAsync("test prompt", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Should().Be("Completed text");
     }
@@ -93,7 +93,7 @@ public class WebFluxTextCompletionAdapterTests
         SetupGeneratorResponse("ok");
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
-        await adapter.CompleteAsync("test");
+        await adapter.CompleteAsync("test", cancellationToken: TestContext.Current.CancellationToken);
 
         await _mockGenerator.Received(1).GenerateMessageAsync(
             Arg.Is<MessageGenerationRequest>(r =>
@@ -114,7 +114,7 @@ public class WebFluxTextCompletionAdapterTests
             Temperature = 0.3f,
             MaxTokens = 200
         };
-        await adapter.CompleteAsync("test", customOptions);
+        await adapter.CompleteAsync("test", customOptions, TestContext.Current.CancellationToken);
 
         await _mockGenerator.Received(1).GenerateMessageAsync(
             Arg.Is<MessageGenerationRequest>(r =>
@@ -136,7 +136,7 @@ public class WebFluxTextCompletionAdapterTests
             });
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
-        var result = await adapter.CompleteAsync("test");
+        var result = await adapter.CompleteAsync("test", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Should().Be("Hello World");
     }
@@ -152,7 +152,7 @@ public class WebFluxTextCompletionAdapterTests
             });
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
-        var result = await adapter.CompleteAsync("test");
+        var result = await adapter.CompleteAsync("test", cancellationToken: TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
     }
@@ -168,7 +168,7 @@ public class WebFluxTextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
         var chunks = new List<string>();
-        await foreach (var chunk in adapter.CompleteStreamAsync("test"))
+        await foreach (var chunk in adapter.CompleteStreamAsync("test", cancellationToken: TestContext.Current.CancellationToken))
         {
             chunks.Add(chunk);
         }
@@ -188,7 +188,7 @@ public class WebFluxTextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
         var chunks = new List<string>();
-        await foreach (var chunk in adapter.CompleteStreamAsync("test"))
+        await foreach (var chunk in adapter.CompleteStreamAsync("test", cancellationToken: TestContext.Current.CancellationToken))
         {
             chunks.Add(chunk);
         }
@@ -205,7 +205,7 @@ public class WebFluxTextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
         var chunks = new List<string>();
-        await foreach (var chunk in adapter.CompleteStreamAsync("test"))
+        await foreach (var chunk in adapter.CompleteStreamAsync("test", cancellationToken: TestContext.Current.CancellationToken))
         {
             chunks.Add(chunk);
         }
@@ -224,7 +224,7 @@ public class WebFluxTextCompletionAdapterTests
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
         var chunks = new List<string>();
-        await foreach (var chunk in adapter.CompleteStreamAsync("test"))
+        await foreach (var chunk in adapter.CompleteStreamAsync("test", cancellationToken: TestContext.Current.CancellationToken))
         {
             chunks.Add(chunk);
         }
@@ -253,7 +253,7 @@ public class WebFluxTextCompletionAdapterTests
             });
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
-        var results = await adapter.CompleteBatchAsync(["prompt1", "prompt2", "prompt3"]);
+        var results = await adapter.CompleteBatchAsync(["prompt1", "prompt2", "prompt3"], cancellationToken: TestContext.Current.CancellationToken);
 
         results.Should().HaveCount(3);
         results[0].Should().Be("result-1");
@@ -266,7 +266,7 @@ public class WebFluxTextCompletionAdapterTests
     {
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
-        var results = await adapter.CompleteBatchAsync([]);
+        var results = await adapter.CompleteBatchAsync([], cancellationToken: TestContext.Current.CancellationToken);
 
         results.Should().BeEmpty();
     }
@@ -277,7 +277,7 @@ public class WebFluxTextCompletionAdapterTests
         SetupGeneratorResponse("single result");
         var adapter = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
 
-        var results = await adapter.CompleteBatchAsync(["test"]);
+        var results = await adapter.CompleteBatchAsync(["test"], cancellationToken: TestContext.Current.CancellationToken);
 
         results.Should().HaveCount(1);
         results[0].Should().Be("single result");

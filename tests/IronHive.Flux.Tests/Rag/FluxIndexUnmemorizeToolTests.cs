@@ -51,7 +51,7 @@ public class FluxIndexUnmemorizeToolTests
     {
         var filePath = "/docs/test.md";
 
-        var resultJson = await _tool.UnmemorizeAsync(filePath);
+        var resultJson = await _tool.UnmemorizeAsync(filePath, TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
@@ -66,7 +66,7 @@ public class FluxIndexUnmemorizeToolTests
     {
         var filePath = "/docs/test.md";
 
-        await _tool.UnmemorizeAsync(filePath);
+        await _tool.UnmemorizeAsync(filePath, TestContext.Current.CancellationToken);
 
         await _vault.Received(1).RemoveAsync(filePath, Arg.Any<CancellationToken>());
     }
@@ -81,7 +81,7 @@ public class FluxIndexUnmemorizeToolTests
         _vault.RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Throws(new InvalidOperationException("Database error"));
 
-        var resultJson = await _tool.UnmemorizeAsync("/docs/test.md");
+        var resultJson = await _tool.UnmemorizeAsync("/docs/test.md", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
@@ -95,7 +95,7 @@ public class FluxIndexUnmemorizeToolTests
         _vault.RemoveAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Throws(new KeyNotFoundException("Entry not found"));
 
-        var resultJson = await _tool.UnmemorizeAsync("/non/existent.md");
+        var resultJson = await _tool.UnmemorizeAsync("/non/existent.md", TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);
 
         result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();

@@ -33,5 +33,5 @@ jobs:
         run: dotnet build IronHive.Flux.slnx --no-restore -c Release
 
       - name: Test
-        run: dotnet test tests/IronHive.Flux.Tests --no-build -c Release --logger "trx;LogFileName=test-results.trx" --blame-hang --blame-hang-timeout 5m
+        run: dotnet test tests/IronHive.Flux.Tests --no-build -c Release --report-trx --report-trx-filename test-results.trx --hangdump --hangdump-timeout 5m
 
