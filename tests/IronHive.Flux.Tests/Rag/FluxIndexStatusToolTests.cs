@@ -56,8 +56,8 @@ public class FluxIndexStatusToolTests
             ErrorCount = 1,
             QueuedCount = 2,
             ActiveWatcherCount = 1,
-            TotalStorageSizeBytes = 52_428_800 // 50MB
         });
+        _vault.GetStorageSizeAsync(Arg.Any<CancellationToken>()).Returns(52_428_800L); // 50MB
 
         var resultJson = await _tool.GetStatusAsync(TestContext.Current.CancellationToken);
         var result = JsonDocument.Parse(resultJson);

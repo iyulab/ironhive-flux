@@ -39,6 +39,8 @@ public partial class FluxIndexStatusTool
         try
         {
             var status = await _vault.StatusAsync(cancellationToken);
+            // FluxFeed 0.29.0 moved disk usage out of the status read (a directory walk per entry).
+            var storageBytes = await _vault.GetStorageSizeAsync(cancellationToken);
 
             var result = new
             {
@@ -63,7 +65,7 @@ public partial class FluxIndexStatusTool
                 activeWatcherCount = status.ActiveWatcherCount,
                 pausedWatcherCount = status.PausedWatcherCount,
                 // Storage
-                totalStorageSizeMb = Math.Round(status.TotalStorageSizeBytes / (1024.0 * 1024.0), 2),
+                totalStorageSizeMb = Math.Round(storageBytes / (1024.0 * 1024.0), 2),
                 // Timing
                 lastSyncTime = status.LastSyncTime?.ToString("O"),
                 statusAsOf = status.StatusAsOf.ToString("O")
