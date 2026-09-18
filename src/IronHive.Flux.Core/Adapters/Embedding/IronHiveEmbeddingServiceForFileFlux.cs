@@ -80,7 +80,7 @@ public partial class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingSe
     public double CalculateSimilarity(float[] embedding1, float[] embedding2)
     {
         if (embedding1.Length != embedding2.Length)
-            throw new ArgumentException("임베딩 차원이 일치하지 않습니다.");
+            throw new ArgumentException("The embedding dimensions do not match.");
 
         double dotProduct = 0;
         double norm1 = 0;

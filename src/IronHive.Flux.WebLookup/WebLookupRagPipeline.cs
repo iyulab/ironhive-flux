@@ -69,7 +69,7 @@ public partial class WebLookupRagPipeline
             LogSitemapDiscoveryStarted(_logger, baseUrl);
 
         if (!Uri.TryCreate(baseUrl, UriKind.Absolute, out var uri))
-            throw new ArgumentException($"유효하지 않은 URL: {baseUrl}", nameof(baseUrl));
+            throw new ArgumentException($"Invalid URL: {baseUrl}", nameof(baseUrl));
 
         var robots = await _siteExplorer.GetRobotsAsync(uri, cancellationToken);
         var urls = new List<string>();
