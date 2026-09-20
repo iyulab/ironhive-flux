@@ -18,6 +18,7 @@ public class OptionsReachabilityRosterTests
         Assembly.Load("IronHive.Flux.Rag"),
         Assembly.Load("IronHive.Flux.WebLookup"),
         Assembly.Load("IronHive.Tools.WebLookup"),
+        Assembly.Load("IronHive.Tools.SystemHarness"),
     ];
 
     /// <summary>
