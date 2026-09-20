@@ -16,15 +16,20 @@ public class OptionsReachabilityRosterTests
         Assembly.Load("IronHive.Flux"),
         Assembly.Load("IronHive.Flux.Core"),
         Assembly.Load("IronHive.Flux.Rag"),
+        Assembly.Load("IronHive.Flux.WebLookup"),
+        Assembly.Load("IronHive.Tools.WebLookup"),
     ];
 
     /// <summary>
     /// Options accepted as unread today. Shrink this list; never grow it silently.
     /// <para>
-    /// This is the roster's opening baseline (2026-09-20), recorded as found rather than as judged:
-    /// the first run reported 3 unread public options across 1 types, and none has been
-    /// investigated, so none carries a reason of its own. Recording them is what makes the gate start
-    /// green and makes the *next* unread option a failure instead of silently joining a crowd.
+    /// Opening baseline (2026-09-20): 4 unread public options across 2 types, recorded as found rather than
+    /// as judged - none has been investigated, so none carries a reason of its own. Recording them is what makes
+    /// the gate start green and makes the *next* unread option a failure instead of silently joining a crowd.
+    /// </para>
+    /// <para>
+    /// The assembly list above must cover every assembly this repository ships. Scanning only the main one
+    /// reports options that a sibling assembly reads as unread - that mistake inflated an early baseline elsewhere threefold.
     /// </para>
     /// </summary>
     private static readonly Dictionary<string, string[]> KnownUnread = new()
@@ -33,6 +38,7 @@ public class OptionsReachabilityRosterTests
         [
             "MaxResults", "MetadataFilter", "Query",
         ],
+        ["IronHive.Tools.WebLookup.WebLookupToolOptions"] = ["ToolTimeout"],
     };
 
     [Fact]
