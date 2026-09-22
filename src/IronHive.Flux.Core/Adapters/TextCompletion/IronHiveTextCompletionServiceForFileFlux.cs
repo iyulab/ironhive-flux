@@ -1,4 +1,4 @@
-using FileFlux;
+﻿using FileFlux;
 using FileFlux.Core;
 using IronHive.Abstractions.Messages;
 using IronHive.Abstractions.Messages.Content;
@@ -34,7 +34,9 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
         Name = "IronHive",
         Type = DocumentAnalysisProviderType.Custom,
         SupportedModels = [_options.TextCompletionModelId],
-        MaxContextLength = 128000,
+        // 0 = not declared: the adapter does not know the configured model's context window, and a made-up
+        // figure would make FileFlux's context check pass prompts the model cannot take.
+        MaxContextLength = 0,
         ApiVersion = "v1"
     };
 
@@ -59,22 +61,39 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
     }
 
     /// <inheritdoc />
-    public async Task<string> GenerateAsync(
+    public Task<string> GenerateAsync(
         string prompt,
         CancellationToken cancellationToken = default)
+        => GenerateAsync(prompt, GenerationSettings.Default, cancellationToken);
+
+    /// <summary>
+    /// Generates with the caller's sampling settings; an unset value falls back to
+    /// <see cref="IronHiveFluxCoreOptions.DefaultTemperature"/> / <see cref="IronHiveFluxCoreOptions.DefaultCompletionMaxTokens"/>.
+    /// </summary>
+    /// <exception cref="GenerationTruncatedException">The model stopped at the output token limit.</exception>
+    public async Task<string> GenerateAsync(
+        string prompt,
+        GenerationSettings settings,
+        CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(settings);
+
         if (_logger is not null)
             LogTextCompletionStarted(_logger, prompt.Length);
 
+        var maxTokens = settings.MaxTokens is > 0 ? settings.MaxTokens.Value : _options.DefaultCompletionMaxTokens;
         var request = new MessageGenerationRequest
         {
             Model = _options.TextCompletionModelId,
             Messages = [Message.User(prompt)],
-            Temperature = _options.DefaultTemperature,
-            MaxTokens = _options.DefaultCompletionMaxTokens
+            Temperature = settings.Temperature is { } temperature ? (float)temperature : _options.DefaultTemperature,
+            MaxTokens = maxTokens
         };
 
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
+        if (response.DoneReason == MessageDoneReason.MaxTokens)
+            throw new GenerationTruncatedException(maxTokens);
+
         var result = ExtractTextFromResponse(response);
 
         if (_logger is not null)

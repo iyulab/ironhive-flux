@@ -14,8 +14,19 @@ breaking changes, and each one is marked **Breaking** with a migration note.
   expects the tool instance, so the factory looked for `[FunctionTool]` methods on `System.Type` and the method always
   returned an empty list. Tools are now created with `CreateFrom<T>(provider)` and resolved from the provider on each
   call (the tool classes are scoped; nothing is built from the root provider).
+- **FileFlux LLM refinement through `IronHiveTextCompletionServiceForFileFlux` no longer adopts a cut-off rewrite and
+  gets the output budget it asks for.** The adapter did not implement `GenerateAsync(prompt, GenerationSettings, ct)`,
+  so FileFlux's temperature and output budget were dropped and every pass ran on `DefaultCompletionMaxTokens` (500) —
+  a document past a couple of kilobytes came back cut off. The settings now reach the request (unset values fall back
+  to `DefaultTemperature` / `DefaultCompletionMaxTokens`), and a response that stopped at the output limit
+  (`MessageDoneReason.MaxTokens`) throws FileFlux's `GenerationTruncatedException`, which the refiner treats as "not
+  applied" and reports in `LlmRefinementInfo.Warnings`.
 
 ### Changed
+- **Breaking**: `IronHiveTextCompletionServiceForFileFlux.GenerateAsync` throws `GenerationTruncatedException` when the
+  model stops at the output token limit, instead of returning the partial text. Its `ProviderInfo.MaxContextLength` is
+  0 (not declared) instead of a fixed 128000 that did not describe the configured model — FileFlux skips its context
+  check for 0.
 - **Breaking**: `memorize_web_page` (`FluxIndexWebMemorizeTool`) extracts through WebFlux's `IContentExtractService`
   instead of its own `HttpClient` and regex tag stripping. robots.txt, the per-request timeout, boilerplate removal
   and Markdown conversion now follow WebFlux (its defaults and configuration) — previously this tool ignored
