@@ -21,7 +21,6 @@
 | 클래스 | 타겟 | 주요 메서드 |
 |--------|------|------------|
 | `IronHiveImageToTextServiceForFileFlux` | FileFlux | `ExtractTextAsync` (byte[], Stream, path) |
-| `IronHiveImageToTextServiceForWebFlux` | WebFlux | `ConvertImageToTextAsync`, `ExtractTextFromWebImageAsync` |
 
 ## 등록
 

@@ -159,7 +159,6 @@ IMessageGenerator      ──┬───>  FileFlux.IDocumentAnalysisService
 | Adapter | Source | Target | Key Methods |
 |---------|--------|--------|-------------|
 | `IronHiveImageToTextServiceForFileFlux` | `IMessageGenerator` | `FileFlux.IImageToTextService` | `ExtractTextAsync` (byte[], Stream, path) |
-| `IronHiveImageToTextServiceForWebFlux` | `IMessageGenerator` | `WebFlux.IImageToTextService` | `ConvertImageToTextAsync`, `ExtractTextFromWebImageAsync` |
 
 ### 4.4 Configuration
 

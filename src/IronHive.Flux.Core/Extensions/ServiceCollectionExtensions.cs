@@ -58,7 +58,6 @@ public static class ServiceCollectionExtensions
     {
         services.TryAddSingleton<WebFlux.Core.Interfaces.ITextEmbeddingService, IronHiveEmbeddingServiceForWebFlux>();
         services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionServiceForWebFlux>();
-        services.TryAddSingleton<WebFlux.Core.Interfaces.IImageToTextService, IronHiveImageToTextServiceForWebFlux>();
         return services;
     }
 

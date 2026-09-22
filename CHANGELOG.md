@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.7.0] - 2026-09-23
+
+### Removed
+- **Breaking**: `IronHiveImageToTextServiceForWebFlux` and its registration in `AddIronHiveWebFluxAdapters`. WebFlux
+  0.14.0 removes the `IImageToTextService` port it implemented — no WebFlux crawl, extraction or chunking path ever
+  called it, so the adapter never received a request through WebFlux. Nothing to migrate: code that constructed the
+  adapter directly can call `IMessageGenerator` itself. The FileFlux image-to-text adapter
+  (`IronHiveImageToTextServiceForFileFlux`) is unchanged.
+
 ## [0.6.54] - 2026-09-22
 
 ### Changed
