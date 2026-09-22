@@ -3,13 +3,13 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="IronHive">
-    <PackageVersion Include="IronHive.Abstractions" Version="0.33.0" />
-    <PackageVersion Include="IronHive.Core" Version="0.33.0" />
-    <PackageVersion Include="IronHive.Plugins.MCP" Version="0.33.0" />
-    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.33.0" />
+    <PackageVersion Include="IronHive.Abstractions" Version="0.33.1" />
+    <PackageVersion Include="IronHive.Core" Version="0.33.1" />
+    <PackageVersion Include="IronHive.Plugins.MCP" Version="0.33.1" />
+    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.33.1" />
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.25.1" />
+    <PackageVersion Include="FileFlux" Version="0.26.0" />
     <PackageVersion Include="WebFlux" Version="0.14.0" />
     <PackageVersion Include="WebLookup" Version="0.2.3" />
     <PackageVersion Include="FluxIndex.Core" Version="0.50.1" />
