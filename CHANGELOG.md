@@ -6,6 +6,9 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [0.7.0] - 2026-09-23
 
+### Changed
+- Re-pinned sibling package(s) `WebFlux` 0.13.0 -> 0.14.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+
 ### Removed
 - **Breaking**: `IronHiveImageToTextServiceForWebFlux` and its registration in `AddIronHiveWebFluxAdapters`. WebFlux
   0.14.0 removes the `IImageToTextService` port it implemented — no WebFlux crawl, extraction or chunking path ever
