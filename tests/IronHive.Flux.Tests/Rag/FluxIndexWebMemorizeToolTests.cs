@@ -1,383 +1,194 @@
 using AwesomeAssertions;
 using FluxFeed.Interfaces;
+using IronHive.Flux.Rag.Extensions;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using System.Text.Json;
+using WebFlux.Core.Interfaces;
+using WebFlux.Core.Models;
+using WebFlux.Core.Options;
 using Xunit;
 
 namespace IronHive.Flux.Tests.Rag;
 
-public class FluxIndexWebMemorizeToolTests : IDisposable
+/// <summary>
+/// The tool extracts through WebFlux (robots.txt, per-request timeout, boilerplate removal, Markdown) rather than
+/// its own HttpClient — so the extractor is the seam, and the whole flow is testable without a network.
+/// </summary>
+public class FluxIndexWebMemorizeToolTests
 {
-    private readonly IVault _vault;
-    private readonly FluxIndexWebMemorizeTool _tool;
+    private readonly IVault _vault = Substitute.For<IVault>();
+    private readonly IContentExtractService _extractor = Substitute.For<IContentExtractService>();
+    private readonly IOptions<FluxRagToolsOptions> _options = Options.Create(new FluxRagToolsOptions());
 
-    public FluxIndexWebMemorizeToolTests()
-    {
-        _vault = Substitute.For<IVault>();
-        var options = Options.Create(new FluxRagToolsOptions());
-        _tool = new FluxIndexWebMemorizeTool(_vault, options);
-    }
+    private FluxIndexWebMemorizeTool CreateTool() => new(_vault, _options, _extractor);
 
-    public void Dispose()
-    {
-        _tool.Dispose();
-        GC.SuppressFinalize(this);
-    }
+    private void ExtractorReturns(ExtractedContent page) =>
+        _extractor.ExtractContentAsync(Arg.Any<string>(), Arg.Any<ExtractOptions?>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessingResult.Success(page));
 
-    #region Constructor Tests
+    private static JsonElement Parse(string json) => JsonDocument.Parse(json).RootElement;
+
+    #region Constructor
 
     [Fact]
-    public void Constructor_WithNullVault_ShouldThrow()
+    public void Constructor_NullArguments_Throw()
     {
-        var options = Options.Create(new FluxRagToolsOptions());
-
-        var act = () => new FluxIndexWebMemorizeTool(null!, options);
-        act.Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void Constructor_WithNullOptions_ShouldThrow()
-    {
-        var vault = Substitute.For<IVault>();
-
-        var act = () => new FluxIndexWebMemorizeTool(vault, null!);
-        act.Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
-    public void Constructor_WithValidArgs_ShouldNotThrow()
-    {
-        var vault = Substitute.For<IVault>();
-        var options = Options.Create(new FluxRagToolsOptions());
-
-        using var tool = new FluxIndexWebMemorizeTool(vault, options);
-        tool.Should().NotBeNull();
-    }
-
-    [Fact]
-    public void Constructor_WithHttpClient_ShouldNotThrow()
-    {
-        var vault = Substitute.For<IVault>();
-        var options = Options.Create(new FluxRagToolsOptions());
-        var httpClient = new HttpClient();
-
-        using var tool = new FluxIndexWebMemorizeTool(vault, options, httpClient);
-        tool.Should().NotBeNull();
+        FluentActions.Invoking(() => new FluxIndexWebMemorizeTool(null!, _options, _extractor)).Should().Throw<ArgumentNullException>();
+        FluentActions.Invoking(() => new FluxIndexWebMemorizeTool(_vault, null!, _extractor)).Should().Throw<ArgumentNullException>();
+        FluentActions.Invoking(() => new FluxIndexWebMemorizeTool(_vault, _options, null!)).Should().Throw<ArgumentNullException>();
     }
 
     #endregion
 
-    #region URL Validation
+    #region URL validation
 
-    [Fact]
-    public async Task MemorizeWebPageAsync_WithInvalidUrl_ShouldReturnError()
+    [Theory]
+    [InlineData("not-a-valid-url")]
+    [InlineData("ftp://example.com/file.txt")]
+    [InlineData("/relative/path")]
+    public async Task InvalidUrl_IsRejected_WithoutCallingTheExtractor(string url)
     {
-        var resultJson = await _tool.MemorizeWebPageAsync("not-a-valid-url", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
+        var result = Parse(await CreateTool().MemorizeWebPageAsync(url, cancellationToken: TestContext.Current.CancellationToken));
 
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
-        result.RootElement.GetProperty("error").GetString().Should().Contain("Invalid URL");
-    }
-
-    [Fact]
-    public async Task MemorizeWebPageAsync_WithFtpUrl_ShouldReturnError()
-    {
-        var resultJson = await _tool.MemorizeWebPageAsync("ftp://example.com/file.txt", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
-        result.RootElement.GetProperty("error").GetString().Should().Contain("Invalid URL");
-    }
-
-    [Fact]
-    public async Task MemorizeWebPageAsync_WithRelativeUrl_ShouldReturnError()
-    {
-        var resultJson = await _tool.MemorizeWebPageAsync("/relative/path", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
-        result.RootElement.GetProperty("error").GetString().Should().Contain("Invalid URL");
+        result.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.GetProperty("error").GetString().Should().Contain("Invalid URL");
+        await _extractor.DidNotReceiveWithAnyArgs().ExtractContentAsync(default!, default, TestContext.Current.CancellationToken);
     }
 
     #endregion
 
-    #region HTML Detection
+    #region Extraction through WebFlux
 
     [Fact]
-    public void IsHtmlContent_WithHtmlContentType_ShouldReturnTrue()
+    public async Task Memorize_AsksWebFluxForMarkdown_AndIndexesWhatItExtracted()
     {
-        FluxIndexWebMemorizeTool.IsHtmlContent("<p>test</p>", "text/html").Should().BeTrue();
+        ExtractorReturns(new ExtractedContent { Url = "https://example.com/guide", Title = "The Guide", MainContent = "## Install\n\nRun the thing." });
+        string? written = null;
+        _vault.When(v => v.MemorizeAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()))
+            .Do(call => written = File.ReadAllText(call.Arg<string>()));
+
+        var result = Parse(await CreateTool().MemorizeWebPageAsync("https://example.com/guide", cancellationToken: TestContext.Current.CancellationToken));
+
+        result.GetProperty("success").GetBoolean().Should().BeTrue();
+        result.GetProperty("title").GetString().Should().Be("The Guide", "the page's own title is used when none is given");
+        await _extractor.Received(1).ExtractContentAsync(
+            "https://example.com/guide",
+            Arg.Is<ExtractOptions?>(o => o != null && o.Format == OutputFormat.Markdown),
+            Arg.Any<CancellationToken>());
+        written.Should().Contain("## Install").And.Contain("Run the thing.").And.Contain("source: https://example.com/guide");
     }
 
     [Fact]
-    public void IsHtmlContent_WithHtmlDoctype_ShouldReturnTrue()
+    public async Task Memorize_ACallerTitleWins_AndAPageWithoutTitleFallsBackToTheUrl()
     {
-        FluxIndexWebMemorizeTool.IsHtmlContent("<!DOCTYPE html><html>", null).Should().BeTrue();
+        ExtractorReturns(new ExtractedContent { Title = "Page Title", MainContent = "body" });
+        var named = Parse(await CreateTool().MemorizeWebPageAsync("https://example.com/a", "Mine", TestContext.Current.CancellationToken));
+        named.GetProperty("title").GetString().Should().Be("Mine");
+
+        ExtractorReturns(new ExtractedContent { Title = "", MainContent = "body" });
+        var untitled = Parse(await CreateTool().MemorizeWebPageAsync("https://example.com/getting-started", cancellationToken: TestContext.Current.CancellationToken));
+        untitled.GetProperty("title").GetString().Should().Be("getting started");
     }
 
     [Fact]
-    public void IsHtmlContent_WithHtmlTag_ShouldReturnTrue()
+    public async Task Memorize_WhenWebFluxRefuses_ReportsItsReason_AndIndexesNothing()
     {
-        FluxIndexWebMemorizeTool.IsHtmlContent("  <html><body>test</body></html>", null).Should().BeTrue();
+        // e.g. robots.txt disallows the path, or the request timed out — WebFlux decides, the tool reports.
+        _extractor.ExtractContentAsync(Arg.Any<string>(), Arg.Any<ExtractOptions?>(), Arg.Any<CancellationToken>())
+            .Returns(ProcessingResult.Failure<ExtractedContent>("Disallowed by robots.txt", "ROBOTS"));
+
+        var result = Parse(await CreateTool().MemorizeWebPageAsync("https://example.com/private", cancellationToken: TestContext.Current.CancellationToken));
+
+        result.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.GetProperty("error").GetString().Should().Contain("Disallowed by robots.txt");
+        await _vault.DidNotReceiveWithAnyArgs().MemorizeAsync(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void IsHtmlContent_WithPlainText_ShouldReturnFalse()
+    public async Task Memorize_EmptyExtraction_IsAnError_NotAnEmptyDocument()
     {
-        FluxIndexWebMemorizeTool.IsHtmlContent("Just plain text", "text/plain").Should().BeFalse();
+        ExtractorReturns(new ExtractedContent { MainContent = "  ", Text = "" });
+
+        var result = Parse(await CreateTool().MemorizeWebPageAsync("https://example.com/", cancellationToken: TestContext.Current.CancellationToken));
+
+        result.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.GetProperty("error").GetString().Should().Contain("empty");
+        await _vault.DidNotReceiveWithAnyArgs().MemorizeAsync(default!, TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void IsHtmlContent_WithJsonContent_ShouldReturnFalse()
+    public async Task Memorize_VaultFailure_IsReported()
     {
-        FluxIndexWebMemorizeTool.IsHtmlContent("{\"key\": \"value\"}", "application/json").Should().BeFalse();
-    }
+        ExtractorReturns(new ExtractedContent { MainContent = "body" });
+        _vault.MemorizeAsync(Arg.Any<string>(), Arg.Any<CancellationToken>()).ThrowsAsync(new InvalidOperationException("store is read-only"));
 
-    #endregion
+        var result = Parse(await CreateTool().MemorizeWebPageAsync("https://example.com/", cancellationToken: TestContext.Current.CancellationToken));
 
-    #region HTML Processing
-
-    [Fact]
-    public void RemoveHtmlBlocks_ShouldRemoveScriptTags()
-    {
-        var html = "before<script>alert('hi')</script>after";
-        var result = FluxIndexWebMemorizeTool.RemoveHtmlBlocks(html, "script");
-        result.Should().Be("beforeafter");
-    }
-
-    [Fact]
-    public void RemoveHtmlBlocks_ShouldRemoveStyleTags()
-    {
-        var html = "text<style>.cls{color:red}</style>more";
-        var result = FluxIndexWebMemorizeTool.RemoveHtmlBlocks(html, "style");
-        result.Should().Be("textmore");
-    }
-
-    [Fact]
-    public void RemoveHtmlBlocks_ShouldRemoveMultipleBlocks()
-    {
-        var html = "a<script>1</script>b<script>2</script>c";
-        var result = FluxIndexWebMemorizeTool.RemoveHtmlBlocks(html, "script");
-        result.Should().Be("abc");
-    }
-
-    [Fact]
-    public void ExtractHtmlTitle_ShouldExtractTitle()
-    {
-        var html = "<html><head><title>Test Page Title</title></head></html>";
-        var result = FluxIndexWebMemorizeTool.ExtractHtmlTitle(html);
-        result.Should().Be("Test Page Title");
-    }
-
-    [Fact]
-    public void ExtractHtmlTitle_WithNoTitle_ShouldReturnNull()
-    {
-        var html = "<html><head></head></html>";
-        var result = FluxIndexWebMemorizeTool.ExtractHtmlTitle(html);
-        result.Should().BeNull();
-    }
-
-    [Fact]
-    public void ExtractHtmlTitle_WithEmptyTitle_ShouldReturnNull()
-    {
-        var html = "<html><head><title>  </title></head></html>";
-        var result = FluxIndexWebMemorizeTool.ExtractHtmlTitle(html);
-        result.Should().BeNull();
-    }
-
-    [Fact]
-    public void StripHtmlTags_ShouldRemoveTags()
-    {
-        var html = "<p>Hello <b>World</b></p>";
-        var result = FluxIndexWebMemorizeTool.StripHtmlTags(html);
-        result.Should().Contain("Hello").And.Contain("World");
-        result.Should().NotContain("<p>").And.NotContain("<b>");
-    }
-
-    [Fact]
-    public void DecodeHtmlEntities_ShouldDecodeCommonEntities()
-    {
-        var text = "A &amp; B &lt; C &gt; D &quot;E&quot; &#39;F&#39;";
-        var result = FluxIndexWebMemorizeTool.DecodeHtmlEntities(text);
-        result.Should().Be("A & B < C > D \"E\" 'F'");
-    }
-
-    [Fact]
-    public void NormalizeWhitespace_ShouldCollapseSpaces()
-    {
-        var text = "  Hello    World  \n\n  Test  ";
-        var result = FluxIndexWebMemorizeTool.NormalizeWhitespace(text);
-        result.Should().Contain("Hello World");
-        result.Should().Contain("Test");
+        result.GetProperty("success").GetBoolean().Should().BeFalse();
+        result.GetProperty("error").GetString().Should().Contain("store is read-only");
     }
 
     #endregion
 
-    #region Markdown Conversion
+    #region Registration
 
     [Fact]
-    public void ConvertHtmlToBasicMarkdown_ShouldProduceFrontmatter()
+    public void GetFluxRagTools_WithoutWebFlux_DoesNotOfferTheWebTool()
     {
-        var html = "<html><head><title>My Page</title></head><body><p>Content here</p></body></html>";
-        var result = FluxIndexWebMemorizeTool.ConvertHtmlToBasicMarkdown(html, "https://example.com/page", null);
+        var services = new ServiceCollection();
+        services.AddScoped(_ => _vault);
+        services.AddFluxRagTools();
+        using var provider = services.BuildServiceProvider();
 
-        result.Should().Contain("source: https://example.com/page");
-        result.Should().Contain("title: My Page");
-        result.Should().Contain("# My Page");
-        result.Should().Contain("Content here");
+        provider.GetFluxRagTools().Select(t => t.UniqueName).Should().NotContain("func_memorize_web_page",
+            "the tool extracts through WebFlux; without it registered the tool cannot be built");
     }
 
     [Fact]
-    public void ConvertHtmlToBasicMarkdown_WithExplicitTitle_ShouldUseIt()
+    public void GetFluxRagTools_WithWebFlux_OffersTheWebTool()
     {
-        var html = "<html><head><title>HTML Title</title></head><body><p>Text</p></body></html>";
-        var result = FluxIndexWebMemorizeTool.ConvertHtmlToBasicMarkdown(html, "https://example.com", "Custom Title");
+        var services = new ServiceCollection();
+        services.AddScoped(_ => _vault);
+        services.AddScoped(_ => _extractor);
+        services.AddFluxRagTools();
+        using var provider = services.BuildServiceProvider();
 
-        result.Should().Contain("title: Custom Title");
-        result.Should().Contain("# Custom Title");
+        provider.GetFluxRagTools().Select(t => t.UniqueName).Should().Contain("func_memorize_web_page");
     }
 
     [Fact]
-    public void ConvertHtmlToBasicMarkdown_ShouldRemoveScriptsAndStyles()
+    public void GetFluxRagTools_ReturnsTheRegisteredTools()
     {
-        var html = "<html><body><script>alert('xss')</script><style>.bad{}</style><p>Safe content</p></body></html>";
-        var result = FluxIndexWebMemorizeTool.ConvertHtmlToBasicMarkdown(html, "https://example.com", "Test");
+        // Before 0.8.0 each tool's Type object was passed where the factory expects the instance, so this returned nothing.
+        var services = new ServiceCollection();
+        services.AddScoped(_ => _vault);
+        services.AddFluxRagTools();
+        using var provider = services.BuildServiceProvider();
 
-        result.Should().Contain("Safe content");
-        result.Should().NotContain("alert");
-        result.Should().NotContain(".bad");
-    }
-
-    [Fact]
-    public void FormatAsMarkdown_ShouldProduceFrontmatter()
-    {
-        var result = FluxIndexWebMemorizeTool.FormatAsMarkdown("Some content", "https://example.com/page", "Page Title");
-
-        result.Should().Contain("---");
-        result.Should().Contain("source: https://example.com/page");
-        result.Should().Contain("title: Page Title");
-        result.Should().Contain("# Page Title");
-        result.Should().Contain("Some content");
+        provider.GetFluxRagTools().Select(t => t.UniqueName).Should().Contain(["func_search_knowledge_base", "func_memorize_document", "func_knowledge_base_status", "func_forget_document"]);
     }
 
     #endregion
 
-    #region Title Extraction from URL
+    #region Formatting helpers
 
     [Fact]
-    public void ExtractTitleFromUrl_WithPathSegment_ShouldExtractTitle()
+    public void ExtractTitleFromUrl_UsesTheLastPathSegment_OrTheHost()
     {
-        var uri = new Uri("https://example.com/blog/my-first-post");
-        var title = FluxIndexWebMemorizeTool.ExtractTitleFromUrl(uri);
-        title.Should().Be("my first post");
+        FluxIndexWebMemorizeTool.ExtractTitleFromUrl(new Uri("https://example.com/docs/getting-started.html")).Should().Be("getting started");
+        FluxIndexWebMemorizeTool.ExtractTitleFromUrl(new Uri("https://example.com/")).Should().Be("example.com");
     }
 
     [Fact]
-    public void ExtractTitleFromUrl_WithExtension_ShouldRemoveExtension()
+    public void CreateTempMarkdownFile_IsAMarkdownPathInTheTempDirectory()
     {
-        var uri = new Uri("https://example.com/docs/guide.html");
-        var title = FluxIndexWebMemorizeTool.ExtractTitleFromUrl(uri);
-        title.Should().Be("guide");
-    }
-
-    [Fact]
-    public void ExtractTitleFromUrl_WithRootPath_ShouldReturnHost()
-    {
-        var uri = new Uri("https://example.com/");
-        var title = FluxIndexWebMemorizeTool.ExtractTitleFromUrl(uri);
-        title.Should().Be("example.com");
-    }
-
-    [Fact]
-    public void ExtractTitleFromUrl_WithUnderscores_ShouldConvertToSpaces()
-    {
-        var uri = new Uri("https://example.com/some_document_title");
-        var title = FluxIndexWebMemorizeTool.ExtractTitleFromUrl(uri);
-        title.Should().Be("some document title");
-    }
-
-    #endregion
-
-    #region Temp File Path
-
-    [Fact]
-    public void CreateTempMarkdownFile_ShouldReturnMdExtension()
-    {
-        var path = FluxIndexWebMemorizeTool.CreateTempMarkdownFile("https://example.com");
-        path.Should().EndWith(".md");
-    }
-
-    [Fact]
-    public void CreateTempMarkdownFile_ShouldBeInTempDir()
-    {
-        var path = FluxIndexWebMemorizeTool.CreateTempMarkdownFile("https://example.com");
-        path.Should().StartWith(Path.GetTempPath());
-    }
-
-    [Fact]
-    public void CreateTempMarkdownFile_DifferentUrls_ShouldProduceDifferentPaths()
-    {
-        var path1 = FluxIndexWebMemorizeTool.CreateTempMarkdownFile("https://example.com/page1");
-        var path2 = FluxIndexWebMemorizeTool.CreateTempMarkdownFile("https://example.com/page2");
-        // Different URLs with different hash should produce different file names (path prefix matches)
-        Path.GetFileName(path1).Should().NotBe(Path.GetFileName(path2));
-    }
-
-    #endregion
-
-    #region Dispose
-
-    [Fact]
-    public void Dispose_MultipleDispose_ShouldNotThrow()
-    {
-        var vault = Substitute.For<IVault>();
-        var options = Options.Create(new FluxRagToolsOptions());
-        var tool = new FluxIndexWebMemorizeTool(vault, options);
-
-        tool.Dispose();
-        var act = () => tool.Dispose();
-        act.Should().NotThrow();
-    }
-
-    [Fact]
-    public void Dispose_WithExternalHttpClient_ShouldNotDisposeIt()
-    {
-        var vault = Substitute.For<IVault>();
-        var options = Options.Create(new FluxRagToolsOptions());
-        var httpClient = new HttpClient();
-
-        using var tool = new FluxIndexWebMemorizeTool(vault, options, httpClient);
-        tool.Dispose();
-
-        // External HttpClient should still be usable (not disposed)
-        var act = () => httpClient.BaseAddress = new Uri("https://example.com");
-        act.Should().NotThrow();
-
-        httpClient.Dispose();
-    }
-
-    #endregion
-
-    #region Error Handling
-
-    [Fact]
-    public async Task MemorizeWebPageAsync_VaultThrows_ShouldReturnError()
-    {
-        // We can't easily test the full flow without a real HTTP server,
-        // but we can test that the tool handles errors gracefully.
-        // The URL validation tests above cover the early exit paths.
-
-        // Test: HTTP download failure (invalid host)
-        var resultJson = await _tool.MemorizeWebPageAsync("https://this-domain-does-not-exist-12345.invalid/page", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
-        result.RootElement.GetProperty("url").GetString().Should().Be("https://this-domain-does-not-exist-12345.invalid/page");
-        result.RootElement.TryGetProperty("error", out _).Should().BeTrue();
+        var path = FluxIndexWebMemorizeTool.CreateTempMarkdownFile("https://example.com/page");
+        path.Should().EndWith(".md").And.StartWith(Path.GetTempPath());
     }
 
     #endregion

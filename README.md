@@ -25,7 +25,7 @@ Flux 통합 외에, ironhive 에이전트를 위한 외부 도구/파이프라�
 | 기능 | 진입점 | 켜는 법 |
 |---|---|---|
 | IronHive 모델을 Flux 포트로 | `AddIronHiveFluxCore(o => …)` — 임베딩·텍스트 완성·이미지→텍스트 어댑터 | opt-in. `AddIronHiveFileFluxAdapters` · `AddIronHiveWebFluxAdapters` · `AddIronHiveFluxIndexAdapters`(또는 `AddAllIronHiveFluxAdapters`)로 각 Flux 패키지의 포트에 연결 |
-| 에이전트용 RAG 도구 | `AddFluxRagTools(o => …)` → `provider.GetFluxRagTools()` — `search_knowledge_base` · `memorize_document(s)` · `memorize_directory` · `memorize_web_page` · `forget_document` · `list_documents` · `get_document_info` · `detect_changes` · `knowledge_base_status` | opt-in. FluxFeed `IVault` 가 먼저 등록돼 있어야 한다 |
+| 에이전트용 RAG 도구 | `AddFluxRagTools(o => …)` → `provider.GetFluxRagTools()` — `search_knowledge_base` · `memorize_document(s)` · `memorize_directory` · `memorize_web_page` · `forget_document` · `list_documents` · `get_document_info` · `detect_changes` · `knowledge_base_status` | opt-in. FluxFeed `IVault` 가 먼저 등록돼 있어야 한다. `memorize_web_page` 는 WebFlux 로 추출하므로(robots.txt · 요청 타임아웃 · 보일러플레이트 제거) `services.AddWebFlux()` 가 등록돼 있을 때만 포함된다 |
 | RAG 컨텍스트 조립 | `AddFluxRagContext(…)` → `RagContextBuilder.BuildContextAsync` | opt-in |
 | 웹 검색 → RAG 적재 | `AddWebLookupRagPipeline(…)` → `WebLookupRagPipeline`(`DiscoverUrlsAsync` · `DiscoverSitemapUrlsAsync` · `DiscoverCombinedUrlsAsync`) | opt-in. WebLookup(`services.AddWebLookup(…)`)이 먼저 |
 | 에이전트용 웹 도구 | `services.AddWebLookupTools(…)` + `tools.AddWebLookupTools(provider)` — `web_search` · `explore_site` | opt-in. WebLookup 이 먼저 |

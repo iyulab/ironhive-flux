@@ -229,7 +229,7 @@ User Query
 | `FluxIndexMemorizeTool` | 파일을 인덱스에 저장 |
 | `FluxIndexUnmemorizeTool` | 파일을 인덱스에서 삭제 |
 | `FluxIndexBatchMemorizeTool` | 여러 파일 또는 디렉토리를 일괄 저장 |
-| `FluxIndexWebMemorizeTool` | 웹 페이지 URL 콘텐츠를 저장 |
+| `FluxIndexWebMemorizeTool` | 웹 페이지 URL 콘텐츠를 WebFlux(`IContentExtractService`)로 추출해 저장 — WebFlux 등록 시에만 제공 |
 | `FluxIndexStatusTool` | 지식 베이스 상태 조회 및 문서 목록 확인 |
 
 ### 5.4 RagContext Model

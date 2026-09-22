@@ -90,33 +90,30 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// FluxIndex RAG 도구들을 ITool 컬렉션으로 가져옵니다.
     /// </summary>
+    /// <remarks>
+    /// 각 도구는 호출될 때마다 <paramref name="provider"/> 에서 해석된다(도구 클래스는 Scoped — 루트에서 미리 만들지 않는다).
+    /// <c>memorize_web_page</c> 는 WebFlux 로 추출하므로 호스트가 WebFlux 를 등록했을 때만(<c>services.AddWebFlux()</c>) 포함된다.
+    /// 0.8.0 이전에는 각 도구의 <see cref="Type"/> 객체를 인스턴스 자리에 넘겨, 이 메서드가 어떤 도구도 돌려주지 않았다.
+    /// </remarks>
     public static IEnumerable<ITool> GetFluxRagTools(this IServiceProvider provider)
     {
+        ArgumentNullException.ThrowIfNull(provider);
+        var isService = provider.GetService<IServiceProviderIsService>();
+        bool Registered(Type type) => isService?.IsService(type) ?? provider.GetService(type) is not null;
+
         var tools = new List<ITool>();
-
-        var searchTool = provider.GetService<FluxIndexSearchTool>();
-        if (searchTool != null)
-            tools.AddRange(FunctionToolFactory.CreateFrom(searchTool.GetType()));
-
-        var memorizeTool = provider.GetService<FluxIndexMemorizeTool>();
-        if (memorizeTool != null)
-            tools.AddRange(FunctionToolFactory.CreateFrom(memorizeTool.GetType()));
-
-        var unmemorizeTool = provider.GetService<FluxIndexUnmemorizeTool>();
-        if (unmemorizeTool != null)
-            tools.AddRange(FunctionToolFactory.CreateFrom(unmemorizeTool.GetType()));
-
-        var batchMemorizeTool = provider.GetService<FluxIndexBatchMemorizeTool>();
-        if (batchMemorizeTool != null)
-            tools.AddRange(FunctionToolFactory.CreateFrom(batchMemorizeTool.GetType()));
-
-        var webMemorizeTool = provider.GetService<FluxIndexWebMemorizeTool>();
-        if (webMemorizeTool != null)
-            tools.AddRange(FunctionToolFactory.CreateFrom(webMemorizeTool.GetType()));
-
-        var statusTool = provider.GetService<FluxIndexStatusTool>();
-        if (statusTool != null)
-            tools.AddRange(FunctionToolFactory.CreateFrom(statusTool.GetType()));
+        if (Registered(typeof(FluxIndexSearchTool)))
+            tools.AddRange(FunctionToolFactory.CreateFrom<FluxIndexSearchTool>(provider));
+        if (Registered(typeof(FluxIndexMemorizeTool)))
+            tools.AddRange(FunctionToolFactory.CreateFrom<FluxIndexMemorizeTool>(provider));
+        if (Registered(typeof(FluxIndexUnmemorizeTool)))
+            tools.AddRange(FunctionToolFactory.CreateFrom<FluxIndexUnmemorizeTool>(provider));
+        if (Registered(typeof(FluxIndexBatchMemorizeTool)))
+            tools.AddRange(FunctionToolFactory.CreateFrom<FluxIndexBatchMemorizeTool>(provider));
+        if (Registered(typeof(FluxIndexWebMemorizeTool)) && Registered(typeof(WebFlux.Core.Interfaces.IContentExtractService)))
+            tools.AddRange(FunctionToolFactory.CreateFrom<FluxIndexWebMemorizeTool>(provider));
+        if (Registered(typeof(FluxIndexStatusTool)))
+            tools.AddRange(FunctionToolFactory.CreateFrom<FluxIndexStatusTool>(provider));
 
         return tools;
     }

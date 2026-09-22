@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.8.0] - 2026-09-23
+
+### Fixed
+- **`GetFluxRagTools()` returns the tools.** It passed each tool's `Type` object where `FunctionToolFactory.CreateFrom`
+  expects the tool instance, so the factory looked for `[FunctionTool]` methods on `System.Type` and the method always
+  returned an empty list. Tools are now created with `CreateFrom<T>(provider)` and resolved from the provider on each
+  call (the tool classes are scoped; nothing is built from the root provider).
+
+### Changed
+- **Breaking**: `memorize_web_page` (`FluxIndexWebMemorizeTool`) extracts through WebFlux's `IContentExtractService`
+  instead of its own `HttpClient` and regex tag stripping. robots.txt, the per-request timeout, boilerplate removal
+  and Markdown conversion now follow WebFlux (its defaults and configuration) — previously this tool ignored
+  robots.txt, set no timeout of its own beyond 30 s, and could not render dynamic pages. The page's own title is used
+  when no title is passed. The constructor takes `IContentExtractService` in place of `HttpClient?`, and the class is no
+  longer `IDisposable`. The tool is offered by `GetFluxRagTools()` only when the host registered WebFlux
+  (`services.AddWebFlux()`).
+
 ## [0.7.0] - 2026-09-23
 
 ### Changed

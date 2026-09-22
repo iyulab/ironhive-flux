@@ -4,60 +4,58 @@ using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.ComponentModel;
-using System.Net.Http.Headers;
 using System.Text.Json;
+using WebFlux.Core.Interfaces;
+using WebFlux.Core.Options;
 
 namespace IronHive.Flux.Rag.Tools;
 
 /// <summary>
-/// FluxIndex 웹 페이지 memorize 도구 - URL에서 콘텐츠를 추출하여 IVault에 인덱싱
-/// HttpClient로 웹 콘텐츠를 가져와 임시 .md 파일로 저장 후 IVault.MemorizeAsync 호출
+/// FluxIndex 웹 페이지 memorize 도구 — URL 의 본문을 WebFlux(<see cref="IContentExtractService"/>)로 추출해 임시 .md 로
+/// 저장한 뒤 <see cref="IVault.MemorizeAsync(string, CancellationToken)"/> 로 인덱싱한다.
 /// </summary>
-public partial class FluxIndexWebMemorizeTool : IDisposable
+/// <remarks>
+/// 추출은 WebFlux 가 한다 — robots.txt 존중, 요청별 타임아웃, 보일러플레이트 제거, 마크다운 변환이 WebFlux 의 기본값과
+/// 설정대로 적용된다. 0.8.0 이전에는 이 도구가 자체 <c>HttpClient</c> 와 정규식 태그 제거로 같은 일을 다시 구현해,
+/// WebFlux 에서 고친 robots·타임아웃 동작이 이 도구에는 닿지 않았다.
+/// <para>
+/// 호스트가 WebFlux 를 등록해야 한다(<c>services.AddWebFlux()</c>). 등록되지 않은 컨테이너에서는
+/// <c>GetFluxRagTools</c> 가 이 도구를 내놓지 않는다.
+/// </para>
+/// </remarks>
+public partial class FluxIndexWebMemorizeTool
 {
     private static readonly JsonSerializerOptions s_indentedJsonOptions = new() { WriteIndented = true };
 
     private readonly FluxRagToolsOptions _options;
     private readonly IVault _vault;
-    private readonly HttpClient _httpClient;
-    private readonly bool _ownsHttpClient;
+    private readonly IContentExtractService _extractor;
     private readonly ILogger<FluxIndexWebMemorizeTool>? _logger;
-    private bool _disposed;
 
     public FluxIndexWebMemorizeTool(
         IVault vault,
         IOptions<FluxRagToolsOptions> options,
-        HttpClient? httpClient = null,
+        IContentExtractService extractor,
         ILogger<FluxIndexWebMemorizeTool>? logger = null)
     {
         _vault = vault ?? throw new ArgumentNullException(nameof(vault));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
+        _extractor = extractor ?? throw new ArgumentNullException(nameof(extractor));
         _logger = logger;
-
-        if (httpClient is not null)
-        {
-            _httpClient = httpClient;
-            _ownsHttpClient = false;
-        }
-        else
-        {
-            _httpClient = CreateDefaultHttpClient();
-            _ownsHttpClient = true;
-        }
     }
 
     /// <summary>
     /// URL에서 웹 페이지 콘텐츠를 추출하여 지식 베이스에 저장합니다.
-    /// 웹 콘텐츠를 다운로드하고, 임시 마크다운 파일로 저장한 후 인덱싱 파이프라인을 실행합니다.
     /// </summary>
     /// <param name="url">인덱싱할 웹 페이지 URL</param>
-    /// <param name="title">문서 제목 (null이면 URL에서 추출)</param>
+    /// <param name="title">문서 제목 (null이면 페이지 제목, 그것도 없으면 URL에서 추출)</param>
+    /// <param name="cancellationToken">취소 토큰</param>
     /// <returns>저장 결과 (JSON 문자열)</returns>
     [FunctionTool("memorize_web_page")]
     [Description("웹 페이지 URL에서 콘텐츠를 추출하여 지식 베이스에 저장합니다. 웹 콘텐츠를 마크다운으로 변환하여 인덱싱합니다.")]
     public async Task<string> MemorizeWebPageAsync(
         [Description("인덱싱할 웹 페이지의 URL")] string url,
-        [Description("문서 제목 (선택사항, 없으면 URL에서 추출)")] string? title = null,
+        [Description("문서 제목 (선택사항, 없으면 페이지 제목 또는 URL에서 추출)")] string? title = null,
         CancellationToken cancellationToken = default)
     {
         if (_logger is not null)
@@ -66,47 +64,41 @@ public partial class FluxIndexWebMemorizeTool : IDisposable
         string? tempFilePath = null;
         try
         {
-            // URL validation
             if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
                 (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
             {
-                return JsonSerializer.Serialize(new
-                {
-                    success = false,
-                    url,
-                    error = $"Invalid URL: {url}. Only HTTP and HTTPS URLs are supported."
-                }, s_indentedJsonOptions);
+                return Failure(url, $"Invalid URL: {url}. Only HTTP and HTTPS URLs are supported.");
             }
 
-            // Download web content
-            var (content, contentType) = await DownloadContentAsync(uri, cancellationToken);
+            var extracted = await _extractor.ExtractContentAsync(
+                url,
+                new ExtractOptions { Format = OutputFormat.Markdown },
+                cancellationToken).ConfigureAwait(false);
 
-            if (string.IsNullOrWhiteSpace(content))
+            if (!extracted.IsSuccess || extracted.Data is null)
             {
-                return JsonSerializer.Serialize(new
-                {
-                    success = false,
-                    url,
-                    error = "Downloaded content is empty."
-                }, s_indentedJsonOptions);
+                var reason = extracted.Error?.Message ?? "the extractor reported no content";
+                return Failure(url, $"Failed to extract web page: {reason}");
             }
 
-            // Convert to markdown if HTML
-            var markdownContent = IsHtmlContent(content, contentType)
-                ? ConvertHtmlToBasicMarkdown(content, url, title)
-                : FormatAsMarkdown(content, url, title);
+            var page = extracted.Data;
+            var body = !string.IsNullOrWhiteSpace(page.MainContent) ? page.MainContent : page.Text;
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                return Failure(url, "Extracted content is empty.");
+            }
 
-            // Save to temp file
+            var effectiveTitle = title
+                ?? (string.IsNullOrWhiteSpace(page.Title) ? ExtractTitleFromUrl(uri) : page.Title);
+            var markdownContent = FormatAsMarkdown(body, url, effectiveTitle);
+
             tempFilePath = CreateTempMarkdownFile(url);
-            await File.WriteAllTextAsync(tempFilePath, markdownContent, cancellationToken);
+            await File.WriteAllTextAsync(tempFilePath, markdownContent, cancellationToken).ConfigureAwait(false);
 
             if (_logger is not null)
                 LogTempFileSaved(_logger, tempFilePath, markdownContent.Length);
 
-            // Memorize via IVault
-            await _vault.MemorizeAsync(tempFilePath, cancellationToken);
-
-            var effectiveTitle = title ?? ExtractTitleFromUrl(uri);
+            await _vault.MemorizeAsync(tempFilePath, cancellationToken).ConfigureAwait(false);
 
             var result = new
             {
@@ -123,101 +115,26 @@ public partial class FluxIndexWebMemorizeTool : IDisposable
                 LogWebMemorizeCompleted(_logger, url, markdownContent.Length);
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
         }
-        catch (HttpRequestException ex)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
-            if (_logger is not null)
-                LogWebMemorizeFailed(_logger, ex, url);
-            return JsonSerializer.Serialize(new
-            {
-                success = false,
-                url,
-                error = $"Failed to download web page: {ex.Message}"
-            }, s_indentedJsonOptions);
-        }
-        catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
-        {
-            if (_logger is not null)
-                LogWebMemorizeFailed(_logger, ex, url);
-            return JsonSerializer.Serialize(new
-            {
-                success = false,
-                url,
-                error = "Request timed out while downloading web page."
-            }, s_indentedJsonOptions);
+            throw;
         }
         catch (Exception ex)
         {
             if (_logger is not null)
                 LogWebMemorizeFailed(_logger, ex, url);
-            return JsonSerializer.Serialize(new
-            {
-                success = false,
-                url,
-                error = ex.Message
-            }, s_indentedJsonOptions);
+            return Failure(url, ex.Message);
         }
         finally
         {
-            // Cleanup temp file
             CleanupTempFile(tempFilePath);
         }
     }
 
-    #region Content Download & Conversion
+    private static string Failure(string url, string error) =>
+        JsonSerializer.Serialize(new { success = false, url, error }, s_indentedJsonOptions);
 
-    internal async Task<(string content, string? contentType)> DownloadContentAsync(
-        Uri uri,
-        CancellationToken cancellationToken)
-    {
-        using var response = await _httpClient.GetAsync(uri, cancellationToken);
-        response.EnsureSuccessStatusCode();
-
-        var content = await response.Content.ReadAsStringAsync(cancellationToken);
-        var contentType = response.Content.Headers.ContentType?.MediaType;
-
-        return (content, contentType);
-    }
-
-    internal static bool IsHtmlContent(string content, string? contentType)
-    {
-        if (contentType is not null &&
-            contentType.Contains("text/html", StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        // Heuristic: check if content starts with HTML-like tags
-        var trimmed = content.TrimStart();
-        return trimmed.StartsWith("<!DOCTYPE", StringComparison.OrdinalIgnoreCase) ||
-               trimmed.StartsWith("<html", StringComparison.OrdinalIgnoreCase);
-    }
-
-    /// <summary>
-    /// HTML 콘텐츠를 기본 마크다운으로 변환합니다.
-    /// script/style 태그 제거, HTML 엔티티 처리, 기본 텍스트 추출 수행.
-    /// 정교한 변환이 필요하면 WebFlux IContentExtractor 연동을 권장.
-    /// </summary>
-    internal static string ConvertHtmlToBasicMarkdown(string html, string url, string? title)
-    {
-        // Remove script and style blocks
-        var cleaned = RemoveHtmlBlocks(html, "script");
-        cleaned = RemoveHtmlBlocks(cleaned, "style");
-        cleaned = RemoveHtmlBlocks(cleaned, "nav");
-        cleaned = RemoveHtmlBlocks(cleaned, "footer");
-        cleaned = RemoveHtmlBlocks(cleaned, "header");
-
-        // Extract title from <title> tag if not provided
-        var extractedTitle = title ?? ExtractHtmlTitle(html);
-
-        // Basic HTML tag removal (preserving content between tags)
-        cleaned = StripHtmlTags(cleaned);
-
-        // Decode common HTML entities
-        cleaned = DecodeHtmlEntities(cleaned);
-
-        // Normalize whitespace
-        cleaned = NormalizeWhitespace(cleaned);
-
-        return FormatAsMarkdown(cleaned.Trim(), url, extractedTitle);
-    }
+    #region Formatting
 
     internal static string FormatAsMarkdown(string content, string url, string? title)
     {
@@ -246,7 +163,6 @@ public partial class FluxIndexWebMemorizeTool : IDisposable
         if (lastSegment is null)
             return uri.Host;
 
-        // Remove file extension and decode
         var decoded = Uri.UnescapeDataString(lastSegment);
         var withoutExt = Path.GetFileNameWithoutExtension(decoded);
         return string.IsNullOrWhiteSpace(withoutExt) ? uri.Host : withoutExt.Replace('-', ' ').Replace('_', ' ');
@@ -261,130 +177,7 @@ public partial class FluxIndexWebMemorizeTool : IDisposable
 
     #endregion
 
-    #region HTML Processing Helpers
-
-    internal static string RemoveHtmlBlocks(string html, string tagName)
-    {
-        var result = html;
-        while (true)
-        {
-            var startIdx = result.IndexOf($"<{tagName}", StringComparison.OrdinalIgnoreCase);
-            if (startIdx < 0) break;
-
-            var endTag = $"</{tagName}>";
-            var endIdx = result.IndexOf(endTag, startIdx, StringComparison.OrdinalIgnoreCase);
-            if (endIdx < 0)
-            {
-                // Self-closing or malformed - remove to end of tag
-                var closeIdx = result.IndexOf('>', startIdx);
-                if (closeIdx < 0) break;
-                result = string.Concat(result.AsSpan(0, startIdx), result.AsSpan(closeIdx + 1));
-            }
-            else
-            {
-                result = string.Concat(result.AsSpan(0, startIdx), result.AsSpan(endIdx + endTag.Length));
-            }
-        }
-        return result;
-    }
-
-    internal static string? ExtractHtmlTitle(string html)
-    {
-        var titleStart = html.IndexOf("<title", StringComparison.OrdinalIgnoreCase);
-        if (titleStart < 0) return null;
-
-        var contentStart = html.IndexOf('>', titleStart);
-        if (contentStart < 0) return null;
-        contentStart++;
-
-        var titleEnd = html.IndexOf("</title>", contentStart, StringComparison.OrdinalIgnoreCase);
-        if (titleEnd < 0) return null;
-
-        var title = html[contentStart..titleEnd].Trim();
-        return string.IsNullOrWhiteSpace(title) ? null : DecodeHtmlEntities(title);
-    }
-
-    internal static string StripHtmlTags(string html)
-    {
-        var result = new System.Text.StringBuilder(html.Length);
-        var inTag = false;
-
-        foreach (var ch in html)
-        {
-            if (ch == '<')
-            {
-                inTag = true;
-                continue;
-            }
-            if (ch == '>')
-            {
-                inTag = false;
-                result.Append(' '); // Replace tag boundary with space
-                continue;
-            }
-            if (!inTag)
-            {
-                result.Append(ch);
-            }
-        }
-
-        return result.ToString();
-    }
-
-    internal static string DecodeHtmlEntities(string text)
-    {
-        return text
-            .Replace("&amp;", "&")
-            .Replace("&lt;", "<")
-            .Replace("&gt;", ">")
-            .Replace("&quot;", "\"")
-            .Replace("&#39;", "'")
-            .Replace("&apos;", "'")
-            .Replace("&nbsp;", " ")
-            .Replace("&#x27;", "'")
-            .Replace("&#x2F;", "/");
-    }
-
-    internal static string NormalizeWhitespace(string text)
-    {
-        // Collapse multiple whitespace into single space, then restore paragraph breaks
-        var lines = text.Split('\n')
-            .Select(line => CollapseSpaces(line.Trim()))
-            .Where(line => !string.IsNullOrEmpty(line));
-
-        return string.Join("\n\n", lines);
-    }
-
-    private static string CollapseSpaces(string text)
-    {
-        if (string.IsNullOrEmpty(text)) return text;
-
-        var result = new System.Text.StringBuilder(text.Length);
-        var previousWasSpace = false;
-
-        foreach (var ch in text)
-        {
-            if (char.IsWhiteSpace(ch))
-            {
-                if (!previousWasSpace)
-                {
-                    result.Append(' ');
-                    previousWasSpace = true;
-                }
-            }
-            else
-            {
-                result.Append(ch);
-                previousWasSpace = false;
-            }
-        }
-
-        return result.ToString();
-    }
-
-    #endregion
-
-    #region Cleanup & Lifecycle
+    #region Cleanup
 
     private void CleanupTempFile(string? filePath)
     {
@@ -405,41 +198,6 @@ public partial class FluxIndexWebMemorizeTool : IDisposable
             if (_logger is not null)
                 LogTempFileCleanupFailed(_logger, ex, filePath);
         }
-    }
-
-    private static HttpClient CreateDefaultHttpClient()
-    {
-        var handler = new HttpClientHandler
-        {
-            AllowAutoRedirect = true,
-            MaxAutomaticRedirections = 5
-        };
-        var client = new HttpClient(handler)
-        {
-            Timeout = TimeSpan.FromSeconds(30)
-        };
-        client.DefaultRequestHeaders.UserAgent.Add(
-            new ProductInfoHeaderValue("IronHive-FluxRag", "1.0"));
-        client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("text/html"));
-        client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("text/plain", 0.9));
-        client.DefaultRequestHeaders.Accept.Add(
-            new MediaTypeWithQualityHeaderValue("*/*", 0.8));
-        return client;
-    }
-
-    public void Dispose()
-    {
-        if (_disposed) return;
-        _disposed = true;
-
-        if (_ownsHttpClient)
-        {
-            _httpClient.Dispose();
-        }
-
-        GC.SuppressFinalize(this);
     }
 
     #endregion

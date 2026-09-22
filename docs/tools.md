@@ -8,7 +8,7 @@
 | `FluxIndexMemorizeTool` | 파일을 지식 베이스에 저장 |
 | `FluxIndexUnmemorizeTool` | 지식 베이스에서 파일 삭제 |
 | `FluxIndexBatchMemorizeTool` | 여러 파일 또는 디렉토리를 일괄 저장 |
-| `FluxIndexWebMemorizeTool` | 웹 페이지 URL 콘텐츠를 저장 |
+| `FluxIndexWebMemorizeTool` | 웹 페이지 URL 콘텐츠를 WebFlux 로 추출해 저장 — 호스트가 `services.AddWebFlux()` 를 등록했을 때만 `GetFluxRagTools()` 에 포함 |
 | `FluxIndexStatusTool` | 지식 베이스 상태 조회 및 문서 목록 확인 |
 
 ## 등록
