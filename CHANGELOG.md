@@ -36,6 +36,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
   (`services.AddWebFlux()`).
 - Re-pinned sibling package(s) `FileFlux` 0.25.1 -> 0.26.0, `IronHive.Abstractions` 0.33.0 -> 0.33.1, `IronHive.Core` 0.33.0 -> 0.33.1, `IronHive.Plugins.MCP` 0.33.0 -> 0.33.1, `IronHive.Providers.OpenAI` 0.33.0 -> 0.33.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.50.1 -> 0.50.2, `FluxIndex.SDK` 0.50.1 -> 0.50.2 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.12 -> 0.33.13 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
 
 ## [0.7.0] - 2026-09-23
 
