@@ -10,6 +10,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `WebFlux` 0.13.0 -> 0.14.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
 - Re-pinned sibling package(s) `FileFlux` 0.25.0 -> 0.25.1, `FluxIndex.Core` 0.49.0 -> 0.50.0, `FluxIndex.SDK` 0.49.0 -> 0.50.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.50.0 -> 0.50.1, `FluxIndex.SDK` 0.50.0 -> 0.50.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.11 -> 0.33.12 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
 
 ### Removed
 - **Breaking**: `IronHiveImageToTextServiceForWebFlux` and its registration in `AddIronHiveWebFluxAdapters`. WebFlux
