@@ -7,6 +7,9 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ## [0.8.0] - 2026-09-23
 
 ### Fixed
+- **`GetWebLookupTools()` / `IToolCollection.AddWebLookupTools(provider)` attach `web_search` and `explore_site`.** Same
+  defect as below: the provider's `Type` was passed where the factory expects the instance, so both returned or attached
+  nothing. The resolved (singleton) provider is now bound directly.
 - **`GetFluxRagTools()` returns the tools.** It passed each tool's `Type` object where `FunctionToolFactory.CreateFrom`
   expects the tool instance, so the factory looked for `[FunctionTool]` methods on `System.Type` and the method always
   returned an empty list. Tools are now created with `CreateFrom<T>(provider)` and resolved from the provider on each

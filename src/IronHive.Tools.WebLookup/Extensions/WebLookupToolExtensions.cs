@@ -68,6 +68,9 @@ public static class WebLookupToolExtensions
         if (toolProvider is null)
             return [];
 
-        return FunctionToolFactory.CreateFrom(toolProvider.GetType());
+        // The provider is a singleton: bind the resolved instance. Before 0.8.0 this passed toolProvider.GetType() where
+        // the factory expects the instance, so it looked for tools on System.Type and returned none — web_search and
+        // explore_site were never attached.
+        return FunctionToolFactory.CreateFrom(toolProvider, provider);
     }
 }
