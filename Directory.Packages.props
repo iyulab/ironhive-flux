@@ -3,19 +3,19 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="IronHive">
-    <PackageVersion Include="IronHive.Abstractions" Version="0.33.1" />
-    <PackageVersion Include="IronHive.Core" Version="0.33.1" />
-    <PackageVersion Include="IronHive.Plugins.MCP" Version="0.33.1" />
-    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.33.1" />
+    <PackageVersion Include="IronHive.Abstractions" Version="0.34.0" />
+    <PackageVersion Include="IronHive.Core" Version="0.34.0" />
+    <PackageVersion Include="IronHive.Plugins.MCP" Version="0.34.0" />
+    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.34.0" />
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.27.1" />
+    <PackageVersion Include="FileFlux" Version="0.28.0" />
     <PackageVersion Include="WebFlux" Version="0.14.1" />
     <PackageVersion Include="WebLookup" Version="0.2.3" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.50.6" />
-    <PackageVersion Include="FluxFeed" Version="0.33.16" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.50.6" />
-    <PackageVersion Include="TokenMeter" Version="0.7.5" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.51.0" />
+    <PackageVersion Include="FluxFeed" Version="0.33.17" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.51.0" />
+    <PackageVersion Include="TokenMeter" Version="0.7.6" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
     <!-- Override transitive vulnerable dependency (GHSA-73j8-2gch-69rq) -->
