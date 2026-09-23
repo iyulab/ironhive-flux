@@ -4,6 +4,20 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.8.1] - 2026-09-23
+
+### Fixed
+- **The two `Flux.Abstractions.ITextCompletionService` adapters send every option IronHive can carry.**
+  `IronHiveTextCompletionServiceForWebFlux` and `…ForFluxIndex` sent only temperature and output budget: a caller's
+  `SystemPrompt`, `TopP`, `StopSequences`, `ResponseFormat` ("json") and `ResponseSchema` were dropped. They now reach the
+  request (`ResponseSchema` → `OutputFormat.For(schema)`, `ResponseFormat = "json"` → `OutputFormat.Json`).
+  `FrequencyPenalty` / `PresencePenalty` have no IronHive counterpart and are still not sent.
+- **`IronHiveTextCompletionServiceForWebFlux.CompleteJsonAsync` returns JSON.** It fell through to the interface
+  default — a plain completion returned as it came, code fence and surrounding prose included. It now does what the
+  FluxIndex adapter does: the JSON instruction in the system prompt (after the caller's own), temperature 0.1, and the
+  outermost JSON object or array extracted from the answer. Provider JSON mode is used only when the options ask for it,
+  since some providers' JSON mode admits only a top-level object.
+
 ## [0.8.0] - 2026-09-23
 
 ### Fixed

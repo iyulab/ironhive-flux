@@ -37,16 +37,11 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
             LogTextCompletionStarted(_logger, prompt.Length, options?.MaxTokens ?? 500);
         }
 
-        var request = new MessageGenerationRequest
-        {
-            Model = _options.TextCompletionModelId,
-            Messages = [Message.User(prompt)],
-            Temperature = options?.Temperature ?? 0.7f,
-            MaxTokens = options?.MaxTokens ?? 500
-        };
+        var request = FluxCompletionRequestMapper.Create(
+            _options.TextCompletionModelId, prompt, options, defaultTemperature: 0.7f, defaultMaxTokens: 500, json: false);
 
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
-        var result = ExtractTextFromResponse(response);
+        var result = FluxCompletionRequestMapper.ExtractText(response);
 
         if (_logger is not null)
         {
@@ -67,19 +62,11 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
             LogJsonCompletionStarted(_logger, prompt.Length);
         }
 
-        const string systemPrompt = "You are a JSON generator. Always respond with valid JSON only, no additional text or markdown.";
-
-        var request = new MessageGenerationRequest
-        {
-            Model = _options.TextCompletionModelId,
-            System = systemPrompt,
-            Messages = [Message.User(prompt)],
-            Temperature = 0.1f,
-            MaxTokens = options?.MaxTokens ?? 500
-        };
+        var request = FluxCompletionRequestMapper.Create(
+            _options.TextCompletionModelId, prompt, options, defaultTemperature: FluxCompletionRequestMapper.JsonTemperature, defaultMaxTokens: 500, json: true);
 
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
-        var result = ExtractJsonFromText(ExtractTextFromResponse(response));
+        var result = FluxCompletionRequestMapper.ExtractJson(FluxCompletionRequestMapper.ExtractText(response));
 
         if (_logger is not null)
         {
@@ -87,51 +74,6 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
         }
 
         return result;
-    }
-
-    private static string ExtractTextFromResponse(MessageResponse response)
-    {
-        var textContents = response.Message?.Content?
-            .OfType<TextMessageContent>()
-            .Select(c => c.Value);
-
-        return textContents != null ? string.Join("", textContents) : string.Empty;
-    }
-
-    private static string ExtractJsonFromText(string text)
-    {
-        text = text.Trim();
-        if (text.StartsWith("```json", StringComparison.Ordinal))
-        {
-            text = text[7..];
-        }
-        else if (text.StartsWith("```", StringComparison.Ordinal))
-        {
-            text = text[3..];
-        }
-
-        if (text.EndsWith("```", StringComparison.Ordinal))
-        {
-            text = text[..^3];
-        }
-
-        text = text.Trim();
-
-        var jsonStart = text.IndexOfAny(['{', '[']);
-        if (jsonStart < 0)
-        {
-            return text;
-        }
-
-        var jsonEndChar = text[jsonStart] == '{' ? '}' : ']';
-        var jsonEnd = text.LastIndexOf(jsonEndChar);
-
-        if (jsonEnd > jsonStart)
-        {
-            return text[jsonStart..(jsonEnd + 1)];
-        }
-
-        return text;
     }
 
     #region LoggerMessage

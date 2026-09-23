@@ -105,25 +105,29 @@ public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionSe
         return results;
     }
 
+    /// <inheritdoc />
+    /// <remarks>
+    /// Adds the JSON instruction to the system prompt, asks the provider for JSON output when the options do
+    /// (<see cref="TextCompletionOptions.ResponseSchema"/> or <see cref="TextCompletionOptions.ResponseFormat"/> "json"),
+    /// and strips a code fence or surrounding prose from the answer. Before, this fell through to the interface default,
+    /// which sent a plain completion and returned the text as it came.
+    /// </remarks>
+    public async Task<string> CompleteJsonAsync(
+        string prompt,
+        TextCompletionOptions? options = null,
+        CancellationToken cancellationToken = default)
+    {
+        var request = FluxCompletionRequestMapper.Create(
+            _options.TextCompletionModelId, prompt, options, _options.DefaultTemperature, _options.DefaultCompletionMaxTokens, json: true);
+        var response = await _generator.GenerateMessageAsync(request, cancellationToken);
+        return FluxCompletionRequestMapper.ExtractJson(FluxCompletionRequestMapper.ExtractText(response));
+    }
+
     private MessageGenerationRequest CreateRequest(string prompt, TextCompletionOptions? options)
-    {
-        return new MessageGenerationRequest
-        {
-            Model = _options.TextCompletionModelId,
-            Messages = [Message.User(prompt)],
-            Temperature = (float?)(options?.Temperature) ?? _options.DefaultTemperature,
-            MaxTokens = options?.MaxTokens ?? _options.DefaultCompletionMaxTokens
-        };
-    }
+        => FluxCompletionRequestMapper.Create(
+            _options.TextCompletionModelId, prompt, options, _options.DefaultTemperature, _options.DefaultCompletionMaxTokens, json: false);
 
-    private static string ExtractTextFromResponse(MessageResponse response)
-    {
-        var textContents = response.Message?.Content?
-            .OfType<TextMessageContent>()
-            .Select(c => c.Value);
-
-        return textContents != null ? string.Join("", textContents) : string.Empty;
-    }
+    private static string ExtractTextFromResponse(MessageResponse response) => FluxCompletionRequestMapper.ExtractText(response);
 
     #region LoggerMessage
 
