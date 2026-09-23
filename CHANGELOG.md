@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.8.5] - 2026-09-24
+
+### Changed
+- Re-pinned sibling package(s) `FluxFeed` 0.33.17 -> 0.33.18, `FluxIndex.Core` 0.51.0 -> 0.51.1, `FluxIndex.SDK` 0.51.0 -> 0.51.1, `TokenMeter` 0.7.6 -> 0.7.7, `WebFlux` 0.14.1 -> 0.15.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+
 ## [0.8.4] - 2026-09-24
 
 ### Changed

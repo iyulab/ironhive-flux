@@ -10,12 +10,12 @@
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
     <PackageVersion Include="FileFlux" Version="0.28.0" />
-    <PackageVersion Include="WebFlux" Version="0.14.1" />
+    <PackageVersion Include="WebFlux" Version="0.15.0" />
     <PackageVersion Include="WebLookup" Version="0.2.3" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.51.0" />
-    <PackageVersion Include="FluxFeed" Version="0.33.17" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.51.0" />
-    <PackageVersion Include="TokenMeter" Version="0.7.6" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.51.1" />
+    <PackageVersion Include="FluxFeed" Version="0.33.18" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.51.1" />
+    <PackageVersion Include="TokenMeter" Version="0.7.7" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
     <!-- Override transitive vulnerable dependency (GHSA-73j8-2gch-69rq) -->
