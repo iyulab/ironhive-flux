@@ -40,6 +40,7 @@ public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionSe
 
         var request = CreateRequest(prompt, options);
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
+        FluxCompletionRequestMapper.ThrowIfTruncated(request, response, options);
         var result = ExtractTextFromResponse(response);
 
         if (_logger is not null)
@@ -51,6 +52,10 @@ public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionSe
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// Streams text deltas as they arrive; <see cref="TextCompletionOptions.ThrowOnTruncation"/> is not applied here — the
+    /// text has already been handed out by the time the stream reports why it stopped.
+    /// </remarks>
     public async IAsyncEnumerable<string> CompleteStreamAsync(
         string prompt,
         TextCompletionOptions? options = null,
@@ -120,6 +125,7 @@ public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionSe
         var request = FluxCompletionRequestMapper.Create(
             _options.TextCompletionModelId, prompt, options, _options.DefaultTemperature, _options.DefaultCompletionMaxTokens, json: true);
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
+        FluxCompletionRequestMapper.ThrowIfTruncated(request, response, options);
         return FluxCompletionRequestMapper.ExtractJson(FluxCompletionRequestMapper.ExtractText(response));
     }
 

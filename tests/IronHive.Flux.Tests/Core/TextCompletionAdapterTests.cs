@@ -39,6 +39,61 @@ public class TextCompletionAdapterTests
 
     #region FluxIndex Adapter
 
+    public static TheoryData<string> AdapterPaths => ["fluxindex-text", "fluxindex-json", "webflux-text", "webflux-json"];
+
+    private Task<string> CompleteVia(string path, TextCompletionOptions options)
+    {
+        ITextCompletionService fluxIndex = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+        ITextCompletionService webFlux = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
+        var ct = TestContext.Current.CancellationToken;
+        return path switch
+        {
+            "fluxindex-text" => fluxIndex.CompleteAsync("p", options, ct),
+            "fluxindex-json" => fluxIndex.CompleteJsonAsync("p", options, ct),
+            "webflux-text" => webFlux.CompleteAsync("p", options, ct),
+            _ => webFlux.CompleteJsonAsync("p", options, ct),
+        };
+    }
+
+    private void SetupTruncatedResponse() =>
+        _mockGenerator
+            .GenerateMessageAsync(Arg.Any<MessageGenerationRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new MessageResponse { Message = Message.Assistant("{\"cut\": \"o"), DoneReason = MessageDoneReason.MaxTokens });
+
+    [Theory]
+    [MemberData(nameof(AdapterPaths))]
+    public async Task ThrowOnTruncation_ReportsAResponseCutAtTheOutputBudget(string path)
+    {
+        SetupTruncatedResponse();
+
+        var act = () => CompleteVia(path, new TextCompletionOptions { MaxTokens = 12, ThrowOnTruncation = true });
+
+        (await act.Should().ThrowAsync<TextCompletionTruncatedException>()).Which.MaxTokens.Should().Be(12);
+    }
+
+    [Theory]
+    [MemberData(nameof(AdapterPaths))]
+    public async Task WithoutThrowOnTruncation_ACutResponseIsReturnedAsBefore(string path)
+    {
+        SetupTruncatedResponse();
+
+        var act = () => CompleteVia(path, new TextCompletionOptions { MaxTokens = 12 });
+
+        await act.Should().NotThrowAsync();
+    }
+
+    [Fact]
+    public async Task ThrowOnTruncation_DoesNotFireOnAFinishedResponse()
+    {
+        _mockGenerator
+            .GenerateMessageAsync(Arg.Any<MessageGenerationRequest>(), Arg.Any<CancellationToken>())
+            .Returns(new MessageResponse { Message = Message.Assistant("done"), DoneReason = MessageDoneReason.EndTurn });
+
+        var result = await CompleteVia("fluxindex-text", new TextCompletionOptions { ThrowOnTruncation = true });
+
+        result.Should().Be("done");
+    }
+
     [Fact]
     public async Task FluxIndex_CompleteAsync_ReturnsText()
     {

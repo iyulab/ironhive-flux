@@ -6,8 +6,16 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [0.8.3] - 2026-09-23
 
+### Added
+- **The FluxIndex and WebFlux completion adapters report truncation when asked.** With
+  `TextCompletionOptions.ThrowOnTruncation` set, `CompleteAsync` and `CompleteJsonAsync` throw
+  `Flux.Abstractions.TextCompletionTruncatedException` (carrying the request's `MaxTokens`) when IronHive reports that the
+  model stopped at the output limit, instead of returning the cut-off text. Without the option nothing changes. This is
+  what makes WebFlux 0.14.1's rewrite protection and FluxIndex's FileFlux adapter reach an IronHive model. The WebFlux
+  adapter's streaming path does not apply it (the text is already out when the stream says why it stopped).
+
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.26.1 -> 0.27.1, `FluxFeed` 0.33.14 -> 0.33.16, `FluxIndex.Core` 0.50.4 -> 0.50.6, `FluxIndex.SDK` 0.50.4 -> 0.50.6, `WebFlux` 0.14.0 -> 0.14.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.26.1 -> 0.27.1, `FluxFeed` 0.33.14 -> 0.33.16, `FluxIndex.Core` 0.50.4 -> 0.50.6, `FluxIndex.SDK` 0.50.4 -> 0.50.6, `WebFlux` 0.14.0 -> 0.14.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
 
 ## [0.8.2] - 2026-09-23
 

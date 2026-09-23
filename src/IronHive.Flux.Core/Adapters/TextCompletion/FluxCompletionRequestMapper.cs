@@ -61,6 +61,18 @@ internal static class FluxCompletionRequestMapper
         return null;
     }
 
+    /// <summary>
+    /// Throws <see cref="TextCompletionTruncatedException"/> when the caller set
+    /// <see cref="TextCompletionOptions.ThrowOnTruncation"/> and the model stopped at the request's output budget.
+    /// </summary>
+    public static void ThrowIfTruncated(MessageGenerationRequest request, MessageResponse response, TextCompletionOptions? options)
+    {
+        if (options?.ThrowOnTruncation == true && response.DoneReason == MessageDoneReason.MaxTokens)
+            throw request.MaxTokens is { } maxTokens
+                ? new TextCompletionTruncatedException(maxTokens)
+                : new TextCompletionTruncatedException();
+    }
+
     public static string ExtractText(MessageResponse response)
     {
         var textContents = response.Message?.Content?

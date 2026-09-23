@@ -41,6 +41,7 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
             _options.TextCompletionModelId, prompt, options, defaultTemperature: 0.7f, defaultMaxTokens: 500, json: false);
 
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
+        FluxCompletionRequestMapper.ThrowIfTruncated(request, response, options);
         var result = FluxCompletionRequestMapper.ExtractText(response);
 
         if (_logger is not null)
@@ -66,6 +67,7 @@ public partial class IronHiveTextCompletionServiceForFluxIndex : ITextCompletion
             _options.TextCompletionModelId, prompt, options, defaultTemperature: FluxCompletionRequestMapper.JsonTemperature, defaultMaxTokens: 500, json: true);
 
         var response = await _generator.GenerateMessageAsync(request, cancellationToken);
+        FluxCompletionRequestMapper.ThrowIfTruncated(request, response, options);
         var result = FluxCompletionRequestMapper.ExtractJson(FluxCompletionRequestMapper.ExtractText(response));
 
         if (_logger is not null)
