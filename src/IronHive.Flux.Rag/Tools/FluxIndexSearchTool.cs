@@ -12,8 +12,9 @@ using System.Text.Json;
 namespace IronHive.Flux.Rag.Tools;
 
 /// <summary>
-/// FluxIndex 검색 도구 - IVault를 통한 벡터+키워드 하이브리드 검색
-/// 선택적 IReranker 지원으로 검색 품질 향상
+/// FluxIndex 검색 도구 - IVault를 통한 벡터+키워드 하이브리드 검색.
+/// IReranker 가 등록돼 있으면 vault 에 리랭크를 요청한다(<see cref="VaultSearchOptions.UseReranker"/>) —
+/// 리랭크는 vault 가 소유하고 이 도구는 다시 구현하지 않는다.
 /// </summary>
 public partial class FluxIndexSearchTool
 {
@@ -64,12 +65,14 @@ public partial class FluxIndexSearchTool
             var topK = maxResults ?? _options.DefaultMaxResults;
             var min = minScore ?? _options.DefaultMinScore;
 
-            // Over-fetch when reranking is enabled for better recall
-            var fetchK = _reranker is not null ? topK * 2 : topK;
-
+            // The vault reranks (and over-fetches the candidate pool) when a reranker is registered; the tool
+            // only asks for it. MinScore filters the retrieval score before reranking, as it always did here.
+            var rerank = _reranker is not null;
             var searchOptions = new VaultSearchOptions
             {
-                TopK = fetchK,
+                TopK = topK,
+                UseReranker = rerank,
+                RerankCandidateCount = rerank ? topK * 2 : null,
                 MinScore = min,
                 IncludeContent = true,
                 IncludeMetadata = true,
@@ -93,17 +96,6 @@ public partial class FluxIndexSearchTool
                 .Select(MapToSearchResult)
                 .ToList();
 
-            // Apply reranking if available
-            if (_reranker is not null && searchResults.Count > 0)
-            {
-                searchResults = await RerankResultsAsync(query, searchResults, topK, cancellationToken);
-            }
-            else if (searchResults.Count > topK)
-            {
-                // Trim to topK when reranker is not available
-                searchResults = searchResults.Take(topK).ToList();
-            }
-
             // RAG 컨텍스트 빌드
             var contextOptions = new RagContextOptions
             {
@@ -124,7 +116,7 @@ public partial class FluxIndexSearchTool
                 averageScore = context.AverageRelevance,
                 tokenCount = context.TokenCount,
                 searchDuration = vaultResult.Duration.TotalMilliseconds,
-                reranked = _reranker is not null,
+                reranked = rerank,
                 context = context.ContextText,
                 sources = context.Sources.Select(s => new
                 {
@@ -202,50 +194,6 @@ public partial class FluxIndexSearchTool
 
     #endregion
 
-    #region Reranking
-
-    private async Task<List<RagSearchResult>> RerankResultsAsync(
-        string query,
-        List<RagSearchResult> items,
-        int topK,
-        CancellationToken cancellationToken)
-    {
-        if (_logger is not null)
-            LogReranking(_logger, items.Count, topK);
-
-        var candidates = items.Select((item, index) => new RetrievalCandidate
-        {
-            Id = $"{item.DocumentId}:{item.ChunkIndex}",
-            Content = item.Content,
-            InitialScore = item.Score,
-            InitialRank = index + 1
-        });
-
-        var rerankOptions = new RerankOptions { TopN = topK };
-        var reranked = await _reranker!.RerankAsync(query, candidates, rerankOptions, cancellationToken);
-
-        // Map back to RagSearchResult using the original items
-        var itemLookup = items.ToDictionary(
-            item => $"{item.DocumentId}:{item.ChunkIndex}",
-            item => item);
-
-        var result = new List<RagSearchResult>();
-        foreach (var r in reranked)
-        {
-            if (itemLookup.TryGetValue(r.Id, out var original))
-            {
-                result.Add(original with { Score = r.RerankScore });
-            }
-        }
-
-        if (_logger is not null)
-            LogRerankCompleted(_logger, items.Count, result.Count);
-
-        return result;
-    }
-
-    #endregion
-
     #region LoggerMessage
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Knowledge base search started - Query: {Query}")]
@@ -256,12 +204,6 @@ public partial class FluxIndexSearchTool
 
     [LoggerMessage(Level = LogLevel.Error, Message = "Knowledge base search failed - Query: {Query}")]
     private static partial void LogSearchFailed(ILogger logger, Exception ex, string Query);
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Reranking {CandidateCount} candidates → topK={TopK}")]
-    private static partial void LogReranking(ILogger logger, int CandidateCount, int TopK);
-
-    [LoggerMessage(Level = LogLevel.Debug, Message = "Reranking completed - {InputCount} → {OutputCount} results")]
-    private static partial void LogRerankCompleted(ILogger logger, int InputCount, int OutputCount);
 
     #endregion
 }

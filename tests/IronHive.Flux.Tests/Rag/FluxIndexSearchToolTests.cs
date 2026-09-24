@@ -440,111 +440,65 @@ public class FluxIndexSearchToolTests
     #region Reranking
 
     [Fact]
-    public async Task SearchAsync_WithReranker_ShouldOverFetchByDoubleTopK()
+    public async Task SearchAsync_WithReranker_AsksTheVaultToRerank_AndNeverRerunsItItself()
     {
+        // The vault owns reranking (FluxFeed VaultSearchOptions.UseReranker); the tool used to repeat it with its own
+        // over-fetch, id mapping and score swap. It now only asks, with the same candidate pool it used (topK * 2).
         var reranker = Substitute.For<IReranker>();
         var options = Options.Create(new FluxRagToolsOptions { DefaultMinScore = 0.0f });
         var builder = new RagContextBuilder(options);
-        var toolWithReranker = new FluxIndexSearchTool(
-            _vault, options, builder, reranker);
-
+        var toolWithReranker = new FluxIndexSearchTool(_vault, options, builder, reranker);
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("test"));
 
-        reranker.RerankAsync(
-            Arg.Any<string>(),
-            Arg.Any<IEnumerable<RetrievalCandidate>>(),
-            Arg.Any<RerankOptions>(),
-            Arg.Any<CancellationToken>())
-            .Returns(Enumerable.Empty<RerankResult>());
+        var json = await toolWithReranker.SearchAsync("test", maxResults: 5, cancellationToken: TestContext.Current.CancellationToken);
 
-        await toolWithReranker.SearchAsync("test", maxResults: 5, cancellationToken: TestContext.Current.CancellationToken);
-
-        // Should fetch TopK=10 (5*2) when reranker is present
         await _vault.Received(1).SearchAsync(
             "test",
-            Arg.Is<VaultSearchOptions>(o => o.TopK == 10),
+            Arg.Is<VaultSearchOptions>(o => o.UseReranker && o.TopK == 5 && o.RerankCandidateCount == 10),
             Arg.Any<CancellationToken>());
+        await reranker.DidNotReceiveWithAnyArgs().RerankAsync(default!, default!, default!, TestContext.Current.CancellationToken);
+        json.Should().Contain("\"reranked\": true");
     }
 
     [Fact]
-    public async Task SearchAsync_WithReranker_ShouldRerankResults()
-    {
-        var reranker = Substitute.For<IReranker>();
-        var options = Options.Create(new FluxRagToolsOptions { DefaultMinScore = 0.0f });
-        var builder = new RagContextBuilder(options);
-        var toolWithReranker = new FluxIndexSearchTool(
-            _vault, options, builder, reranker);
-
-        var searchResult = new VaultSearchResult
-        {
-            Query = "test",
-            Items =
-            [
-                new VaultSearchResultItem
-                {
-                    Entry = null!,
-                    SourcePath = "/docs/a.md",
-                    FileName = "a.md",
-                    Content = "Content A",
-                    Score = 0.9f,
-                    ChunkIndex = 0
-                },
-                new VaultSearchResultItem
-                {
-                    Entry = null!,
-                    SourcePath = "/docs/b.md",
-                    FileName = "b.md",
-                    Content = "Content B",
-                    Score = 0.7f,
-                    ChunkIndex = 0
-                }
-            ],
-            TotalCount = 2,
-            IsSuccess = true
-        };
-
-        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
-            .Returns(searchResult);
-
-        // Reranker returns B higher than A
-        reranker.RerankAsync(
-            Arg.Any<string>(),
-            Arg.Any<IEnumerable<RetrievalCandidate>>(),
-            Arg.Any<RerankOptions>(),
-            Arg.Any<CancellationToken>())
-            .Returns(new List<RerankResult>
-            {
-                new() { Id = "/docs/b.md:0", Content = "Content B", RerankScore = 0.95f, NewRank = 1 },
-                new() { Id = "/docs/a.md:0", Content = "Content A", RerankScore = 0.80f, NewRank = 2 }
-            });
-
-        var resultJson = await toolWithReranker.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
-
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeTrue();
-        result.RootElement.GetProperty("reranked").GetBoolean().Should().BeTrue();
-
-        var sources = result.RootElement.GetProperty("sources");
-        var sourcesList = sources.EnumerateArray().ToList();
-        // After reranking, B should be first (higher rerank score)
-        sourcesList[0].GetProperty("documentId").GetString().Should().Be("/docs/b.md");
-        sourcesList[0].GetProperty("score").GetSingle().Should().BeApproximately(0.95f, 0.01f);
-    }
-
-    [Fact]
-    public async Task SearchAsync_WithoutReranker_ShouldNotOverFetch()
+    public async Task SearchAsync_WithoutReranker_DoesNotAskForReranking()
     {
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(VaultSearchResult.Empty("test"));
 
         await _tool.SearchAsync("test", maxResults: 5, cancellationToken: TestContext.Current.CancellationToken);
 
-        // Without reranker, TopK should be exactly 5
         await _vault.Received(1).SearchAsync(
             "test",
-            Arg.Is<VaultSearchOptions>(o => o.TopK == 5),
+            Arg.Is<VaultSearchOptions>(o => !o.UseReranker && o.TopK == 5 && o.RerankCandidateCount == null),
             Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task SearchAsync_WithReranker_KeepsTheVaultsRerankedOrderAndScores()
+    {
+        var reranker = Substitute.For<IReranker>();
+        var options = Options.Create(new FluxRagToolsOptions { DefaultMinScore = 0.0f });
+        var builder = new RagContextBuilder(options);
+        var toolWithReranker = new FluxIndexSearchTool(_vault, options, builder, reranker);
+        _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
+            .Returns(new VaultSearchResult
+            {
+                Query = "test",
+                Items =
+                [
+                    new VaultSearchResultItem { Entry = null!, SourcePath = "/docs/b.md", FileName = "b.md", Content = "Content B", Score = 0.95f, RetrievalScore = 0.7f, ChunkIndex = 0 },
+                    new VaultSearchResultItem { Entry = null!, SourcePath = "/docs/a.md", FileName = "a.md", Content = "Content A", Score = 0.80f, RetrievalScore = 0.9f, ChunkIndex = 0 }
+                ],
+                TotalCount = 2,
+                IsSuccess = true
+            });
+
+        var json = await toolWithReranker.SearchAsync("test", maxResults: 5, cancellationToken: TestContext.Current.CancellationToken);
+
+        json.IndexOf("/docs/b.md", StringComparison.Ordinal).Should().BeLessThan(json.IndexOf("/docs/a.md", StringComparison.Ordinal));
+        json.Should().Contain("0.95");
     }
 
     #endregion
