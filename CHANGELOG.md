@@ -8,6 +8,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ### Changed
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.51.4 -> 0.52.0, `FluxIndex.SDK` 0.51.4 -> 0.52.0, `IronHive.Abstractions` 0.38.0 -> 0.39.0, `IronHive.Core` 0.38.0 -> 0.39.0, `IronHive.Plugins.MCP` 0.38.0 -> 0.39.0, `IronHive.Providers.OpenAI` 0.38.0 -> 0.39.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. The embedding adapters read `EmbeddingResponse.Results` (IronHive 0.39.0 changed `EmbedBatchAsync`'s return type); their behaviour is unchanged.
+- Re-pinned sibling package(s) `FileFlux` 0.29.0 -> 0.29.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
 
 ## [0.8.9] - 2026-09-25
 
