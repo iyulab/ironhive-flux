@@ -65,12 +65,12 @@ public partial class IronHiveEmbeddingServiceForFileFlux : FileFlux.IEmbeddingSe
         if (_logger is not null)
             LogBatchEmbeddingStarted(_logger, purpose, textList.Count);
 
-        var results = await _generator.EmbedBatchAsync(
+        var response = await _generator.EmbedBatchAsync(
             _options.EmbeddingModelId,
             textList,
             cancellationToken);
 
-        var embeddings = results.Select(r => r.Embedding ?? Array.Empty<float>()).ToList();
+        var embeddings = response.Results.Select(r => r.Embedding ?? Array.Empty<float>()).ToList();
         if (_logger is not null)
             LogBatchEmbeddingCompleted(_logger, embeddings.Count);
         return embeddings;

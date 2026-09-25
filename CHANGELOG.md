@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.8.10] - 2026-09-25
+
+### Changed
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.51.4 -> 0.52.0, `FluxIndex.SDK` 0.51.4 -> 0.52.0, `IronHive.Abstractions` 0.38.0 -> 0.39.0, `IronHive.Core` 0.38.0 -> 0.39.0, `IronHive.Plugins.MCP` 0.38.0 -> 0.39.0, `IronHive.Providers.OpenAI` 0.38.0 -> 0.39.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. The embedding adapters read `EmbeddingResponse.Results` (IronHive 0.39.0 changed `EmbedBatchAsync`'s return type); their behaviour is unchanged.
+
 ## [0.8.9] - 2026-09-25
 
 ### Changed

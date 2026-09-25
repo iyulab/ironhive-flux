@@ -194,11 +194,11 @@ public class EmbeddingAdapterTests
         var embedding2 = new float[] { 4f, 5f, 6f };
         _mockGenerator
             .EmbedBatchAsync(Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-            .Returns(new List<EmbeddingResult>
+            .Returns(new EmbeddingResponse { Results = new List<EmbeddingResult>
             {
                 new() { Embedding = embedding1, Index = 0 },
                 new() { Embedding = embedding2, Index = 1 }
-            });
+            } });
 
         var adapter = new IronHiveEmbeddingServiceForFileFlux(_mockGenerator, _options);
 
@@ -217,10 +217,10 @@ public class EmbeddingAdapterTests
         // Arrange
         _mockGenerator
             .EmbedBatchAsync(Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-            .Returns(new List<EmbeddingResult>
+            .Returns(new EmbeddingResponse { Results = new List<EmbeddingResult>
             {
                 new() { Embedding = null, Index = 0 }
-            });
+            } });
 
         var adapter = new IronHiveEmbeddingServiceForFileFlux(_mockGenerator, _options);
 
@@ -291,11 +291,11 @@ public class EmbeddingAdapterTests
         var embedding2 = new float[] { 3f, 4f };
         _mockGenerator
             .EmbedBatchAsync(Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-            .Returns(new List<EmbeddingResult>
+            .Returns(new EmbeddingResponse { Results = new List<EmbeddingResult>
             {
                 new() { Embedding = embedding1, Index = 0 },
                 new() { Embedding = embedding2, Index = 1 }
-            });
+            } });
 
         var adapter = new IronHiveEmbeddingServiceForWebFlux(_mockGenerator, _options);
 
@@ -368,11 +368,11 @@ public class EmbeddingAdapterTests
         var embedding2 = new float[] { 4f, 5f, 6f };
         _mockGenerator
             .EmbedBatchAsync(Arg.Any<string>(), Arg.Any<IEnumerable<string>>(), Arg.Any<CancellationToken>())
-            .Returns(new List<EmbeddingResult>
+            .Returns(new EmbeddingResponse { Results = new List<EmbeddingResult>
             {
                 new() { Embedding = embedding1, Index = 0 },
                 new() { Embedding = embedding2, Index = 1 }
-            });
+            } });
 
         var adapter = new IronHiveEmbeddingServiceForFluxIndex(_mockGenerator, _options);
 
