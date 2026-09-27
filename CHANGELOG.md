@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.8.18] - 2026-09-27
+
+### Changed
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.41.0 -> 0.42.0, `IronHive.Core` 0.41.0 -> 0.42.0, `IronHive.Plugins.MCP` 0.41.0 -> 0.42.0, `IronHive.Providers.OpenAI` 0.41.0 -> 0.42.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+
 ## [0.8.17] - 2026-09-27
 
 ### Changed
