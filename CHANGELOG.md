@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.8.28] - 2026-09-28
+
+### Changed
+- Re-pinned sibling package(s) `FileFlux` 0.31.10 -> 0.31.11, `FluxFeed` 0.36.1 -> 0.36.2, `FluxIndex.Core` 0.59.1 -> 0.59.2, `FluxIndex.SDK` 0.59.1 -> 0.59.2 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+
 ## [0.8.27] - 2026-09-28
 
 ### Changed
