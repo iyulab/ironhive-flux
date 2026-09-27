@@ -9,12 +9,12 @@
     <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.42.0" />
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.31.8" />
+    <PackageVersion Include="FileFlux" Version="0.31.10" />
     <PackageVersion Include="WebFlux" Version="0.16.0" />
     <PackageVersion Include="WebLookup" Version="0.2.3" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.59.0" />
-    <PackageVersion Include="FluxFeed" Version="0.36.0" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.59.0" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.59.1" />
+    <PackageVersion Include="FluxFeed" Version="0.36.1" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.59.1" />
     <PackageVersion Include="TokenMeter" Version="0.7.8" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
