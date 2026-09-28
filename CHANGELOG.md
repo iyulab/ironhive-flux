@@ -6,6 +6,9 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [0.9.0] - Unreleased
 
+### Changed
+- Re-pinned sibling package(s) `FluxFeed` 0.36.3 -> 0.37.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
+
 ### Fixed
 - **RAG and web-lookup tools stop at their configured timeout.** `FluxRagToolsOptions.ToolTimeout` and
   `WebLookupToolOptions.ToolTimeout` (seconds, default 60) were accepted and never applied, so the tools ran without a limit.
