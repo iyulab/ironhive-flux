@@ -39,7 +39,6 @@ public class OptionsReachabilityRosterTests
         [
             "MaxResults", "MetadataFilter", "Query",
         ],
-        ["IronHive.Tools.WebLookup.WebLookupToolOptions"] = ["ToolTimeout"],
     };
 
     [Fact]

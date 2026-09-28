@@ -31,7 +31,8 @@ public class FluxRagToolsOptions
     public string ChunkSeparator { get; set; } = "\n\n---\n\n";
 
     /// <summary>
-    /// 도구 실행 타임아웃 (초)
+    /// 도구 실행 타임아웃 (초). <c>GetFluxRagTools()</c> 가 만든 각 도구의 <c>FunctionTool.Timeout</c> 이 되어, 넘기면 실행이
+    /// 취소되고 타임아웃 실패가 모델에 돌아간다. 0 이하는 무제한. 기본값: 60.
     /// </summary>
     public int ToolTimeout { get; set; } = 60;
 }

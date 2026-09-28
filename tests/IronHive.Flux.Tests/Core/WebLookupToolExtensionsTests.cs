@@ -31,6 +31,18 @@ public class WebLookupToolExtensionsTests
     }
 
     [Fact]
+    public void GetWebLookupTools_CarryTheConfiguredToolTimeout()
+    {
+        // WebLookupToolOptions.ToolTimeout was accepted and never applied: the tools ran without a limit.
+        var services = new ServiceCollection();
+        services.AddWebLookup(_ => { });
+        services.AddWebLookupTools(o => o.ToolTimeout = 7);
+        using var provider = services.BuildServiceProvider();
+
+        provider.GetWebLookupTools().Cast<FunctionTool>().Should().OnlyContain(t => t.Timeout == 7);
+    }
+
+    [Fact]
     public void AddWebLookupTools_OnAToolCollection_AttachesThem()
     {
         using var provider = BuildProvider(withTools: true);

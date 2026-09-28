@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.9.0] - Unreleased
+
+### Fixed
+- **RAG and web-lookup tools stop at their configured timeout.** `FluxRagToolsOptions.ToolTimeout` and
+  `WebLookupToolOptions.ToolTimeout` (seconds, default 60) were accepted and never applied, so the tools ran without a limit.
+  `GetFluxRagTools()` and `GetWebLookupTools()` now set each tool's `FunctionTool.Timeout`; a call that runs longer is
+  cancelled and the model gets a timeout failure. **Behaviour change**: a call that used to run past 60 s now fails. Raise
+  the option (or set 0 for no limit) if your tools legitimately take longer.
+
 ## [0.8.32] - 2026-09-28
 
 ### Changed

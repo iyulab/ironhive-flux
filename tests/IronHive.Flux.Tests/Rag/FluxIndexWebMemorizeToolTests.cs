@@ -150,6 +150,21 @@ public class FluxIndexWebMemorizeToolTests
     }
 
     [Fact]
+    public void GetFluxRagTools_CarryTheConfiguredToolTimeout()
+    {
+        // FluxRagToolsOptions.ToolTimeout was copied into IOptions and never applied: the tools ran without a limit.
+        var services = new ServiceCollection();
+        services.AddScoped(_ => _vault);
+        services.AddFluxRagTools(o => o.ToolTimeout = 9);
+        using var provider = services.BuildServiceProvider();
+
+        var tools = provider.GetFluxRagTools().ToList();
+
+        tools.Should().NotBeEmpty();
+        tools.Cast<IronHive.Core.Tools.FunctionTool>().Should().OnlyContain(t => t.Timeout == 9);
+    }
+
+    [Fact]
     public void GetFluxRagTools_WithWebFlux_OffersTheWebTool()
     {
         var services = new ServiceCollection();

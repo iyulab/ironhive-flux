@@ -71,6 +71,12 @@ public static class WebLookupToolExtensions
         // The provider is a singleton: bind the resolved instance. Before 0.8.0 this passed toolProvider.GetType() where
         // the factory expects the instance, so it looked for tools on System.Type and returned none — web_search and
         // explore_site were never attached.
-        return FunctionToolFactory.CreateFrom(toolProvider, provider);
+        // WebLookupToolOptions.ToolTimeout bounds each call; the tool runner stops it and reports the timeout.
+        var timeout = (provider.GetService<WebLookupToolOptions>() ?? new WebLookupToolOptions()).ToolTimeout;
+        var tools = FunctionToolFactory.CreateFrom(toolProvider, provider).ToList();
+        foreach (var tool in tools.OfType<FunctionTool>())
+            tool.Timeout = timeout;
+
+        return tools;
     }
 }

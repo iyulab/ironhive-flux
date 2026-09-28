@@ -115,6 +115,11 @@ public static class ServiceCollectionExtensions
         if (Registered(typeof(FluxIndexStatusTool)))
             tools.AddRange(FunctionToolFactory.CreateFrom<FluxIndexStatusTool>(provider));
 
+        // FluxRagToolsOptions.ToolTimeout bounds each call; the tool runner stops it and reports the timeout.
+        var timeout = provider.GetService<Microsoft.Extensions.Options.IOptions<FluxRagToolsOptions>>()?.Value.ToolTimeout ?? new FluxRagToolsOptions().ToolTimeout;
+        foreach (var tool in tools.OfType<FunctionTool>())
+            tool.Timeout = timeout;
+
         return tools;
     }
 }
