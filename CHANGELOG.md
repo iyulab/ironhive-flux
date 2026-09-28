@@ -4,6 +4,23 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.10.0] - Unreleased
+
+### Changed
+- **Breaking — `RagContextOptions` members are nullable, and an unset one follows `FluxRagToolsOptions`.** `MaxResults`,
+  `Strategy`, `MinScore` and `MaxTokens` carried their own defaults (5, "hybrid", 0.5, 4000), so passing any options object
+  replaced the configured `DefaultMinScore`, `DefaultSearchStrategy` and `MaxContextTokens`. Leave a member unset to get the
+  configured value; set it to override.
+
+### Fixed
+- **`RagContextOptions.MaxResults` caps the sources a context carries** (highest scores first). It was never read. When
+  unset, `FluxRagToolsOptions.DefaultMaxResults` applies.
+- **The packages carry the README**, so their nuget.org page shows it.
+
+### Removed
+- **Breaking — `RagContextOptions.Query` and `MetadataFilter`.** The context builder works on results already retrieved and
+  read neither. Delete the assignments; filter by metadata in the search that produces the results.
+
 ## [0.9.1] - 2026-09-28
 
 ### Changed
