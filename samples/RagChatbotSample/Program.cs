@@ -80,7 +80,6 @@ var sampleResults = new List<RagSearchResult>
 
 var context = contextBuilder.BuildContext(sampleResults, new RagContextOptions
 {
-    Query = "IronHive와 Flux의 관계는?",
     MaxResults = 5,
     MinScore = 0.5f
 });

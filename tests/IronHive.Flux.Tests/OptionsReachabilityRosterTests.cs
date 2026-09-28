@@ -33,13 +33,7 @@ public class OptionsReachabilityRosterTests
     /// reports options that a sibling assembly reads as unread - that mistake inflated an early baseline elsewhere threefold.
     /// </para>
     /// </summary>
-    private static readonly Dictionary<string, string[]> KnownUnread = new()
-    {
-        ["IronHive.Flux.Rag.Context.RagContextOptions"] =
-        [
-            "MaxResults", "MetadataFilter", "Query",
-        ],
-    };
+    private static readonly Dictionary<string, string[]> KnownUnread = new();
 
     [Fact]
     public void EveryPublicOption_IsRead() =>

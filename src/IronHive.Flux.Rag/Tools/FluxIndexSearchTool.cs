@@ -99,7 +99,6 @@ public partial class FluxIndexSearchTool
             // RAG 컨텍스트 빌드
             var contextOptions = new RagContextOptions
             {
-                Query = query,
                 MaxResults = topK,
                 MinScore = min,
                 MaxTokens = _options.MaxContextTokens

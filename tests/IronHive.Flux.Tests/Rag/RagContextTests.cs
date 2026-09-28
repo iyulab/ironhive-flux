@@ -113,37 +113,31 @@ public class RagContextTests
     #region RagContextOptions — Defaults & Properties
 
     [Fact]
-    public void RagContextOptions_Defaults_ShouldBeCorrect()
+    public void RagContextOptions_Defaults_AreUnset_SoTheToolsOptionsApply()
     {
-        var options = new RagContextOptions { Query = "test" };
+        var options = new RagContextOptions();
 
-        options.MaxResults.Should().Be(5);
-        options.Strategy.Should().Be("hybrid");
-        options.MinScore.Should().Be(0.5f);
-        options.MaxTokens.Should().Be(4000);
-        options.MetadataFilter.Should().BeNull();
+        options.MaxResults.Should().BeNull();
+        options.Strategy.Should().BeNull();
+        options.MinScore.Should().BeNull();
+        options.MaxTokens.Should().BeNull();
     }
 
     [Fact]
     public void RagContextOptions_AllProperties_ShouldBeSettable()
     {
-        var filter = new Dictionary<string, object> { ["category"] = "tech" };
         var options = new RagContextOptions
         {
-            Query = "search query",
             MaxResults = 10,
             Strategy = "vector",
             MinScore = 0.8f,
-            MaxTokens = 8000,
-            MetadataFilter = filter
+            MaxTokens = 8000
         };
 
-        options.Query.Should().Be("search query");
         options.MaxResults.Should().Be(10);
         options.Strategy.Should().Be("vector");
         options.MinScore.Should().Be(0.8f);
         options.MaxTokens.Should().Be(8000);
-        options.MetadataFilter.Should().ContainKey("category");
     }
 
     #endregion

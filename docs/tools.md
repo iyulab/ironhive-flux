@@ -31,7 +31,6 @@ var contextBuilder = provider.GetRequiredService<RagContextBuilder>();
 
 var context = contextBuilder.BuildContext(searchResults, new RagContextOptions
 {
-    Query = "검색 쿼리",
     MaxResults = 5,
     MinScore = 0.5f
 });

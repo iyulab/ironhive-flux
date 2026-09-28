@@ -100,37 +100,29 @@ public record RagSearchResult
 }
 
 /// <summary>
-/// RAG 컨텍스트 빌더 옵션
+/// RAG 컨텍스트 빌더 옵션 — 이미 검색된 결과에서 무엇을 컨텍스트에 실을지 정한다. 비워 둔(null) 항목은
+/// <see cref="Options.FluxRagToolsOptions"/> 의 기본값을 따른다.
 /// </summary>
 public class RagContextOptions
 {
     /// <summary>
-    /// 검색 쿼리
+    /// 컨텍스트에 싣는 최대 결과 수(점수순). null 이면 <see cref="Options.FluxRagToolsOptions.DefaultMaxResults"/>.
     /// </summary>
-    public required string Query { get; set; }
+    public int? MaxResults { get; set; }
 
     /// <summary>
-    /// 최대 결과 수
+    /// 결과를 낸 검색 전략(vector, hybrid, keyword) — <see cref="RagContext.SearchStrategy"/> 에 기록된다.
+    /// null 이면 <see cref="Options.FluxRagToolsOptions.DefaultSearchStrategy"/>.
     /// </summary>
-    public int MaxResults { get; set; } = 5;
+    public string? Strategy { get; set; }
 
     /// <summary>
-    /// 검색 전략 (vector, hybrid, keyword)
+    /// 최소 관련성 점수 — 이보다 낮은 결과는 싣지 않는다. null 이면 <see cref="Options.FluxRagToolsOptions.DefaultMinScore"/>.
     /// </summary>
-    public string Strategy { get; set; } = "hybrid";
+    public float? MinScore { get; set; }
 
     /// <summary>
-    /// 최소 관련성 점수
+    /// 최대 컨텍스트 토큰 수. null 이면 <see cref="Options.FluxRagToolsOptions.MaxContextTokens"/>.
     /// </summary>
-    public float MinScore { get; set; } = 0.5f;
-
-    /// <summary>
-    /// 최대 컨텍스트 토큰 수
-    /// </summary>
-    public int MaxTokens { get; set; } = 4000;
-
-    /// <summary>
-    /// 메타데이터 필터
-    /// </summary>
-    public IDictionary<string, object>? MetadataFilter { get; set; }
+    public int? MaxTokens { get; set; }
 }

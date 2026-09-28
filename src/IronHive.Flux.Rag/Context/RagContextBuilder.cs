@@ -36,11 +36,15 @@ public partial class RagContextBuilder
 
         var maxTokens = options?.MaxTokens ?? _options.MaxContextTokens;
         var minScore = options?.MinScore ?? _options.DefaultMinScore;
+        var maxResults = options?.MaxResults ?? _options.DefaultMaxResults;
+        if (maxResults <= 0)
+            throw new ArgumentOutOfRangeException(nameof(options), maxResults, "MaxResults must be positive.");
 
         // 점수 필터링 및 정렬
         var filteredResults = results
             .Where(r => r.Score >= minScore)
             .OrderByDescending(r => r.Score)
+            .Take(maxResults)
             .ToList();
 
         // 토큰 제한에 맞춰 결과 선택

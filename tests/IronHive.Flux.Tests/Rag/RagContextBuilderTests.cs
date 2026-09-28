@@ -74,7 +74,7 @@ public class RagContextBuilderTests
             CreateResult("2", "content", 0.7f),
             CreateResult("3", "content", 0.6f)
         };
-        var options = new RagContextOptions { Query = "test", MinScore = 0.8f };
+        var options = new RagContextOptions { MinScore = 0.8f };
 
         var context = builder.BuildContext(results, options);
 
@@ -252,6 +252,57 @@ public class RagContextBuilderTests
     }
 
     [Fact]
+    public void BuildContext_MaxResultsCapsTheSources_HighestScoresFirst()
+    {
+        var builder = new RagContextBuilder(CreateOptions());
+        var results = new[]
+        {
+            CreateResult("1", "content", 0.6f),
+            CreateResult("2", "content", 0.9f),
+            CreateResult("3", "content", 0.8f)
+        };
+
+        var context = builder.BuildContext(results, new RagContextOptions { MaxResults = 2 });
+
+        context.Sources.Select(s => s.DocumentId).Should().Equal("2", "3");
+    }
+
+    [Fact]
+    public void BuildContext_WithoutMaxResults_UsesTheToolsDefault()
+    {
+        var builder = new RagContextBuilder(CreateOptions(new FluxRagToolsOptions { DefaultMaxResults = 1 }));
+        var results = new[] { CreateResult("1", "content", 0.9f), CreateResult("2", "content", 0.8f) };
+
+        builder.BuildContext(results).Sources.Should().ContainSingle();
+    }
+
+    /// <summary>
+    /// An option left unset follows FluxRagToolsOptions. Before, RagContextOptions carried its own defaults, so passing
+    /// any options object (here only MaxTokens) replaced a configured DefaultMinScore of 0.8 with 0.5.
+    /// </summary>
+    [Fact]
+    public void BuildContext_UnsetOptionsFollowTheToolsOptions()
+    {
+        var builder = new RagContextBuilder(CreateOptions(new FluxRagToolsOptions { DefaultMinScore = 0.8f, DefaultSearchStrategy = "keyword" }));
+        var results = new[] { CreateResult("1", "content", 0.9f), CreateResult("2", "content", 0.6f) };
+
+        var context = builder.BuildContext(results, new RagContextOptions { MaxTokens = 1000 });
+
+        context.Sources.Should().ContainSingle().Which.DocumentId.Should().Be("1");
+        context.SearchStrategy.Should().Be("keyword");
+    }
+
+    [Fact]
+    public void BuildContext_RejectsANonPositiveMaxResults()
+    {
+        var builder = new RagContextBuilder(CreateOptions());
+
+        var act = () => builder.BuildContext([CreateResult("1", "content", 0.9f)], new RagContextOptions { MaxResults = 0 });
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
+    }
+
+    [Fact]
     public void BuildContext_ShouldSetSearchStrategy()
     {
         var builder = new RagContextBuilder(CreateOptions());
@@ -259,7 +310,7 @@ public class RagContextBuilderTests
         {
             CreateResult("1", "content", 0.9f)
         };
-        var options = new RagContextOptions { Query = "test", Strategy = "vector" };
+        var options = new RagContextOptions { Strategy = "vector" };
 
         var context = builder.BuildContext(results, options);
 
