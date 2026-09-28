@@ -11,6 +11,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
   `Strategy`, `MinScore` and `MaxTokens` carried their own defaults (5, "hybrid", 0.5, 4000), so passing any options object
   replaced the configured `DefaultMinScore`, `DefaultSearchStrategy` and `MaxContextTokens`. Leave a member unset to get the
   configured value; set it to override.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.44.0 -> 0.45.0, `IronHive.Core` 0.44.0 -> 0.45.0, `IronHive.Plugins.MCP` 0.44.0 -> 0.45.0, `IronHive.Providers.OpenAI` 0.44.0 -> 0.45.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
 
 ### Fixed
 - **`RagContextOptions.MaxResults` caps the sources a context carries** (highest scores first). It was never read. When
