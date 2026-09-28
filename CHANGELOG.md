@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
-## [0.10.0] - Unreleased
+## [0.10.0] - 2026-09-28
 
 ### Changed
 - **Breaking — `RagContextOptions` members are nullable, and an unset one follows `FluxRagToolsOptions`.** `MaxResults`,
