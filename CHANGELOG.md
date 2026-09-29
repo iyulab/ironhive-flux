@@ -9,6 +9,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ### Changed
 - Re-pinned sibling package(s) `FileFlux` 0.33.3 -> 0.33.4, `WebFlux` 0.17.0 -> 0.18.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.61.3 -> 0.61.4, `FluxIndex.SDK` 0.61.3 -> 0.61.4 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.9 -> 0.37.10 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
 
 ## [0.10.8] - 2026-09-29
 
