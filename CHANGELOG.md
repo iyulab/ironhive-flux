@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.10.8] - 2026-09-29
+
+### Changed
+- Re-pinned sibling package(s) `FileFlux` 0.33.2 -> 0.33.3, `FluxFeed` 0.37.8 -> 0.37.9, `FluxIndex.Core` 0.61.2 -> 0.61.3, `FluxIndex.SDK` 0.61.2 -> 0.61.3, `IronHive.Abstractions` 0.45.0 -> 0.45.1, `IronHive.Core` 0.45.0 -> 0.45.1, `IronHive.Plugins.MCP` 0.45.0 -> 0.45.1, `IronHive.Providers.OpenAI` 0.45.0 -> 0.45.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+
 ## [0.10.7] - 2026-09-29
 
 ### Changed
