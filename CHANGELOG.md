@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.10.9] - 2026-09-29
+
+### Changed
+- Re-pinned sibling package(s) `FileFlux` 0.33.3 -> 0.33.4, `WebFlux` 0.17.0 -> 0.18.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+
 ## [0.10.8] - 2026-09-29
 
 ### Changed

@@ -9,8 +9,8 @@
     <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.45.1" />
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.33.3" />
-    <PackageVersion Include="WebFlux" Version="0.17.0" />
+    <PackageVersion Include="FileFlux" Version="0.33.4" />
+    <PackageVersion Include="WebFlux" Version="0.18.0" />
     <PackageVersion Include="WebLookup" Version="0.2.3" />
     <PackageVersion Include="FluxIndex.Core" Version="0.61.3" />
     <PackageVersion Include="FluxFeed" Version="0.37.9" />
