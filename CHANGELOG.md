@@ -10,6 +10,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.45.1 -> 0.45.2, `IronHive.Core` 0.45.1 -> 0.45.2, `IronHive.Plugins.MCP` 0.45.1 -> 0.45.2, `IronHive.Providers.OpenAI` 0.45.1 -> 0.45.2, `WebFlux` 0.19.1 -> 0.19.2, `WebLookup` 0.2.4 -> 0.3.0. No source changes.
 - Re-pinned sibling package(s) `FileFlux` 0.33.6 -> 0.33.7.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.62.1 -> 0.63.0, `FluxIndex.SDK` 0.62.1 -> 0.63.0.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.14 -> 0.38.0.
 
 ## [0.10.13] - 2026-09-30
 
