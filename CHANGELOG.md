@@ -15,69 +15,69 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ## [0.10.13] - 2026-09-30
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.37.13 -> 0.37.14, `FluxIndex.Core` 0.62.0 -> 0.62.1, `FluxIndex.SDK` 0.62.0 -> 0.62.1, `WebLookup` 0.2.3 -> 0.2.4 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.13 -> 0.37.14, `FluxIndex.Core` 0.62.0 -> 0.62.1, `FluxIndex.SDK` 0.62.0 -> 0.62.1, `WebLookup` 0.2.3 -> 0.2.4 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.12] - 2026-09-30
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.33.5 -> 0.33.6, `FluxFeed` 0.37.12 -> 0.37.13, `FluxIndex.Core` 0.61.6 -> 0.62.0, `FluxIndex.SDK` 0.61.6 -> 0.62.0, `WebFlux` 0.19.0 -> 0.19.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.33.5 -> 0.33.6, `FluxFeed` 0.37.12 -> 0.37.13, `FluxIndex.Core` 0.61.6 -> 0.62.0, `FluxIndex.SDK` 0.61.6 -> 0.62.0, `WebFlux` 0.19.0 -> 0.19.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.11] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.37.11 -> 0.37.12, `FluxIndex.Core` 0.61.5 -> 0.61.6, `FluxIndex.SDK` 0.61.5 -> 0.61.6, `WebFlux` 0.18.0 -> 0.19.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.11 -> 0.37.12, `FluxIndex.Core` 0.61.5 -> 0.61.6, `FluxIndex.SDK` 0.61.5 -> 0.61.6, `WebFlux` 0.18.0 -> 0.19.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.10] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.33.4 -> 0.33.5, `FluxFeed` 0.37.10 -> 0.37.11, `FluxIndex.Core` 0.61.4 -> 0.61.5, `FluxIndex.SDK` 0.61.4 -> 0.61.5 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.33.4 -> 0.33.5, `FluxFeed` 0.37.10 -> 0.37.11, `FluxIndex.Core` 0.61.4 -> 0.61.5, `FluxIndex.SDK` 0.61.4 -> 0.61.5 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.9] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.33.3 -> 0.33.4, `WebFlux` 0.17.0 -> 0.18.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `FluxIndex.Core` 0.61.3 -> 0.61.4, `FluxIndex.SDK` 0.61.3 -> 0.61.4 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
-- Re-pinned sibling package(s) `FluxFeed` 0.37.9 -> 0.37.10 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
+- Re-pinned sibling package(s) `FileFlux` 0.33.3 -> 0.33.4, `WebFlux` 0.17.0 -> 0.18.0 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.61.3 -> 0.61.4, `FluxIndex.SDK` 0.61.3 -> 0.61.4 — re-consumption of already-consumed iyulab packages.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.9 -> 0.37.10 — re-consumption of already-consumed iyulab packages.
 
 ## [0.10.8] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.33.2 -> 0.33.3, `FluxFeed` 0.37.8 -> 0.37.9, `FluxIndex.Core` 0.61.2 -> 0.61.3, `FluxIndex.SDK` 0.61.2 -> 0.61.3, `IronHive.Abstractions` 0.45.0 -> 0.45.1, `IronHive.Core` 0.45.0 -> 0.45.1, `IronHive.Plugins.MCP` 0.45.0 -> 0.45.1, `IronHive.Providers.OpenAI` 0.45.0 -> 0.45.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.33.2 -> 0.33.3, `FluxFeed` 0.37.8 -> 0.37.9, `FluxIndex.Core` 0.61.2 -> 0.61.3, `FluxIndex.SDK` 0.61.2 -> 0.61.3, `IronHive.Abstractions` 0.45.0 -> 0.45.1, `IronHive.Core` 0.45.0 -> 0.45.1, `IronHive.Plugins.MCP` 0.45.0 -> 0.45.1, `IronHive.Providers.OpenAI` 0.45.0 -> 0.45.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.7] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.37.7 -> 0.37.8, `FluxIndex.Core` 0.61.1 -> 0.61.2, `FluxIndex.SDK` 0.61.1 -> 0.61.2, `WebFlux` 0.16.0 -> 0.17.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.7 -> 0.37.8, `FluxIndex.Core` 0.61.1 -> 0.61.2, `FluxIndex.SDK` 0.61.1 -> 0.61.2, `WebFlux` 0.16.0 -> 0.17.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.6] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.33.1 -> 0.33.2, `FluxFeed` 0.37.6 -> 0.37.7, `FluxIndex.Core` 0.61.0 -> 0.61.1, `FluxIndex.SDK` 0.61.0 -> 0.61.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.33.1 -> 0.33.2, `FluxFeed` 0.37.6 -> 0.37.7, `FluxIndex.Core` 0.61.0 -> 0.61.1, `FluxIndex.SDK` 0.61.0 -> 0.61.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.5] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.33.0 -> 0.33.1, `FluxFeed` 0.37.5 -> 0.37.6, `FluxIndex.Core` 0.60.1 -> 0.61.0, `FluxIndex.SDK` 0.60.1 -> 0.61.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.33.0 -> 0.33.1, `FluxFeed` 0.37.5 -> 0.37.6, `FluxIndex.Core` 0.60.1 -> 0.61.0, `FluxIndex.SDK` 0.60.1 -> 0.61.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.4] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.32.0 -> 0.33.0, `FluxFeed` 0.37.4 -> 0.37.5, `FluxIndex.Core` 0.60.0 -> 0.60.1, `FluxIndex.SDK` 0.60.0 -> 0.60.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.32.0 -> 0.33.0, `FluxFeed` 0.37.4 -> 0.37.5, `FluxIndex.Core` 0.60.0 -> 0.60.1, `FluxIndex.SDK` 0.60.0 -> 0.60.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.3] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.37.3 -> 0.37.4, `FluxIndex.Core` 0.59.5 -> 0.60.0, `FluxIndex.SDK` 0.59.5 -> 0.60.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.3 -> 0.37.4, `FluxIndex.Core` 0.59.5 -> 0.60.0, `FluxIndex.SDK` 0.59.5 -> 0.60.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.2] - 2026-09-29
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.37.2 -> 0.37.3 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.37.2 -> 0.37.3 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.1] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.13 -> 0.32.0, `FluxFeed` 0.37.1 -> 0.37.2, `FluxIndex.Core` 0.59.4 -> 0.59.5, `FluxIndex.SDK` 0.59.4 -> 0.59.5 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.13 -> 0.32.0, `FluxFeed` 0.37.1 -> 0.37.2, `FluxIndex.Core` 0.59.4 -> 0.59.5, `FluxIndex.SDK` 0.59.4 -> 0.59.5 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.10.0] - 2026-09-28
 
@@ -86,7 +86,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
   `Strategy`, `MinScore` and `MaxTokens` carried their own defaults (5, "hybrid", 0.5, 4000), so passing any options object
   replaced the configured `DefaultMinScore`, `DefaultSearchStrategy` and `MaxContextTokens`. Leave a member unset to get the
   configured value; set it to override.
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.44.0 -> 0.45.0, `IronHive.Core` 0.44.0 -> 0.45.0, `IronHive.Plugins.MCP` 0.44.0 -> 0.45.0, `IronHive.Providers.OpenAI` 0.44.0 -> 0.45.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.44.0 -> 0.45.0, `IronHive.Core` 0.44.0 -> 0.45.0, `IronHive.Plugins.MCP` 0.44.0 -> 0.45.0, `IronHive.Providers.OpenAI` 0.44.0 -> 0.45.0 — re-consumption of already-consumed iyulab packages.
 
 ### Fixed
 - **`RagContextOptions.MaxResults` caps the sources a context carries** (highest scores first). It was never read. When
@@ -100,12 +100,12 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ## [0.9.1] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.12 -> 0.31.13, `FluxFeed` 0.37.0 -> 0.37.1, `FluxIndex.Core` 0.59.3 -> 0.59.4, `FluxIndex.SDK` 0.59.3 -> 0.59.4 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.12 -> 0.31.13, `FluxFeed` 0.37.0 -> 0.37.1, `FluxIndex.Core` 0.59.3 -> 0.59.4, `FluxIndex.SDK` 0.59.3 -> 0.59.4 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.9.0] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.36.3 -> 0.37.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
+- Re-pinned sibling package(s) `FluxFeed` 0.36.3 -> 0.37.0 — re-consumption of already-consumed iyulab packages.
 
 ### Fixed
 - **RAG and web-lookup tools stop at their configured timeout.** `FluxRagToolsOptions.ToolTimeout` and
@@ -117,129 +117,129 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ## [0.8.32] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.43.1 -> 0.44.0, `IronHive.Core` 0.43.1 -> 0.44.0, `IronHive.Plugins.MCP` 0.43.1 -> 0.44.0, `IronHive.Providers.OpenAI` 0.43.1 -> 0.44.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.43.1 -> 0.44.0, `IronHive.Core` 0.43.1 -> 0.44.0, `IronHive.Plugins.MCP` 0.43.1 -> 0.44.0, `IronHive.Providers.OpenAI` 0.43.1 -> 0.44.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.31] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.43.0 -> 0.43.1, `IronHive.Core` 0.43.0 -> 0.43.1, `IronHive.Plugins.MCP` 0.43.0 -> 0.43.1, `IronHive.Providers.OpenAI` 0.43.0 -> 0.43.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.43.0 -> 0.43.1, `IronHive.Core` 0.43.0 -> 0.43.1, `IronHive.Plugins.MCP` 0.43.0 -> 0.43.1, `IronHive.Providers.OpenAI` 0.43.0 -> 0.43.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.30] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.11 -> 0.31.12, `FluxFeed` 0.36.2 -> 0.36.3, `FluxIndex.Core` 0.59.2 -> 0.59.3, `FluxIndex.SDK` 0.59.2 -> 0.59.3 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.11 -> 0.31.12, `FluxFeed` 0.36.2 -> 0.36.3, `FluxIndex.Core` 0.59.2 -> 0.59.3, `FluxIndex.SDK` 0.59.2 -> 0.59.3 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.29] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.42.0 -> 0.43.0, `IronHive.Core` 0.42.0 -> 0.43.0, `IronHive.Plugins.MCP` 0.42.0 -> 0.43.0, `IronHive.Providers.OpenAI` 0.42.0 -> 0.43.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.42.0 -> 0.43.0, `IronHive.Core` 0.42.0 -> 0.43.0, `IronHive.Plugins.MCP` 0.42.0 -> 0.43.0, `IronHive.Providers.OpenAI` 0.42.0 -> 0.43.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.28] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.10 -> 0.31.11, `FluxFeed` 0.36.1 -> 0.36.2, `FluxIndex.Core` 0.59.1 -> 0.59.2, `FluxIndex.SDK` 0.59.1 -> 0.59.2 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.10 -> 0.31.11, `FluxFeed` 0.36.1 -> 0.36.2, `FluxIndex.Core` 0.59.1 -> 0.59.2, `FluxIndex.SDK` 0.59.1 -> 0.59.2 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.27] - 2026-09-28
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.8 -> 0.31.10, `FluxFeed` 0.36.0 -> 0.36.1, `FluxIndex.Core` 0.59.0 -> 0.59.1, `FluxIndex.SDK` 0.59.0 -> 0.59.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.8 -> 0.31.10, `FluxFeed` 0.36.0 -> 0.36.1, `FluxIndex.Core` 0.59.0 -> 0.59.1, `FluxIndex.SDK` 0.59.0 -> 0.59.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.26] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.35.11 -> 0.36.0, `FluxIndex.Core` 0.58.0 -> 0.59.0, `FluxIndex.SDK` 0.58.0 -> 0.59.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.35.11 -> 0.36.0, `FluxIndex.Core` 0.58.0 -> 0.59.0, `FluxIndex.SDK` 0.58.0 -> 0.59.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.25] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.35.10 -> 0.35.11, `FluxIndex.Core` 0.57.1 -> 0.58.0, `FluxIndex.SDK` 0.57.1 -> 0.58.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.35.10 -> 0.35.11, `FluxIndex.Core` 0.57.1 -> 0.58.0, `FluxIndex.SDK` 0.57.1 -> 0.58.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.24] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.7 -> 0.31.8, `FluxFeed` 0.35.9 -> 0.35.10, `FluxIndex.Core` 0.57.0 -> 0.57.1, `FluxIndex.SDK` 0.57.0 -> 0.57.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.7 -> 0.31.8, `FluxFeed` 0.35.9 -> 0.35.10, `FluxIndex.Core` 0.57.0 -> 0.57.1, `FluxIndex.SDK` 0.57.0 -> 0.57.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.23] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.35.8 -> 0.35.9, `FluxIndex.Core` 0.56.0 -> 0.57.0, `FluxIndex.SDK` 0.56.0 -> 0.57.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.35.8 -> 0.35.9, `FluxIndex.Core` 0.56.0 -> 0.57.0, `FluxIndex.SDK` 0.56.0 -> 0.57.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.22] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.35.7 -> 0.35.8, `FluxIndex.Core` 0.55.4 -> 0.56.0, `FluxIndex.SDK` 0.55.4 -> 0.56.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.35.7 -> 0.35.8, `FluxIndex.Core` 0.55.4 -> 0.56.0, `FluxIndex.SDK` 0.55.4 -> 0.56.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.21] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.6 -> 0.31.7, `FluxFeed` 0.35.6 -> 0.35.7, `FluxIndex.Core` 0.55.3 -> 0.55.4, `FluxIndex.SDK` 0.55.3 -> 0.55.4 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.6 -> 0.31.7, `FluxFeed` 0.35.6 -> 0.35.7, `FluxIndex.Core` 0.55.3 -> 0.55.4, `FluxIndex.SDK` 0.55.3 -> 0.55.4 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.20] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.5 -> 0.31.6, `FluxFeed` 0.35.5 -> 0.35.6, `FluxIndex.Core` 0.55.2 -> 0.55.3, `FluxIndex.SDK` 0.55.2 -> 0.55.3 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.5 -> 0.31.6, `FluxFeed` 0.35.5 -> 0.35.6, `FluxIndex.Core` 0.55.2 -> 0.55.3, `FluxIndex.SDK` 0.55.2 -> 0.55.3 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.19] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.4 -> 0.31.5, `FluxFeed` 0.35.4 -> 0.35.5, `FluxIndex.Core` 0.55.1 -> 0.55.2, `FluxIndex.SDK` 0.55.1 -> 0.55.2 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.4 -> 0.31.5, `FluxFeed` 0.35.4 -> 0.35.5, `FluxIndex.Core` 0.55.1 -> 0.55.2, `FluxIndex.SDK` 0.55.1 -> 0.55.2 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.18] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.41.0 -> 0.42.0, `IronHive.Core` 0.41.0 -> 0.42.0, `IronHive.Plugins.MCP` 0.41.0 -> 0.42.0, `IronHive.Providers.OpenAI` 0.41.0 -> 0.42.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.41.0 -> 0.42.0, `IronHive.Core` 0.41.0 -> 0.42.0, `IronHive.Plugins.MCP` 0.41.0 -> 0.42.0, `IronHive.Providers.OpenAI` 0.41.0 -> 0.42.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.17] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.3 -> 0.31.4, `FluxFeed` 0.35.3 -> 0.35.4, `FluxIndex.Core` 0.55.0 -> 0.55.1, `FluxIndex.SDK` 0.55.0 -> 0.55.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.3 -> 0.31.4, `FluxFeed` 0.35.3 -> 0.35.4, `FluxIndex.Core` 0.55.0 -> 0.55.1, `FluxIndex.SDK` 0.55.0 -> 0.55.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.16] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.35.2 -> 0.35.3, `FluxIndex.Core` 0.54.1 -> 0.55.0, `FluxIndex.SDK` 0.54.1 -> 0.55.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.35.2 -> 0.35.3, `FluxIndex.Core` 0.54.1 -> 0.55.0, `FluxIndex.SDK` 0.54.1 -> 0.55.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.15] - 2026-09-27
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.1 -> 0.31.3, `FluxFeed` 0.35.1 -> 0.35.2, `FluxIndex.Core` 0.53.1 -> 0.54.1, `FluxIndex.SDK` 0.53.1 -> 0.54.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.1 -> 0.31.3, `FluxFeed` 0.35.1 -> 0.35.2, `FluxIndex.Core` 0.53.1 -> 0.54.1, `FluxIndex.SDK` 0.53.1 -> 0.54.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.14] - 2026-09-26
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.31.0 -> 0.31.1, `FluxFeed` 0.35.0 -> 0.35.1, `FluxIndex.Core` 0.53.0 -> 0.53.1, `FluxIndex.SDK` 0.53.0 -> 0.53.1, `IronHive.Abstractions` 0.40.0 -> 0.41.0, `IronHive.Core` 0.40.0 -> 0.41.0, `IronHive.Plugins.MCP` 0.40.0 -> 0.41.0, `IronHive.Providers.OpenAI` 0.40.0 -> 0.41.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.31.0 -> 0.31.1, `FluxFeed` 0.35.0 -> 0.35.1, `FluxIndex.Core` 0.53.0 -> 0.53.1, `FluxIndex.SDK` 0.53.0 -> 0.53.1, `IronHive.Abstractions` 0.40.0 -> 0.41.0, `IronHive.Core` 0.40.0 -> 0.41.0, `IronHive.Plugins.MCP` 0.40.0 -> 0.41.0, `IronHive.Providers.OpenAI` 0.40.0 -> 0.41.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.13] - 2026-09-26
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.30.0 -> 0.31.0, `FluxFeed` 0.34.5 -> 0.35.0, `FluxIndex.Core` 0.52.3 -> 0.53.0, `FluxIndex.SDK` 0.52.3 -> 0.53.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.30.0 -> 0.31.0, `FluxFeed` 0.34.5 -> 0.35.0, `FluxIndex.Core` 0.52.3 -> 0.53.0, `FluxIndex.SDK` 0.52.3 -> 0.53.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.12] - 2026-09-26
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.29.2 -> 0.30.0, `FluxFeed` 0.34.4 -> 0.34.5, `FluxIndex.Core` 0.52.1 -> 0.52.3, `FluxIndex.SDK` 0.52.1 -> 0.52.3 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.29.2 -> 0.30.0, `FluxFeed` 0.34.4 -> 0.34.5, `FluxIndex.Core` 0.52.1 -> 0.52.3, `FluxIndex.SDK` 0.52.1 -> 0.52.3 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.11] - 2026-09-26
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.29.1 -> 0.29.2, `FluxFeed` 0.34.3 -> 0.34.4, `FluxIndex.Core` 0.52.0 -> 0.52.1, `FluxIndex.SDK` 0.52.0 -> 0.52.1, `IronHive.Abstractions` 0.39.0 -> 0.40.0, `IronHive.Core` 0.39.0 -> 0.40.0, `IronHive.Plugins.MCP` 0.39.0 -> 0.40.0, `IronHive.Providers.OpenAI` 0.39.0 -> 0.40.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.29.1 -> 0.29.2, `FluxFeed` 0.34.3 -> 0.34.4, `FluxIndex.Core` 0.52.0 -> 0.52.1, `FluxIndex.SDK` 0.52.0 -> 0.52.1, `IronHive.Abstractions` 0.39.0 -> 0.40.0, `IronHive.Core` 0.39.0 -> 0.40.0, `IronHive.Plugins.MCP` 0.39.0 -> 0.40.0, `IronHive.Providers.OpenAI` 0.39.0 -> 0.40.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.10] - 2026-09-25
 
 ### Changed
-- Re-pinned sibling package(s) `FluxIndex.Core` 0.51.4 -> 0.52.0, `FluxIndex.SDK` 0.51.4 -> 0.52.0, `IronHive.Abstractions` 0.38.0 -> 0.39.0, `IronHive.Core` 0.38.0 -> 0.39.0, `IronHive.Plugins.MCP` 0.38.0 -> 0.39.0, `IronHive.Providers.OpenAI` 0.38.0 -> 0.39.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. The embedding adapters read `EmbeddingResponse.Results` (IronHive 0.39.0 changed `EmbedBatchAsync`'s return type); their behaviour is unchanged.
-- Re-pinned sibling package(s) `FileFlux` 0.29.0 -> 0.29.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
-- Re-pinned sibling package(s) `FluxFeed` 0.34.2 -> 0.34.3 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.51.4 -> 0.52.0, `FluxIndex.SDK` 0.51.4 -> 0.52.0, `IronHive.Abstractions` 0.38.0 -> 0.39.0, `IronHive.Core` 0.38.0 -> 0.39.0, `IronHive.Plugins.MCP` 0.38.0 -> 0.39.0, `IronHive.Providers.OpenAI` 0.38.0 -> 0.39.0 — re-consumption of already-consumed iyulab packages. The embedding adapters read `EmbeddingResponse.Results` (IronHive 0.39.0 changed `EmbedBatchAsync`'s return type); their behaviour is unchanged.
+- Re-pinned sibling package(s) `FileFlux` 0.29.0 -> 0.29.1 — re-consumption of already-consumed iyulab packages.
+- Re-pinned sibling package(s) `FluxFeed` 0.34.2 -> 0.34.3 — re-consumption of already-consumed iyulab packages.
 
 ## [0.8.9] - 2026-09-25
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.28.2 -> 0.29.0, `FluxFeed` 0.34.1 -> 0.34.2, `FluxIndex.Core` 0.51.3 -> 0.51.4, `FluxIndex.SDK` 0.51.3 -> 0.51.4, `IronHive.Abstractions` 0.37.0 -> 0.38.0, `IronHive.Core` 0.37.0 -> 0.38.0, `IronHive.Plugins.MCP` 0.37.0 -> 0.38.0, `IronHive.Providers.OpenAI` 0.37.0 -> 0.38.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.28.2 -> 0.29.0, `FluxFeed` 0.34.1 -> 0.34.2, `FluxIndex.Core` 0.51.3 -> 0.51.4, `FluxIndex.SDK` 0.51.3 -> 0.51.4, `IronHive.Abstractions` 0.37.0 -> 0.38.0, `IronHive.Core` 0.37.0 -> 0.38.0, `IronHive.Plugins.MCP` 0.37.0 -> 0.38.0, `IronHive.Providers.OpenAI` 0.37.0 -> 0.38.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.8] - 2026-09-24
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.36.0 -> 0.37.0, `IronHive.Core` 0.36.0 -> 0.37.0, `IronHive.Plugins.MCP` 0.36.0 -> 0.37.0, `IronHive.Providers.OpenAI` 0.36.0 -> 0.37.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.36.0 -> 0.37.0, `IronHive.Core` 0.36.0 -> 0.37.0, `IronHive.Plugins.MCP` 0.36.0 -> 0.37.0, `IronHive.Providers.OpenAI` 0.36.0 -> 0.37.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.7] - 2026-09-24
 
@@ -247,22 +247,22 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - **`search_knowledge_base` asks the vault to rerank instead of reranking itself.** With an `IReranker` registered
   the tool sets `VaultSearchOptions.UseReranker` (candidate pool `topK * 2`, as before) and FluxFeed reranks; the
   results, their order and scores are the same, and `MinScore` still filters the retrieval score before reranking.
-- Re-pinned sibling package(s) `FileFlux` 0.28.1 -> 0.28.2, `FluxFeed` 0.33.19 -> 0.34.1, `FluxIndex.Core` 0.51.2 -> 0.51.3, `FluxIndex.SDK` 0.51.2 -> 0.51.3, `IronHive.Abstractions` 0.35.0 -> 0.36.0, `IronHive.Core` 0.35.0 -> 0.36.0, `IronHive.Plugins.MCP` 0.35.0 -> 0.36.0, `IronHive.Providers.OpenAI` 0.35.0 -> 0.36.0, `WebFlux` 0.15.0 -> 0.16.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.28.1 -> 0.28.2, `FluxFeed` 0.33.19 -> 0.34.1, `FluxIndex.Core` 0.51.2 -> 0.51.3, `FluxIndex.SDK` 0.51.2 -> 0.51.3, `IronHive.Abstractions` 0.35.0 -> 0.36.0, `IronHive.Core` 0.35.0 -> 0.36.0, `IronHive.Plugins.MCP` 0.35.0 -> 0.36.0, `IronHive.Providers.OpenAI` 0.35.0 -> 0.36.0, `WebFlux` 0.15.0 -> 0.16.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.6] - 2026-09-24
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.28.0 -> 0.28.1, `FluxFeed` 0.33.18 -> 0.33.19, `FluxIndex.Core` 0.51.1 -> 0.51.2, `FluxIndex.SDK` 0.51.1 -> 0.51.2, `IronHive.Abstractions` 0.34.0 -> 0.35.0, `IronHive.Core` 0.34.0 -> 0.35.0, `IronHive.Plugins.MCP` 0.34.0 -> 0.35.0, `IronHive.Providers.OpenAI` 0.34.0 -> 0.35.0, `TokenMeter` 0.7.7 -> 0.7.8 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.28.0 -> 0.28.1, `FluxFeed` 0.33.18 -> 0.33.19, `FluxIndex.Core` 0.51.1 -> 0.51.2, `FluxIndex.SDK` 0.51.1 -> 0.51.2, `IronHive.Abstractions` 0.34.0 -> 0.35.0, `IronHive.Core` 0.34.0 -> 0.35.0, `IronHive.Plugins.MCP` 0.34.0 -> 0.35.0, `IronHive.Providers.OpenAI` 0.34.0 -> 0.35.0, `TokenMeter` 0.7.7 -> 0.7.8 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.5] - 2026-09-24
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.17 -> 0.33.18, `FluxIndex.Core` 0.51.0 -> 0.51.1, `FluxIndex.SDK` 0.51.0 -> 0.51.1, `TokenMeter` 0.7.6 -> 0.7.7, `WebFlux` 0.14.1 -> 0.15.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.17 -> 0.33.18, `FluxIndex.Core` 0.51.0 -> 0.51.1, `FluxIndex.SDK` 0.51.0 -> 0.51.1, `TokenMeter` 0.7.6 -> 0.7.7, `WebFlux` 0.14.1 -> 0.15.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.4] - 2026-09-24
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.27.1 -> 0.28.0, `FluxFeed` 0.33.16 -> 0.33.17, `FluxIndex.Core` 0.50.6 -> 0.51.0, `FluxIndex.SDK` 0.50.6 -> 0.51.0, `IronHive.Abstractions` 0.33.1 -> 0.34.0, `IronHive.Core` 0.33.1 -> 0.34.0, `IronHive.Plugins.MCP` 0.33.1 -> 0.34.0, `IronHive.Providers.OpenAI` 0.33.1 -> 0.34.0, `TokenMeter` 0.7.5 -> 0.7.6 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.27.1 -> 0.28.0, `FluxFeed` 0.33.16 -> 0.33.17, `FluxIndex.Core` 0.50.6 -> 0.51.0, `FluxIndex.SDK` 0.50.6 -> 0.51.0, `IronHive.Abstractions` 0.33.1 -> 0.34.0, `IronHive.Core` 0.33.1 -> 0.34.0, `IronHive.Plugins.MCP` 0.33.1 -> 0.34.0, `IronHive.Providers.OpenAI` 0.33.1 -> 0.34.0, `TokenMeter` 0.7.5 -> 0.7.6 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.3] - 2026-09-23
 
@@ -275,12 +275,12 @@ breaking changes, and each one is marked **Breaking** with a migration note.
   adapter's streaming path does not apply it (the text is already out when the stream says why it stopped).
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.26.1 -> 0.27.1, `FluxFeed` 0.33.14 -> 0.33.16, `FluxIndex.Core` 0.50.4 -> 0.50.6, `FluxIndex.SDK` 0.50.4 -> 0.50.6, `WebFlux` 0.14.0 -> 0.14.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`.
+- Re-pinned sibling package(s) `FileFlux` 0.26.1 -> 0.27.1, `FluxFeed` 0.33.14 -> 0.33.16, `FluxIndex.Core` 0.50.4 -> 0.50.6, `FluxIndex.SDK` 0.50.4 -> 0.50.6, `WebFlux` 0.14.0 -> 0.14.1 — re-consumption of already-consumed iyulab packages.
 
 ## [0.8.2] - 2026-09-23
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.26.0 -> 0.26.1, `FluxFeed` 0.33.13 -> 0.33.14, `FluxIndex.Core` 0.50.2 -> 0.50.4, `FluxIndex.SDK` 0.50.2 -> 0.50.4 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.26.0 -> 0.26.1, `FluxFeed` 0.33.13 -> 0.33.14, `FluxIndex.Core` 0.50.2 -> 0.50.4, `FluxIndex.SDK` 0.50.2 -> 0.50.4 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.8.1] - 2026-09-23
 
@@ -326,17 +326,17 @@ breaking changes, and each one is marked **Breaking** with a migration note.
   when no title is passed. The constructor takes `IContentExtractService` in place of `HttpClient?`, and the class is no
   longer `IDisposable`. The tool is offered by `GetFluxRagTools()` only when the host registered WebFlux
   (`services.AddWebFlux()`).
-- Re-pinned sibling package(s) `FileFlux` 0.25.1 -> 0.26.0, `IronHive.Abstractions` 0.33.0 -> 0.33.1, `IronHive.Core` 0.33.0 -> 0.33.1, `IronHive.Plugins.MCP` 0.33.0 -> 0.33.1, `IronHive.Providers.OpenAI` 0.33.0 -> 0.33.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `FluxIndex.Core` 0.50.1 -> 0.50.2, `FluxIndex.SDK` 0.50.1 -> 0.50.2 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `FluxFeed` 0.33.12 -> 0.33.13 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.25.1 -> 0.26.0, `IronHive.Abstractions` 0.33.0 -> 0.33.1, `IronHive.Core` 0.33.0 -> 0.33.1, `IronHive.Plugins.MCP` 0.33.0 -> 0.33.1, `IronHive.Providers.OpenAI` 0.33.0 -> 0.33.1 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.50.1 -> 0.50.2, `FluxIndex.SDK` 0.50.1 -> 0.50.2 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.12 -> 0.33.13 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.7.0] - 2026-09-23
 
 ### Changed
-- Re-pinned sibling package(s) `WebFlux` 0.13.0 -> 0.14.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `FileFlux` 0.25.0 -> 0.25.1, `FluxIndex.Core` 0.49.0 -> 0.50.0, `FluxIndex.SDK` 0.49.0 -> 0.50.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `FluxIndex.Core` 0.50.0 -> 0.50.1, `FluxIndex.SDK` 0.50.0 -> 0.50.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `FluxFeed` 0.33.11 -> 0.33.12 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `WebFlux` 0.13.0 -> 0.14.0 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.25.0 -> 0.25.1, `FluxIndex.Core` 0.49.0 -> 0.50.0, `FluxIndex.SDK` 0.49.0 -> 0.50.0 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.50.0 -> 0.50.1, `FluxIndex.SDK` 0.50.0 -> 0.50.1 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.11 -> 0.33.12 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ### Removed
 - **Breaking**: `IronHiveImageToTextServiceForWebFlux` and its registration in `AddIronHiveWebFluxAdapters`. WebFlux
@@ -348,79 +348,79 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ## [0.6.54] - 2026-09-22
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.24.1 -> 0.25.0, `FluxFeed` 0.33.10 -> 0.33.11, `FluxIndex.Core` 0.48.1 -> 0.49.0, `FluxIndex.SDK` 0.48.1 -> 0.49.0, `WebFlux` 0.12.0 -> 0.13.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.24.1 -> 0.25.0, `FluxFeed` 0.33.10 -> 0.33.11, `FluxIndex.Core` 0.48.1 -> 0.49.0, `FluxIndex.SDK` 0.48.1 -> 0.49.0, `WebFlux` 0.12.0 -> 0.13.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.53] - 2026-09-22
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.23.20 -> 0.24.1, `FluxFeed` 0.33.9 -> 0.33.10, `FluxIndex.Core` 0.48.0 -> 0.48.1, `FluxIndex.SDK` 0.48.0 -> 0.48.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.23.20 -> 0.24.1, `FluxFeed` 0.33.9 -> 0.33.10, `FluxIndex.Core` 0.48.0 -> 0.48.1, `FluxIndex.SDK` 0.48.0 -> 0.48.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.52] - 2026-09-22
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.8 -> 0.33.9, `FluxIndex.Core` 0.47.0 -> 0.48.0, `FluxIndex.SDK` 0.47.0 -> 0.48.0, `WebFlux` 0.11.0 -> 0.12.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.8 -> 0.33.9, `FluxIndex.Core` 0.47.0 -> 0.48.0, `FluxIndex.SDK` 0.47.0 -> 0.48.0, `WebFlux` 0.11.0 -> 0.12.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.51] - 2026-09-21
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.23.19 -> 0.23.20, `FluxFeed` 0.33.7 -> 0.33.8, `FluxIndex.Core` 0.46.4 -> 0.47.0, `FluxIndex.SDK` 0.46.4 -> 0.47.0, `WebFlux` 0.10.0 -> 0.11.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.23.19 -> 0.23.20, `FluxFeed` 0.33.7 -> 0.33.8, `FluxIndex.Core` 0.46.4 -> 0.47.0, `FluxIndex.SDK` 0.46.4 -> 0.47.0, `WebFlux` 0.10.0 -> 0.11.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.50] - 2026-09-21
 
 ### Changed
-- Re-pinned sibling package(s) `FileFlux` 0.23.18 -> 0.23.19, `FluxFeed` 0.33.6 -> 0.33.7, `FluxIndex.Core` 0.46.3 -> 0.46.4, `FluxIndex.SDK` 0.46.3 -> 0.46.4, `WebFlux` 0.9.0 -> 0.10.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FileFlux` 0.23.18 -> 0.23.19, `FluxFeed` 0.33.6 -> 0.33.7, `FluxIndex.Core` 0.46.3 -> 0.46.4, `FluxIndex.SDK` 0.46.3 -> 0.46.4, `WebFlux` 0.9.0 -> 0.10.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.49] - 2026-09-21
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.5 -> 0.33.6, `FluxIndex.Core` 0.46.2 -> 0.46.3, `FluxIndex.SDK` 0.46.2 -> 0.46.3 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.5 -> 0.33.6, `FluxIndex.Core` 0.46.2 -> 0.46.3, `FluxIndex.SDK` 0.46.2 -> 0.46.3 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.48] - 2026-09-20
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.4 -> 0.33.5, `FluxIndex.Core` 0.46.1 -> 0.46.2, `FluxIndex.SDK` 0.46.1 -> 0.46.2, `WebFlux` 0.8.0 -> 0.9.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.4 -> 0.33.5, `FluxIndex.Core` 0.46.1 -> 0.46.2, `FluxIndex.SDK` 0.46.1 -> 0.46.2, `WebFlux` 0.8.0 -> 0.9.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.47] - 2026-09-20
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.3 -> 0.33.4, `FluxIndex.Core` 0.46.0 -> 0.46.1, `FluxIndex.SDK` 0.46.0 -> 0.46.1 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.3 -> 0.33.4, `FluxIndex.Core` 0.46.0 -> 0.46.1, `FluxIndex.SDK` 0.46.0 -> 0.46.1 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.46] - 2026-09-20
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.2 -> 0.33.3, `FluxIndex.Core` 0.45.0 -> 0.46.0, `FluxIndex.SDK` 0.45.0 -> 0.46.0, `IronHive.Abstractions` 0.32.0 -> 0.33.0, `IronHive.Core` 0.32.0 -> 0.33.0, `IronHive.Plugins.MCP` 0.32.0 -> 0.33.0, `IronHive.Providers.OpenAI` 0.32.0 -> 0.33.0, `WebFlux` 0.7.4 -> 0.8.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.2 -> 0.33.3, `FluxIndex.Core` 0.45.0 -> 0.46.0, `FluxIndex.SDK` 0.45.0 -> 0.46.0, `IronHive.Abstractions` 0.32.0 -> 0.33.0, `IronHive.Core` 0.32.0 -> 0.33.0, `IronHive.Plugins.MCP` 0.32.0 -> 0.33.0, `IronHive.Providers.OpenAI` 0.32.0 -> 0.33.0, `WebFlux` 0.7.4 -> 0.8.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.45] - 2026-09-20
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.1 -> 0.33.2, `FluxIndex.Core` 0.44.7 -> 0.45.0, `FluxIndex.SDK` 0.44.7 -> 0.45.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.1 -> 0.33.2, `FluxIndex.Core` 0.44.7 -> 0.45.0, `FluxIndex.SDK` 0.44.7 -> 0.45.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.44] - 2026-09-20
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.33.0 -> 0.33.1, `FluxIndex.Core` 0.44.6 -> 0.44.7, `FluxIndex.SDK` 0.44.6 -> 0.44.7 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.33.0 -> 0.33.1, `FluxIndex.Core` 0.44.6 -> 0.44.7, `FluxIndex.SDK` 0.44.6 -> 0.44.7 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.43] - 2026-09-20
 
 ### Changed
-- Re-pinned sibling package(s) `FluxFeed` 0.32.0 -> 0.33.0, `FluxIndex.Core` 0.44.5 -> 0.44.6, `FluxIndex.SDK` 0.44.5 -> 0.44.6 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.32.0 -> 0.33.0, `FluxIndex.Core` 0.44.5 -> 0.44.6, `FluxIndex.SDK` 0.44.5 -> 0.44.6 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.42] - 2026-09-19
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.31.0 -> 0.32.0, `IronHive.Core` 0.31.0 -> 0.32.0, `IronHive.Plugins.MCP` 0.31.0 -> 0.32.0, `IronHive.Providers.OpenAI` 0.31.0 -> 0.32.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `FluxFeed` 0.31.4 -> 0.32.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.31.0 -> 0.32.0, `IronHive.Core` 0.31.0 -> 0.32.0, `IronHive.Plugins.MCP` 0.31.0 -> 0.32.0, `IronHive.Providers.OpenAI` 0.31.0 -> 0.32.0 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `FluxFeed` 0.31.4 -> 0.32.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.41] - 2026-09-19
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.30.0 -> 0.31.0, `IronHive.Core` 0.30.0 -> 0.31.0, `IronHive.Plugins.MCP` 0.30.0 -> 0.31.0, `IronHive.Providers.OpenAI` 0.30.0 -> 0.31.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.30.0 -> 0.31.0, `IronHive.Core` 0.30.0 -> 0.31.0, `IronHive.Plugins.MCP` 0.30.0 -> 0.31.0, `IronHive.Providers.OpenAI` 0.30.0 -> 0.31.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.40] - 2026-09-19
 
 ### Changed
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.29.1 -> 0.29.2, `IronHive.Core` 0.29.1 -> 0.29.2, `IronHive.Plugins.MCP` 0.29.1 -> 0.29.2, `IronHive.Providers.OpenAI` 0.29.1 -> 0.29.2 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
-- Re-pinned sibling package(s) `IronHive.Abstractions` 0.29.2 -> 0.30.0, `IronHive.Core` 0.29.2 -> 0.30.0, `IronHive.Plugins.MCP` 0.29.2 -> 0.30.0, `IronHive.Providers.OpenAI` 0.29.2 -> 0.30.0 — re-consumption of already-consumed iyulab packages via `check-pin-drift.ps1 -Fix`. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.29.1 -> 0.29.2, `IronHive.Core` 0.29.1 -> 0.29.2, `IronHive.Plugins.MCP` 0.29.1 -> 0.29.2, `IronHive.Providers.OpenAI` 0.29.1 -> 0.29.2 — re-consumption of already-consumed iyulab packages. No source changes.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.29.2 -> 0.30.0, `IronHive.Core` 0.29.2 -> 0.30.0, `IronHive.Plugins.MCP` 0.29.2 -> 0.30.0, `IronHive.Providers.OpenAI` 0.29.2 -> 0.30.0 — re-consumption of already-consumed iyulab packages. No source changes.
 
 ## [0.6.39] - 2026-09-19
 
