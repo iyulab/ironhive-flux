@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.10.18] - 2026-10-01
+
+### Changed
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.45.3 -> 0.45.4, `IronHive.Core` 0.45.3 -> 0.45.4, `IronHive.Plugins.MCP` 0.45.3 -> 0.45.4, `IronHive.Providers.OpenAI` 0.45.3 -> 0.45.4. No source changes.
+
 ## [0.10.17] - 2026-10-01
 
 ### Changed
