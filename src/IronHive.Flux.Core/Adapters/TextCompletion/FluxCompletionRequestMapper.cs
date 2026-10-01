@@ -44,8 +44,20 @@ internal static class FluxCompletionRequestMapper
             TopP = options?.TopP,
             StopSequences = options?.StopSequences is { Count: > 0 } stops ? stops.ToList() : null,
             OutputFormat = ResolveOutputFormat(options),
+            ThinkingEffort = ResolveThinkingEffort(options?.EnableThinking),
         };
     }
+
+    /// <summary>
+    /// The port's reasoning switch on IronHive's effort scale: off is <see cref="MessageThinkingEffort.None"/> (an explicit
+    /// off), on is <see cref="MessageThinkingEffort.Medium"/> (the usual default effort), unset leaves the provider default.
+    /// </summary>
+    internal static MessageThinkingEffort? ResolveThinkingEffort(bool? enableThinking) => enableThinking switch
+    {
+        false => MessageThinkingEffort.None,
+        true => MessageThinkingEffort.Medium,
+        null => null,
+    };
 
     private static OutputFormat? ResolveOutputFormat(TextCompletionOptions? options)
     {

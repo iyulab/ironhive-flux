@@ -80,4 +80,33 @@ public class FluxCompletionRequestMappingTests
         _sent.Temperature.Should().Be(0.1f, "JSON keeps its low, fixed temperature");
         _sent.OutputFormat.Should().BeNull("provider JSON mode only when the options ask for it — a prompt may want an array");
     }
+
+    public static TheoryData<string, bool?, MessageThinkingEffort?> ThinkingCases => new()
+    {
+        { "webflux", false, MessageThinkingEffort.None },
+        { "fluxindex", false, MessageThinkingEffort.None },
+        { "fluxindex", true, MessageThinkingEffort.Medium },
+        { "fluxindex", null, null },
+    };
+
+    [Theory]
+    [MemberData(nameof(ThinkingCases))]
+    public async Task EnableThinking_reaches_the_requests_thinking_effort(string which, bool? enableThinking, MessageThinkingEffort? expected)
+    {
+        Respond("ok");
+
+        await Create(which).CompleteAsync("p", new TextCompletionOptions { EnableThinking = enableThinking }, TestContext.Current.CancellationToken);
+
+        _sent!.ThinkingEffort.Should().Be(expected);
+    }
+
+    [Fact]
+    public async Task EnableThinking_reaches_a_json_request_too()
+    {
+        Respond("{}");
+
+        await Create("fluxindex").CompleteJsonAsync("p", new TextCompletionOptions { EnableThinking = false }, TestContext.Current.CancellationToken);
+
+        _sent!.ThinkingEffort.Should().Be(MessageThinkingEffort.None);
+    }
 }

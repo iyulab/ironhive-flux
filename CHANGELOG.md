@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.11.0] - Unreleased
+
+### Added
+- **The reasoning switch reaches IronHive.** `TextCompletionOptions.EnableThinking` (Flux.Abstractions 0.27.0) maps onto
+  the request's `ThinkingEffort` in both completion adapters (FluxIndex, WebFlux): `false` → `None` (explicitly off),
+  `true` → `Medium`, unset → the provider's default. So FluxImprover enrichment (which asks for no reasoning) and other
+  short extractions keep a reasoning model from spending the output budget thinking.
+- Every package now carries the `LICENSE` text, not only the MIT expression.
+
 ## [0.10.27] - 2026-10-01
 
 ### Changed
