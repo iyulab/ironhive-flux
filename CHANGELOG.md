@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.11.10] - 2026-10-04
+
+### Changed
+- Re-pinned sibling package(s) `FileFlux` 0.36.0 -> 0.36.1, `FluxFeed` 0.42.6 -> 0.42.7, `FluxIndex.Core` 0.73.1 -> 0.73.2, `FluxIndex.SDK` 0.73.1 -> 0.73.2. No source changes.
+
 ## [0.11.9] - 2026-10-03
 
 ### Changed
