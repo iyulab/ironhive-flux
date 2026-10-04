@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
-## [0.11.15] - Unreleased
+## [0.11.15] - 2026-10-05
 
 ### Changed
 - Re-pinned `WebFlux` 0.19.6 -> 0.20.0 (extraction failures are exceptions now). The web-page memorize tool reports a
