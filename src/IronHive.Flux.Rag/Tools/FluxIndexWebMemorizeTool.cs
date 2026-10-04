@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using System.ComponentModel;
 using System.Text.Json;
 using WebFlux.Core.Interfaces;
+using WebFlux.Core.Models;
 using WebFlux.Core.Options;
 
 namespace IronHive.Flux.Rag.Tools;
@@ -70,18 +71,19 @@ public partial class FluxIndexWebMemorizeTool
                 return Failure(url, $"Invalid URL: {url}. Only HTTP and HTTPS URLs are supported.");
             }
 
-            var extracted = await _extractor.ExtractContentAsync(
-                url,
-                new ExtractOptions { Format = OutputFormat.Markdown },
-                cancellationToken).ConfigureAwait(false);
-
-            if (!extracted.IsSuccess || extracted.Data is null)
+            ExtractedContent page;
+            try
             {
-                var reason = extracted.Error?.Message ?? "the extractor reported no content";
-                return Failure(url, $"Failed to extract web page: {reason}");
+                page = await _extractor.ExtractContentAsync(
+                    url,
+                    new ExtractOptions { Format = OutputFormat.Markdown },
+                    cancellationToken).ConfigureAwait(false);
+            }
+            catch (WebExtractionException ex)
+            {
+                return Failure(url, $"Failed to extract web page: {ex.Message}");
             }
 
-            var page = extracted.Data;
             var body = !string.IsNullOrWhiteSpace(page.MainContent) ? page.MainContent : page.Text;
             if (string.IsNullOrWhiteSpace(body))
             {

@@ -29,7 +29,7 @@ public class FluxIndexWebMemorizeToolTests
 
     private void ExtractorReturns(ExtractedContent page) =>
         _extractor.ExtractContentAsync(Arg.Any<string>(), Arg.Any<ExtractOptions?>(), Arg.Any<CancellationToken>())
-            .Returns(ProcessingResult.Success(page));
+            .Returns(page);
 
     private static JsonElement Parse(string json) => JsonDocument.Parse(json).RootElement;
 
@@ -100,7 +100,7 @@ public class FluxIndexWebMemorizeToolTests
     {
         // e.g. robots.txt disallows the path, or the request timed out — WebFlux decides, the tool reports.
         _extractor.ExtractContentAsync(Arg.Any<string>(), Arg.Any<ExtractOptions?>(), Arg.Any<CancellationToken>())
-            .Returns(ProcessingResult.Failure<ExtractedContent>("Disallowed by robots.txt", "ROBOTS"));
+            .ThrowsAsync(new WebExtractionException("https://example.com/private", ExtractErrorCodes.DisallowedByRobotsTxt, "Disallowed by robots.txt"));
 
         var result = Parse(await CreateTool().MemorizeWebPageAsync("https://example.com/private", cancellationToken: TestContext.Current.CancellationToken));
 
