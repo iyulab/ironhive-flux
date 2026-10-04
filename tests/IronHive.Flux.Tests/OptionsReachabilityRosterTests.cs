@@ -11,7 +11,7 @@ namespace IronHive.Flux.Tests;
 /// </summary>
 public class OptionsReachabilityRosterTests
 {
-    private static readonly Assembly[] Libraries =
+    internal static readonly Assembly[] Libraries =
     [
         Assembly.Load("IronHive.Flux"),
         Assembly.Load("IronHive.Flux.Core"),
