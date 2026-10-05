@@ -6,6 +6,9 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [0.12.6] - Unreleased
 
+### Changed
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.76.1 -> 0.77.0, `FluxIndex.SDK` 0.76.1 -> 0.77.0.
+
 ### Fixed
 - **Cancelling a turn now cancels the RAG tools instead of being reported to the model as a tool failure.** The search,
   memorize, batch memorize, status, list and unmemorize tools caught every exception, including the
