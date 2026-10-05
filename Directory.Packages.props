@@ -12,9 +12,9 @@
     <PackageVersion Include="FileFlux" Version="0.38.1" />
     <PackageVersion Include="WebFlux" Version="0.20.0" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.73.8" />
-    <PackageVersion Include="FluxFeed" Version="0.43.3" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.73.8" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.74.0" />
+    <PackageVersion Include="FluxFeed" Version="0.43.4" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.74.0" />
     <PackageVersion Include="TokenMeter" Version="0.7.9" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
