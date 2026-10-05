@@ -3,18 +3,18 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup Label="IronHive">
-    <PackageVersion Include="IronHive.Abstractions" Version="0.52.0" />
-    <PackageVersion Include="IronHive.Core" Version="0.52.0" />
-    <PackageVersion Include="IronHive.Plugins.MCP" Version="0.52.0" />
-    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.52.0" />
+    <PackageVersion Include="IronHive.Abstractions" Version="0.53.0" />
+    <PackageVersion Include="IronHive.Core" Version="0.53.0" />
+    <PackageVersion Include="IronHive.Plugins.MCP" Version="0.53.0" />
+    <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.53.0" />
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
     <PackageVersion Include="FileFlux" Version="0.38.3" />
     <PackageVersion Include="WebFlux" Version="0.21.0" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.75.1" />
-    <PackageVersion Include="FluxFeed" Version="0.43.8" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.75.1" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.76.0" />
+    <PackageVersion Include="FluxFeed" Version="0.43.9" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.76.0" />
     <PackageVersion Include="TokenMeter" Version="0.7.9" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
