@@ -8,6 +8,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ### Changed
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.76.1 -> 0.77.0, `FluxIndex.SDK` 0.76.1 -> 0.77.0.
+- Re-pinned sibling package(s) `FluxFeed` 0.43.10 -> 0.44.0.
 
 ### Fixed
 - **Cancelling a turn now cancels the RAG tools instead of being reported to the model as a tool failure.** The search,
