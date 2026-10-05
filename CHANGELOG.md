@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.11.16] - 2026-10-05
+
+### Changed
+- Re-pinned sibling package(s) `FileFlux` 0.37.2 -> 0.38.1, `FluxFeed` 0.43.2 -> 0.43.3, `FluxIndex.Core` 0.73.6 -> 0.73.8, `FluxIndex.SDK` 0.73.6 -> 0.73.8, `IronHive.Abstractions` 0.51.0 -> 0.51.1, `IronHive.Core` 0.51.0 -> 0.51.1, `IronHive.Plugins.MCP` 0.51.0 -> 0.51.1, `IronHive.Providers.OpenAI` 0.51.0 -> 0.51.1. No source changes.
+
 ## [0.11.15] - 2026-10-05
 
 ### Changed
