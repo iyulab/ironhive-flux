@@ -54,7 +54,7 @@ public partial class IronHiveTextCompletionServiceForFileFlux : FileFlux.IDocume
             await _generator.GenerateMessageAsync(request, cancellationToken);
             return true;
         }
-        catch
+        catch (Exception ex) when (ex is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
         {
             return false;
         }
