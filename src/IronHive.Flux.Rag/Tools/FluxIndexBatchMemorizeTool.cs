@@ -111,7 +111,7 @@ public partial class FluxIndexBatchMemorizeTool
                         succeeded.Add(filePath);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ex is not OperationCanceledException || !cancellationToken.IsCancellationRequested)
                 {
                     lock (failed)
                     {
@@ -143,6 +143,10 @@ public partial class FluxIndexBatchMemorizeTool
             if (_logger is not null)
                 LogBatchMemorizeCompleted(_logger, succeeded.Count, failed.Count);
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -247,6 +251,10 @@ public partial class FluxIndexBatchMemorizeTool
             if (_logger is not null)
                 LogDirectoryMemorizeCompleted(_logger, directoryPath, succeededCount, failedCount);
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {

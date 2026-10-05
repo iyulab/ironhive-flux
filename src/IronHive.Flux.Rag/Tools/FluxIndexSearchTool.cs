@@ -79,17 +79,8 @@ public partial class FluxIndexSearchTool
                 PathScope = string.IsNullOrEmpty(pathScope) ? [] : [pathScope]
             };
 
+            // A search that cannot run throws (FluxFeed 0.44.0); the catch below turns it into the tool's error result.
             var vaultResult = await _vault.SearchAsync(query, searchOptions, cancellationToken);
-
-            if (!vaultResult.IsSuccess)
-            {
-                return JsonSerializer.Serialize(new
-                {
-                    success = false,
-                    query,
-                    error = vaultResult.ErrorMessage ?? "Search failed"
-                }, s_indentedJsonOptions);
-            }
 
             // VaultSearchResultItem → RagSearchResult 변환 (with rich metadata extraction)
             var searchResults = vaultResult.Items
@@ -135,6 +126,11 @@ public partial class FluxIndexSearchTool
             if (_logger is not null)
                 LogSearchCompleted(_logger, context.Sources.Count);
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The caller stopped the turn; that is not a search failure to report to the model.
+            throw;
         }
         catch (Exception ex)
         {

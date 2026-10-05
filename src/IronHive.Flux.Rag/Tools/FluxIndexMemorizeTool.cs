@@ -90,6 +90,10 @@ public partial class FluxIndexMemorizeTool
                 LogMemorizeCompleted(_logger, filePath);
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             if (_logger is not null)

@@ -173,16 +173,16 @@ public class FluxIndexSearchToolTests
     #region SearchAsync — Error Handling
 
     [Fact]
-    public async Task SearchAsync_VaultError_ShouldReturnError()
+    public async Task SearchAsync_CallerCancels_Propagates()
     {
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
-            .Returns(VaultSearchResult.Error("test", "Index not available"));
+            .Returns<VaultSearchResult>(ci => throw new OperationCanceledException(ci.ArgAt<CancellationToken>(2)));
 
-        var resultJson = await _tool.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
+        var act = () => _tool.SearchAsync("test", cancellationToken: cts.Token);
 
-        result.RootElement.GetProperty("success").GetBoolean().Should().BeFalse();
-        result.RootElement.GetProperty("error").GetString().Should().Contain("Index not available");
+        await act.Should().ThrowAsync<OperationCanceledException>();
     }
 
     [Fact]

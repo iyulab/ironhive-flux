@@ -75,6 +75,10 @@ public partial class FluxIndexStatusTool
                 LogStatusCompleted(_logger, status.TotalEntries);
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             if (_logger is not null)
@@ -138,6 +142,10 @@ public partial class FluxIndexStatusTool
                 LogGetDocumentInfoCompleted(_logger, filePath, stageName);
             }
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {
@@ -208,6 +216,10 @@ public partial class FluxIndexStatusTool
                 LogListDocumentsCompleted(_logger, documents.Count, stageFilter);
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             if (_logger is not null)
@@ -267,6 +279,10 @@ public partial class FluxIndexStatusTool
                 LogDetectChangesCompleted(_logger, filePath, changes.HasChanges, actionName);
             }
             return JsonSerializer.Serialize(result, s_indentedJsonOptions);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (Exception ex)
         {

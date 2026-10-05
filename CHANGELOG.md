@@ -4,6 +4,17 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.12.6] - Unreleased
+
+### Fixed
+- **Cancelling a turn now cancels the RAG tools instead of being reported to the model as a tool failure.** The search,
+  memorize, batch memorize, status, list and unmemorize tools caught every exception, including the
+  `OperationCanceledException` raised by the caller's token, and returned `success: false` with "A task was canceled";
+  a batch recorded each cancelled file as a failed file and carried on. They now let the caller's cancellation
+  propagate, as the web memorize tool already did. Other failures are still returned as the tool's error result.
+- The search tool reads a failed search from the exception the vault throws (FluxFeed 0.44.0 removes
+  `VaultSearchResult.IsSuccess`); the tool's error result is unchanged.
+
 ## [0.12.5] - 2026-10-06
 
 ### Changed

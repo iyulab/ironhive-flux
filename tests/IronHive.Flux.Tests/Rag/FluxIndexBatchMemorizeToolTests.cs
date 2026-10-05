@@ -187,6 +187,30 @@ public class FluxIndexBatchMemorizeToolTests
         }
     }
 
+    [Fact]
+    public async Task MemorizeDocumentsAsync_CallerCancels_PropagatesInsteadOfReportingFailedFiles()
+    {
+        var tempFiles = CreateTempFiles(2);
+        try
+        {
+            using var cts = new CancellationTokenSource();
+            _vault.MemorizeAsync(Arg.Any<string>(), Arg.Any<CancellationToken>())
+                .Returns<Task<VaultEntry>>(ci =>
+                {
+                    cts.Cancel();
+                    throw new OperationCanceledException(cts.Token);
+                });
+
+            var act = () => _tool.MemorizeDocumentsAsync(tempFiles, maxConcurrent: 1, cancellationToken: cts.Token);
+
+            await act.Should().ThrowAsync<OperationCanceledException>();
+        }
+        finally
+        {
+            DeleteTempFiles(tempFiles);
+        }
+    }
+
     #endregion
 
     #region MemorizeDocumentsAsync — Concurrency
