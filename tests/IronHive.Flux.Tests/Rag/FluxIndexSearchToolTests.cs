@@ -136,8 +136,7 @@ public class FluxIndexSearchToolTests
                     ChunkIndex = 0
                 }
             ],
-            TotalCount = 1,
-            IsSuccess = true
+            TotalCount = 1
         };
 
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
@@ -232,8 +231,7 @@ public class FluxIndexSearchToolTests
                     ChunkIndex = 0
                 }
             ],
-            TotalCount = 1,
-            IsSuccess = true
+            TotalCount = 1
         };
 
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
@@ -267,8 +265,7 @@ public class FluxIndexSearchToolTests
                     ChunkIndex = 0
                 }
             ],
-            TotalCount = 1,
-            IsSuccess = true
+            TotalCount = 1
         };
 
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
@@ -346,8 +343,7 @@ public class FluxIndexSearchToolTests
                     Metadata = null
                 }
             ],
-            TotalCount = 1,
-            IsSuccess = true
+            TotalCount = 1
         };
 
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
@@ -491,8 +487,7 @@ public class FluxIndexSearchToolTests
                     new VaultSearchResultItem { Entry = null!, SourcePath = "/docs/b.md", FileName = "b.md", Content = "Content B", Score = 0.95f, RetrievalScore = 0.7f, ChunkIndex = 0 },
                     new VaultSearchResultItem { Entry = null!, SourcePath = "/docs/a.md", FileName = "a.md", Content = "Content A", Score = 0.80f, RetrievalScore = 0.9f, ChunkIndex = 0 }
                 ],
-                TotalCount = 2,
-                IsSuccess = true
+                TotalCount = 2
             });
 
         var json = await toolWithReranker.SearchAsync("test", maxResults: 5, cancellationToken: TestContext.Current.CancellationToken);
@@ -595,8 +590,7 @@ public class FluxIndexSearchToolTests
                     Metadata = metadata
                 }
             ],
-            TotalCount = 1,
-            IsSuccess = true
+            TotalCount = 1
         };
     }
 
