@@ -1,6 +1,6 @@
 using FluxFeed.Domain.Enums;
 using FluxFeed.Interfaces;
-using IronHive.Core.Tools;
+using IronHive.Abstractions.Tools;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using System.Text.Json;

@@ -1,5 +1,5 @@
 using FluxFeed.Interfaces;
-using IronHive.Core.Tools;
+using IronHive.Abstractions.Tools;
 using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

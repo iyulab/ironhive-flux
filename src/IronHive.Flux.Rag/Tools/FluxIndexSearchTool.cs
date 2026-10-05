@@ -1,6 +1,6 @@
 using FluxIndex.Core.Application.Interfaces;
 using FluxFeed.Interfaces;
-using IronHive.Core.Tools;
+using IronHive.Abstractions.Tools;
 using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
 using Microsoft.Extensions.Logging;

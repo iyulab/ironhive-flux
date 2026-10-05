@@ -15,6 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- ToolCollection (the tests attach tools to one) lives in IronHive.Core; the tool packages themselves no longer reference it. -->
+    <PackageReference Include="IronHive.Core" />
     <PackageReference Include="Iyu.Conventions.Testing" />
     <PackageReference Include="xunit.v3" />
     <PackageReference Include="xunit.runner.visualstudio" />

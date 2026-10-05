@@ -161,7 +161,7 @@ public class FluxIndexWebMemorizeToolTests
         var tools = provider.GetFluxRagTools().ToList();
 
         tools.Should().NotBeEmpty();
-        tools.Cast<IronHive.Core.Tools.FunctionTool>().Should().OnlyContain(t => t.Timeout == 9);
+        tools.Cast<IronHive.Abstractions.Tools.FunctionTool>().Should().OnlyContain(t => t.Timeout == 9);
     }
 
     [Fact]

@@ -1,5 +1,4 @@
 using IronHive.Abstractions.Tools;
-using IronHive.Core.Tools;
 using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;

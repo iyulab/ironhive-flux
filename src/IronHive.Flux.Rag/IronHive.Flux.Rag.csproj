@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="IronHive.Core" />
     <PackageReference Include="FluxIndex.SDK" />
     <PackageReference Include="FluxFeed" />
     <PackageReference Include="TokenMeter" />

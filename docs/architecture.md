@@ -49,7 +49,7 @@ IronHive.Flux (metapackage)
 │   └── TokenMeter
 │
 ├── IronHive.Flux.Rag
-│   ├── IronHive.Core
+│   ├── IronHive.Flux.Core  # IronHive.Abstractions (FunctionToolFactory) — no IronHive.Core
 │   ├── FluxIndex.SDK
 │   ├── FluxFeed          # IVault — 문서 수집/파싱/적재 표면
 │   └── TokenMeter
