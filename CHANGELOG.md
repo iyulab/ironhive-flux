@@ -10,6 +10,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.53.0 -> 0.53.1, `IronHive.Core` 0.53.0 -> 0.53.1, `IronHive.Plugins.MCP` 0.53.0 -> 0.53.1, `IronHive.Providers.OpenAI` 0.53.0 -> 0.53.1, `WebFlux` 0.21.0 -> 0.21.1.
 - Re-pinned sibling package(s) `FileFlux` 0.39.0 -> 0.39.1.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.77.0 -> 0.77.1, `FluxIndex.SDK` 0.77.0 -> 0.77.1.
+- Re-pinned sibling package(s) `FluxFeed` 0.44.0 -> 0.44.1.
 
 ### Fixed
 - **Cancelling a call now cancels it.** 1 method(s) that take a `CancellationToken` caught every exception to
