@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
-## [0.12.7] - Unreleased
+## [0.12.7] - 2026-10-06
 
 ### Changed
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.53.0 -> 0.53.1, `IronHive.Core` 0.53.0 -> 0.53.1, `IronHive.Plugins.MCP` 0.53.0 -> 0.53.1, `IronHive.Providers.OpenAI` 0.53.0 -> 0.53.1, `WebFlux` 0.21.0 -> 0.21.1.
