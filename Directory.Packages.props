@@ -13,7 +13,7 @@
     <PackageVersion Include="WebFlux" Version="0.22.4" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
     <PackageVersion Include="FluxIndex.Core" Version="0.80.14" />
-    <PackageVersion Include="FluxFeed" Version="0.50.2" />
+    <PackageVersion Include="FluxFeed" Version="0.50.3" />
     <PackageVersion Include="FluxIndex.SDK" Version="0.80.14" />
     <PackageVersion Include="TokenMeter" Version="0.7.9" />
   </ItemGroup>
