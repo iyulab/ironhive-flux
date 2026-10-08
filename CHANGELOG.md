@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [Unreleased]
+
+### Dependencies
+- Re-pinned sibling package(s) `FileFlux` 0.50.1 -> 0.51.0.
+
 ## [0.12.26] - 2026-10-08
 
 ### Changed
