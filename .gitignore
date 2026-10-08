@@ -71,3 +71,6 @@ nul
 
 # IDE language server cache
 *.lscache
+
+# Local environment (endpoints, keys) - never tracked
+.env
