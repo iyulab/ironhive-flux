@@ -126,7 +126,7 @@ IronHive.Flux.Core는 **Adapter 패턴**을 사용하여 IronHive의 AI 인터�
 IronHive Interface              Flux Interface
 ──────────────────────          ──────────────────────────────────
 IEmbeddingGenerator    ──┬───>  FileFlux.IEmbeddingService
-                         ├───>  WebFlux.ITextEmbeddingService
+                         ├───>  FluxCurator.IEmbedder (WebFlux/FileFlux semantic chunking)
                          └───>  FluxIndex.IEmbeddingService
 
 IMessageGenerator      ──┬───>  FileFlux.IDocumentAnalysisService
@@ -143,7 +143,7 @@ IMessageGenerator      ──┬───>  FileFlux.IDocumentAnalysisService
 | Adapter | Source | Target | Key Methods |
 |---------|--------|--------|-------------|
 | `IronHiveEmbeddingServiceForFileFlux` | `IEmbeddingGenerator` | `FileFlux.IEmbeddingService` | `GenerateEmbeddingAsync`, `GenerateBatchEmbeddingsAsync` |
-| `IronHiveEmbeddingServiceForWebFlux` | `IEmbeddingGenerator` | `WebFlux.ITextEmbeddingService` | `GetEmbeddingAsync`, `GetBatchEmbeddingsAsync` |
+| `IronHiveEmbedderForFluxCurator` | `IEmbeddingGenerator` | `FluxCurator.Core.Core.IEmbedder` | `GenerateEmbeddingAsync`, `GenerateEmbeddingsAsync`, `CalculateSimilarity` |
 | `IronHiveEmbeddingServiceForFluxIndex` | `IEmbeddingGenerator` | `FluxIndex.IEmbeddingService` | `GenerateEmbeddingAsync`, `GetModelName` |
 
 **TextCompletion Adapters** (3):

@@ -11,6 +11,7 @@
   <ItemGroup Label="Flux Ecosystem">
     <PackageVersion Include="FileFlux" Version="0.51.0" />
     <PackageVersion Include="WebFlux" Version="0.22.4" />
+    <PackageVersion Include="FluxCurator.Core" Version="0.14.0" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
     <PackageVersion Include="FluxIndex.Core" Version="0.80.16" />
     <PackageVersion Include="FluxFeed" Version="0.51.0" />

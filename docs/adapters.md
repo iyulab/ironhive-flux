@@ -5,7 +5,7 @@
 | 클래스 | 타겟 | 주요 메서드 |
 |--------|------|------------|
 | `IronHiveEmbeddingServiceForFileFlux` | FileFlux | `GenerateEmbeddingAsync`, `GenerateBatchEmbeddingsAsync` |
-| `IronHiveEmbeddingServiceForWebFlux` | WebFlux | `GetEmbeddingAsync`, `GetBatchEmbeddingsAsync` |
+| `IronHiveEmbedderForFluxCurator` | FluxCurator `IEmbedder` — WebFlux·FileFlux 의 Semantic 청킹 | `GenerateEmbeddingAsync`, `GenerateEmbeddingsAsync`, `CalculateSimilarity` |
 | `IronHiveEmbeddingServiceForFluxIndex` | FluxIndex | `GenerateEmbeddingAsync`, `GetModelName` |
 
 ## TextCompletion 어댑터

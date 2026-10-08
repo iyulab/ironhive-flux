@@ -6,6 +6,15 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [Unreleased]
 
+### Changed
+- **Breaking** — **The IronHive embedder for WebFlux is now a FluxCurator `IEmbedder`, so semantic chunking uses it.**
+  `IronHiveEmbeddingServiceForWebFlux` (WebFlux `ITextEmbeddingService`) is replaced by `IronHiveEmbedderForFluxCurator`
+  (`FluxCurator.Core.Core.IEmbedder`). WebFlux never read its `ITextEmbeddingService` — semantic chunking runs on FluxCurator, which
+  reads `IEmbedder` — so the registered IronHive embedder never reached it. `AddIronHiveWebFluxAdapters()` and
+  `AddIronHiveFileFluxAdapters()` both register the new adapter (FileFlux's semantic chunking reads the same contract). Migration:
+  code that constructed `IronHiveEmbeddingServiceForWebFlux` constructs `IronHiveEmbedderForFluxCurator`; `GetEmbeddingAsync` →
+  `GenerateEmbeddingAsync`, `GetEmbeddingsAsync` → `GenerateEmbeddingsAsync`.
+
 ### Dependencies
 - Re-pinned sibling package(s) `FileFlux` 0.50.1 -> 0.51.0.
 - Re-pinned sibling package(s) `FluxFeed` 0.50.5 -> 0.51.0.

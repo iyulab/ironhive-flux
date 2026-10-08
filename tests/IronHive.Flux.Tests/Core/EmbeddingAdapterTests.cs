@@ -76,7 +76,7 @@ public class EmbeddingAdapterTests
     }
 
     [Fact]
-    public async Task WebFluxAdapter_GetEmbeddingAsync_ReturnsEmbedding()
+    public async Task FluxCuratorEmbedder_GenerateEmbeddingAsync_ReturnsEmbedding()
     {
         // Arrange
         var expectedEmbedding = new float[1536];
@@ -84,10 +84,10 @@ public class EmbeddingAdapterTests
             .EmbedAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>())
             .Returns(expectedEmbedding);
 
-        var adapter = new IronHiveEmbeddingServiceForWebFlux(_mockGenerator, _options);
+        var adapter = new IronHiveEmbedderForFluxCurator(_mockGenerator, _options);
 
         // Act
-        var result = await adapter.GetEmbeddingAsync("test text", TestContext.Current.CancellationToken);
+        var result = await adapter.GenerateEmbeddingAsync("test text", TestContext.Current.CancellationToken);
 
         // Assert
         result.Should().NotBeNull();
@@ -257,34 +257,36 @@ public class EmbeddingAdapterTests
 
     #endregion
 
-    #region WebFlux Properties & Batch
+    #region FluxCurator embedder (WebFlux/FileFlux semantic chunking)
 
     [Fact]
-    public void WebFluxAdapter_EmbeddingDimension_ReturnsConfiguredValue()
+    public void FluxCuratorEmbedder_EmbeddingDimension_ReturnsConfiguredValue()
     {
-        var adapter = new IronHiveEmbeddingServiceForWebFlux(_mockGenerator, _options);
+        var adapter = new IronHiveEmbedderForFluxCurator(_mockGenerator, _options);
 
         adapter.EmbeddingDimension.Should().Be(1536);
     }
 
     [Fact]
-    public void WebFluxAdapter_MaxTokens_ReturnsConfiguredValue()
+    public void FluxCuratorEmbedder_CalculateSimilarity_IsCosine()
     {
-        var adapter = new IronHiveEmbeddingServiceForWebFlux(_mockGenerator, _options);
+        var adapter = new IronHiveEmbedderForFluxCurator(_mockGenerator, _options);
 
-        adapter.MaxTokens.Should().Be(8191);
+        adapter.CalculateSimilarity([1f, 0f], [1f, 0f]).Should().BeApproximately(1f, 1e-6f);
+        adapter.CalculateSimilarity([1f, 0f], [0f, 1f]).Should().BeApproximately(0f, 1e-6f);
+        adapter.CalculateSimilarity([0f, 0f], [1f, 0f]).Should().Be(0f);
     }
 
     [Fact]
-    public void WebFluxAdapter_Constructor_NullGenerator_Throws()
+    public void FluxCuratorEmbedder_Constructor_NullGenerator_Throws()
     {
-        var act = () => new IronHiveEmbeddingServiceForWebFlux(null!, _options);
+        var act = () => new IronHiveEmbedderForFluxCurator(null!, _options);
 
         act.Should().Throw<ArgumentNullException>().WithParameterName("generator");
     }
 
     [Fact]
-    public async Task WebFluxAdapter_GetEmbeddingsAsync_ReturnsBatch()
+    public async Task FluxCuratorEmbedder_GenerateEmbeddingsAsync_ReturnsBatch()
     {
         // Arrange
         var embedding1 = new float[] { 1f, 2f };
@@ -297,10 +299,10 @@ public class EmbeddingAdapterTests
                 new() { Embedding = embedding2, Index = 1 }
             } });
 
-        var adapter = new IronHiveEmbeddingServiceForWebFlux(_mockGenerator, _options);
+        var adapter = new IronHiveEmbedderForFluxCurator(_mockGenerator, _options);
 
         // Act
-        var results = await adapter.GetEmbeddingsAsync(["text1", "text2"], TestContext.Current.CancellationToken);
+        var results = await adapter.GenerateEmbeddingsAsync(["text1", "text2"], TestContext.Current.CancellationToken);
 
         // Assert
         results.Should().HaveCount(2);
