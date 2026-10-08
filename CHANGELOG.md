@@ -8,6 +8,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ### Dependencies
 - Re-pinned sibling package(s) `FileFlux` 0.50.1 -> 0.51.0.
+- Re-pinned sibling package(s) `FluxFeed` 0.50.5 -> 0.51.0.
 
 ## [0.12.26] - 2026-10-08
 
