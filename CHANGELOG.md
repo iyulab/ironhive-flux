@@ -4,7 +4,7 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
-## [Unreleased]
+## [0.13.0] - 2026-10-09
 
 ### Changed
 - **Breaking** — **The IronHive embedder for WebFlux is now a FluxCurator `IEmbedder`, so semantic chunking uses it.**
