@@ -71,32 +71,19 @@ public record RagSearchResult
     /// </summary>
     public string? Title { get; init; }
 
-    // === Rich Metadata (from FileFlux enrichment) ===
+    // === Where the chunk sits (from the vault's chunk metadata) ===
 
     /// <summary>
-    /// 문서 계층 구조 경로 (heading breadcrumb)
+    /// What the chunk holds: <c>text</c>, <c>table</c> (rows of a table) or <c>image_description</c> (a description of a
+    /// picture) — the vault's <c>chunk_kind</c>; <c>text</c> when the chunk carries none.
     /// </summary>
-    public string? Breadcrumb { get; init; }
+    public string Kind { get; init; } = "text";
 
-    /// <summary>
-    /// 문서 주제
-    /// </summary>
-    public string? DocumentTopic { get; init; }
+    /// <summary>First page (1-based) the chunk covers, when the document has pages; null otherwise.</summary>
+    public int? StartPage { get; init; }
 
-    /// <summary>
-    /// 문서 키워드
-    /// </summary>
-    public string? Keywords { get; init; }
-
-    /// <summary>
-    /// 청크 품질 점수
-    /// </summary>
-    public double? QualityScore { get; init; }
-
-    /// <summary>
-    /// 구조적 역할 (paragraph, heading, table, list 등)
-    /// </summary>
-    public string? StructuralRole { get; init; }
+    /// <summary>Last page (1-based) the chunk covers, when the document has pages; null otherwise.</summary>
+    public int? EndPage { get; init; }
 }
 
 /// <summary>

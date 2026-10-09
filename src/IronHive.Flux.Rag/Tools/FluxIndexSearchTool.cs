@@ -1,5 +1,6 @@
 using FluxIndex.Core.Application.Interfaces;
 using FluxFeed.Interfaces;
+using FluxFeed.Services;
 using IronHive.Abstractions.Tools;
 using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
@@ -114,11 +115,9 @@ public partial class FluxIndexSearchTool
                     title = s.Title,
                     score = s.Score,
                     chunkIndex = s.ChunkIndex,
-                    breadcrumb = s.Breadcrumb,
-                    documentTopic = s.DocumentTopic,
-                    keywords = s.Keywords,
-                    qualityScore = s.QualityScore,
-                    structuralRole = s.StructuralRole,
+                    kind = s.Kind,
+                    startPage = s.StartPage,
+                    endPage = s.EndPage,
                     preview = s.Content.Length > 200 ? s.Content[..200] + "..." : s.Content
                 })
             };
@@ -150,6 +149,7 @@ public partial class FluxIndexSearchTool
     internal static RagSearchResult MapToSearchResult(VaultSearchResultItem item)
     {
         var metadata = item.Metadata;
+        var startPage = GetInt(metadata, VaultPipeline.StartPageMetadataKey) ?? GetInt(metadata, VaultPipeline.PageNumberMetadataKey);
 
         return new RagSearchResult
         {
@@ -159,12 +159,11 @@ public partial class FluxIndexSearchTool
             Title = item.FileName,
             Metadata = item.Metadata,
             ChunkIndex = item.ChunkIndex,
-            // Rich metadata from FileFlux enrichment pipeline
-            Breadcrumb = GetString(metadata, "context.breadcrumb"),
-            DocumentTopic = GetString(metadata, "document.topic"),
-            Keywords = GetString(metadata, "document.keywords"),
-            QualityScore = GetFloat(metadata, "quality.overall"),
-            StructuralRole = GetString(metadata, "content.structuralRole"),
+            // The vault's own vocabulary (FluxFeed writes these); the keys this read before — FileFlux's breadcrumb, topic,
+            // keywords, quality and structural role — never reached a vault chunk, so those fields were always null.
+            Kind = GetString(metadata, "chunk_kind") ?? "text",
+            StartPage = startPage,
+            EndPage = GetInt(metadata, VaultPipeline.EndPageMetadataKey) ?? startPage,
         };
     }
 
@@ -173,16 +172,17 @@ public partial class FluxIndexSearchTool
             ? val as string ?? val.ToString()
             : null;
 
-    internal static float? GetFloat(Dictionary<string, object>? metadata, string key)
+    internal static int? GetInt(Dictionary<string, object>? metadata, string key)
     {
         if (metadata is null || !metadata.TryGetValue(key, out var val)) return null;
         return val switch
         {
-            float f => f,
-            double d => (float)d,
             int i => i,
-            long l => l,
-            string s when float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsed) => parsed,
+            long l when l is >= int.MinValue and <= int.MaxValue => (int)l,
+            double d when d == Math.Floor(d) && d is >= int.MinValue and <= int.MaxValue => (int)d,
+            JsonElement { ValueKind: JsonValueKind.Number } e when e.TryGetInt32(out var n) => n,
+            JsonElement { ValueKind: JsonValueKind.String } e when int.TryParse(e.GetString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var n) => n,
+            string str when int.TryParse(str, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) => parsed,
             _ => null
         };
     }

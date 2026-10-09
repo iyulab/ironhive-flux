@@ -6,6 +6,13 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [Unreleased]
 
+### Changed
+- **Breaking** — **knowledge-base search results say what kind of chunk each one is and which pages it covers.**
+  `RagSearchResult` (and each `sources` entry of the search tool's JSON) gains `Kind` (`text`, `table` or
+  `image_description`) and `StartPage`/`EndPage`, read from the vault's chunk metadata. `Breadcrumb`, `DocumentTopic`,
+  `Keywords`, `QualityScore` and `StructuralRole` are removed: they read keys no vault chunk ever carried, so they were
+  always null. Migration: read `Kind` and the page range instead; drop the removed fields.
+
 ### Dependencies
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.58.0 -> 0.59.0, `IronHive.Core` 0.58.0 -> 0.59.0, `IronHive.Plugins.MCP` 0.58.0 -> 0.59.0, `IronHive.Providers.OpenAI` 0.58.0 -> 0.59.0.
 - Re-pinned sibling package(s) `TokenMeter` 0.7.10 -> 0.8.0.

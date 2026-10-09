@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using FluxIndex.Core.Application.Interfaces;
 using FluxFeed.Interfaces;
+using FluxFeed.Services;
 using IronHive.Flux.Rag.Context;
 using IronHive.Flux.Rag.Options;
 using IronHive.Flux.Rag.Tools;
@@ -297,35 +298,32 @@ public class FluxIndexSearchToolTests
 
     #region Metadata Extraction
 
+    // The tool reads what the vault writes. These keys come from FluxFeed's own constants, so a renamed key breaks the
+    // build here instead of turning the fields null in production (the previous keys were never written to a vault chunk).
     [Fact]
-    public async Task SearchAsync_WithRichMetadata_ShouldExtractBreadcrumb()
+    public async Task SearchAsync_TableChunk_ReportsItsKindAndPages()
     {
         var searchResult = CreateSearchResultWithMetadata(new Dictionary<string, object>
         {
-            ["context.breadcrumb"] = "Chapter 1 > Section 2 > Subsection A",
-            ["document.topic"] = "Machine Learning",
-            ["document.keywords"] = "neural networks, deep learning",
-            ["quality.overall"] = 0.92f,
-            ["content.structuralRole"] = "paragraph"
+            ["chunk_kind"] = VaultPipeline.TableChunkKind,
+            [VaultPipeline.StartPageMetadataKey] = 3,
+            [VaultPipeline.EndPageMetadataKey] = 4L,
         });
 
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
             .Returns(searchResult);
 
-        var resultJson = await _tool.SearchAsync("ML concepts", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
+        var resultJson = await _tool.SearchAsync("revenue table", cancellationToken: TestContext.Current.CancellationToken);
+        var first = JsonDocument.Parse(resultJson).RootElement.GetProperty("sources").EnumerateArray().First();
 
-        var sources = result.RootElement.GetProperty("sources");
-        var first = sources.EnumerateArray().First();
-        first.GetProperty("breadcrumb").GetString().Should().Be("Chapter 1 > Section 2 > Subsection A");
-        first.GetProperty("documentTopic").GetString().Should().Be("Machine Learning");
-        first.GetProperty("keywords").GetString().Should().Be("neural networks, deep learning");
-        first.GetProperty("qualityScore").GetSingle().Should().BeApproximately(0.92f, 0.01f);
-        first.GetProperty("structuralRole").GetString().Should().Be("paragraph");
+        first.GetProperty("kind").GetString().Should().Be("table");
+        first.GetProperty("startPage").GetInt32().Should().Be(3);
+        first.GetProperty("endPage").GetInt32().Should().Be(4);
+        first.TryGetProperty("breadcrumb", out _).Should().BeFalse("the fields nothing wrote are gone");
     }
 
     [Fact]
-    public async Task SearchAsync_WithNoMetadata_ShouldReturnNullFields()
+    public async Task SearchAsync_NoMetadata_IsATextChunkWithoutPages()
     {
         var searchResult = new VaultSearchResult
         {
@@ -350,85 +348,36 @@ public class FluxIndexSearchToolTests
             .Returns(searchResult);
 
         var resultJson = await _tool.SearchAsync("test", cancellationToken: TestContext.Current.CancellationToken);
-        var result = JsonDocument.Parse(resultJson);
+        var first = JsonDocument.Parse(resultJson).RootElement.GetProperty("sources").EnumerateArray().First();
 
-        var sources = result.RootElement.GetProperty("sources");
-        var first = sources.EnumerateArray().First();
-        first.GetProperty("breadcrumb").ValueKind.Should().Be(JsonValueKind.Null);
-        first.GetProperty("documentTopic").ValueKind.Should().Be(JsonValueKind.Null);
-        first.GetProperty("keywords").ValueKind.Should().Be(JsonValueKind.Null);
-        first.GetProperty("qualityScore").ValueKind.Should().Be(JsonValueKind.Null);
-        first.GetProperty("structuralRole").ValueKind.Should().Be(JsonValueKind.Null);
+        first.GetProperty("kind").GetString().Should().Be("text");
+        first.GetProperty("startPage").ValueKind.Should().Be(JsonValueKind.Null);
+        first.GetProperty("endPage").ValueKind.Should().Be(JsonValueKind.Null);
     }
 
     [Fact]
-    public void MapToSearchResult_WithPartialMetadata_ShouldHandleGracefully()
+    public void MapToSearchResult_ImageOnOnePage_UsesPageNumberForBothEnds()
     {
         var item = new VaultSearchResultItem
         {
             Entry = null!,
-            SourcePath = "/docs/partial.md",
-            FileName = "partial.md",
-            Content = "Partial metadata",
+            SourcePath = "/docs/deck.pptx",
+            FileName = "deck.pptx",
+            Content = "A bar chart of quarterly revenue",
             Score = 0.75f,
-            ChunkIndex = 0,
+            ChunkIndex = 7,
             Metadata = new Dictionary<string, object>
             {
-                ["context.breadcrumb"] = "Only breadcrumb"
+                ["chunk_kind"] = VaultPipeline.ImageDescriptionChunkKind,
+                [VaultPipeline.PageNumberMetadataKey] = "5",
             }
         };
 
         var result = FluxIndexSearchTool.MapToSearchResult(item);
 
-        result.Breadcrumb.Should().Be("Only breadcrumb");
-        result.DocumentTopic.Should().BeNull();
-        result.Keywords.Should().BeNull();
-        result.QualityScore.Should().BeNull();
-        result.StructuralRole.Should().BeNull();
-    }
-
-    [Fact]
-    public void MapToSearchResult_WithDoubleQualityScore_ShouldConvertToFloat()
-    {
-        var item = new VaultSearchResultItem
-        {
-            Entry = null!,
-            SourcePath = "/docs/double.md",
-            FileName = "double.md",
-            Content = "Double score",
-            Score = 0.8f,
-            ChunkIndex = 0,
-            Metadata = new Dictionary<string, object>
-            {
-                ["quality.overall"] = 0.85 // double, not float
-            }
-        };
-
-        var result = FluxIndexSearchTool.MapToSearchResult(item);
-
-        result.QualityScore.Should().BeApproximately(0.85f, 0.001f);
-    }
-
-    [Fact]
-    public void MapToSearchResult_WithStringQualityScore_ShouldParse()
-    {
-        var item = new VaultSearchResultItem
-        {
-            Entry = null!,
-            SourcePath = "/docs/string-score.md",
-            FileName = "string-score.md",
-            Content = "String score",
-            Score = 0.7f,
-            ChunkIndex = 0,
-            Metadata = new Dictionary<string, object>
-            {
-                ["quality.overall"] = "0.75"
-            }
-        };
-
-        var result = FluxIndexSearchTool.MapToSearchResult(item);
-
-        result.QualityScore.Should().BeApproximately(0.75f, 0.001f);
+        result.Kind.Should().Be("image_description");
+        result.StartPage.Should().Be(5);
+        result.EndPage.Should().Be(5);
     }
 
     #endregion
@@ -498,7 +447,7 @@ public class FluxIndexSearchToolTests
 
     #endregion
 
-    #region GetString / GetFloat Helpers
+    #region GetString / GetInt Helpers
 
     [Fact]
     public void GetString_NullMetadata_ShouldReturnNull()
@@ -528,44 +477,36 @@ public class FluxIndexSearchToolTests
     }
 
     [Fact]
-    public void GetFloat_NullMetadata_ShouldReturnNull()
+    public void GetInt_NullMetadata_ShouldReturnNull()
     {
-        FluxIndexSearchTool.GetFloat(null, "any.key").Should().BeNull();
+        FluxIndexSearchTool.GetInt(null, "any.key").Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData(7)]
+    [InlineData(7L)]
+    [InlineData(7.0)]
+    [InlineData("7")]
+    public void GetInt_StoredForms_ShouldRead(object stored)
+    {
+        var metadata = new Dictionary<string, object> { ["page"] = stored };
+        FluxIndexSearchTool.GetInt(metadata, "page").Should().Be(7);
     }
 
     [Fact]
-    public void GetFloat_FloatValue_ShouldReturn()
+    public void GetInt_JsonNumber_ShouldRead()
     {
-        var metadata = new Dictionary<string, object> { ["score"] = 0.85f };
-        FluxIndexSearchTool.GetFloat(metadata, "score").Should().BeApproximately(0.85f, 0.001f);
+        var metadata = new Dictionary<string, object> { ["page"] = JsonDocument.Parse("12").RootElement.Clone() };
+        FluxIndexSearchTool.GetInt(metadata, "page").Should().Be(12);
     }
 
-    [Fact]
-    public void GetFloat_DoubleValue_ShouldConvert()
+    [Theory]
+    [InlineData("not-a-number")]
+    [InlineData(2.5)]
+    public void GetInt_NotAnInteger_ShouldReturnNull(object stored)
     {
-        var metadata = new Dictionary<string, object> { ["score"] = 0.92 };
-        FluxIndexSearchTool.GetFloat(metadata, "score").Should().BeApproximately(0.92f, 0.001f);
-    }
-
-    [Fact]
-    public void GetFloat_IntValue_ShouldConvert()
-    {
-        var metadata = new Dictionary<string, object> { ["score"] = 1 };
-        FluxIndexSearchTool.GetFloat(metadata, "score").Should().Be(1.0f);
-    }
-
-    [Fact]
-    public void GetFloat_StringValue_ShouldParse()
-    {
-        var metadata = new Dictionary<string, object> { ["score"] = "0.77" };
-        FluxIndexSearchTool.GetFloat(metadata, "score").Should().BeApproximately(0.77f, 0.001f);
-    }
-
-    [Fact]
-    public void GetFloat_InvalidStringValue_ShouldReturnNull()
-    {
-        var metadata = new Dictionary<string, object> { ["score"] = "not-a-number" };
-        FluxIndexSearchTool.GetFloat(metadata, "score").Should().BeNull();
+        var metadata = new Dictionary<string, object> { ["page"] = stored };
+        FluxIndexSearchTool.GetInt(metadata, "page").Should().BeNull();
     }
 
     #endregion
