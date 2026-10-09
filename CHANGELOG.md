@@ -8,6 +8,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ### Dependencies
 - Re-pinned sibling package(s) `FileFlux` 0.52.0 -> 0.53.0.
+- Re-pinned sibling package(s) `FileFlux` 0.53.0 -> 0.54.0, `FluxIndex.Core` 0.80.17 -> 0.81.0, `FluxIndex.SDK` 0.80.17 -> 0.81.0.
 
 ## [0.13.0] - 2026-10-09
 
