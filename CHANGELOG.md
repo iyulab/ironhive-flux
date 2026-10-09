@@ -11,6 +11,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `TokenMeter` 0.7.10 -> 0.8.0.
 - Re-pinned sibling package(s) `FileFlux` 0.54.0 -> 0.55.0, `FluxFeed` 0.51.1 -> 0.52.0.
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.59.0 -> 0.59.1, `IronHive.Core` 0.59.0 -> 0.59.1, `IronHive.Plugins.MCP` 0.59.0 -> 0.59.1, `IronHive.Providers.OpenAI` 0.59.0 -> 0.59.1.
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.81.0 -> 0.82.0, `FluxIndex.SDK` 0.81.0 -> 0.82.0.
 
 ## [0.13.1] - 2026-10-09
 
