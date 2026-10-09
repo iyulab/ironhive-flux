@@ -118,6 +118,7 @@ public partial class FluxIndexSearchTool
                     kind = s.Kind,
                     startPage = s.StartPage,
                     endPage = s.EndPage,
+                    headingPath = s.HeadingPath,
                     preview = s.Content.Length > 200 ? s.Content[..200] + "..." : s.Content
                 })
             };
@@ -161,9 +162,10 @@ public partial class FluxIndexSearchTool
             ChunkIndex = item.ChunkIndex,
             // The vault's own vocabulary (FluxFeed writes these); the keys this read before — FileFlux's breadcrumb, topic,
             // keywords, quality and structural role — never reached a vault chunk, so those fields were always null.
-            Kind = GetString(metadata, "chunk_kind") ?? "text",
+            Kind = GetString(metadata, VaultPipeline.ChunkKindMetadataKey) ?? "text",
             StartPage = startPage,
             EndPage = GetInt(metadata, VaultPipeline.EndPageMetadataKey) ?? startPage,
+            HeadingPath = GetString(metadata, VaultPipeline.HeadingPathMetadataKey),
         };
     }
 

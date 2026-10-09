@@ -9,9 +9,10 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ### Changed
 - **Breaking** — **knowledge-base search results say what kind of chunk each one is and which pages it covers.**
   `RagSearchResult` (and each `sources` entry of the search tool's JSON) gains `Kind` (`text`, `table` or
-  `image_description`) and `StartPage`/`EndPage`, read from the vault's chunk metadata. `Breadcrumb`, `DocumentTopic`,
-  `Keywords`, `QualityScore` and `StructuralRole` are removed: they read keys no vault chunk ever carried, so they were
-  always null. Migration: read `Kind` and the page range instead; drop the removed fields.
+  `image_description`), `StartPage`/`EndPage` and `HeadingPath` (the headings above the chunk, `"Install > Windows"`;
+  FluxFeed 0.53.0 stores it), read from the vault's chunk metadata. `Breadcrumb`, `DocumentTopic`, `Keywords`,
+  `QualityScore` and `StructuralRole` are removed: they read keys no vault chunk ever carried, so they were always null.
+  Migration: read `Kind`, the page range and `HeadingPath` instead (`HeadingPath` replaces `Breadcrumb`); drop the rest.
 
 ### Dependencies
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.58.0 -> 0.59.0, `IronHive.Core` 0.58.0 -> 0.59.0, `IronHive.Plugins.MCP` 0.58.0 -> 0.59.0, `IronHive.Providers.OpenAI` 0.58.0 -> 0.59.0.
@@ -20,6 +21,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.59.0 -> 0.59.1, `IronHive.Core` 0.59.0 -> 0.59.1, `IronHive.Plugins.MCP` 0.59.0 -> 0.59.1, `IronHive.Providers.OpenAI` 0.59.0 -> 0.59.1.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.81.0 -> 0.82.0, `FluxIndex.SDK` 0.81.0 -> 0.82.0.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.82.0 -> 0.83.0, `FluxIndex.SDK` 0.82.0 -> 0.83.0.
+- Re-pinned sibling package(s) `FileFlux` 0.55.0 -> 0.56.0, `WebFlux` 0.23.0 -> 0.24.0, `FluxFeed` 0.52.0 -> 0.53.0.
 
 ## [0.13.1] - 2026-10-09
 

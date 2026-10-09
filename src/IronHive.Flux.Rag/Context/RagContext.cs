@@ -84,6 +84,12 @@ public record RagSearchResult
 
     /// <summary>Last page (1-based) the chunk covers, when the document has pages; null otherwise.</summary>
     public int? EndPage { get; init; }
+
+    /// <summary>
+    /// The headings the chunk sits under, outermost first, joined with <c>" &gt; "</c> (<c>"Install &gt; Windows"</c>); null
+    /// when the document has no headings above it.
+    /// </summary>
+    public string? HeadingPath { get; init; }
 }
 
 /// <summary>

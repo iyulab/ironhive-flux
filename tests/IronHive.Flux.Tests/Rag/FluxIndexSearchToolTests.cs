@@ -305,9 +305,10 @@ public class FluxIndexSearchToolTests
     {
         var searchResult = CreateSearchResultWithMetadata(new Dictionary<string, object>
         {
-            ["chunk_kind"] = VaultPipeline.TableChunkKind,
+            [VaultPipeline.ChunkKindMetadataKey] = VaultPipeline.TableChunkKind,
             [VaultPipeline.StartPageMetadataKey] = 3,
             [VaultPipeline.EndPageMetadataKey] = 4L,
+            [VaultPipeline.HeadingPathMetadataKey] = "Results > Revenue",
         });
 
         _vault.SearchAsync(Arg.Any<string>(), Arg.Any<VaultSearchOptions>(), Arg.Any<CancellationToken>())
@@ -319,6 +320,7 @@ public class FluxIndexSearchToolTests
         first.GetProperty("kind").GetString().Should().Be("table");
         first.GetProperty("startPage").GetInt32().Should().Be(3);
         first.GetProperty("endPage").GetInt32().Should().Be(4);
+        first.GetProperty("headingPath").GetString().Should().Be("Results > Revenue");
         first.TryGetProperty("breadcrumb", out _).Should().BeFalse("the fields nothing wrote are gone");
     }
 
@@ -353,6 +355,7 @@ public class FluxIndexSearchToolTests
         first.GetProperty("kind").GetString().Should().Be("text");
         first.GetProperty("startPage").ValueKind.Should().Be(JsonValueKind.Null);
         first.GetProperty("endPage").ValueKind.Should().Be(JsonValueKind.Null);
+        first.GetProperty("headingPath").ValueKind.Should().Be(JsonValueKind.Null);
     }
 
     [Fact]
@@ -368,7 +371,7 @@ public class FluxIndexSearchToolTests
             ChunkIndex = 7,
             Metadata = new Dictionary<string, object>
             {
-                ["chunk_kind"] = VaultPipeline.ImageDescriptionChunkKind,
+                [VaultPipeline.ChunkKindMetadataKey] = VaultPipeline.ImageDescriptionChunkKind,
                 [VaultPipeline.PageNumberMetadataKey] = "5",
             }
         };
