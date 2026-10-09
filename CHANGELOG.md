@@ -8,6 +8,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ### Dependencies
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.58.0 -> 0.59.0, `IronHive.Core` 0.58.0 -> 0.59.0, `IronHive.Plugins.MCP` 0.58.0 -> 0.59.0, `IronHive.Providers.OpenAI` 0.58.0 -> 0.59.0.
+- Re-pinned sibling package(s) `TokenMeter` 0.7.10 -> 0.8.0.
 
 ## [0.13.1] - 2026-10-09
 

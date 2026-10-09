@@ -16,7 +16,7 @@
     <PackageVersion Include="FluxIndex.Core" Version="0.81.0" />
     <PackageVersion Include="FluxFeed" Version="0.51.1" />
     <PackageVersion Include="FluxIndex.SDK" Version="0.81.0" />
-    <PackageVersion Include="TokenMeter" Version="0.7.10" />
+    <PackageVersion Include="TokenMeter" Version="0.8.0" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
     <!-- Override transitive vulnerable dependency (GHSA-73j8-2gch-69rq) -->
