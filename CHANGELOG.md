@@ -9,6 +9,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ### Dependencies
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.59.1 -> 0.60.0, `IronHive.Core` 0.59.1 -> 0.60.0, `IronHive.Plugins.MCP` 0.59.1 -> 0.60.0, `IronHive.Providers.OpenAI` 0.59.1 -> 0.60.0.
 - Re-pinned sibling package(s) `FluxFeed` 0.53.0 -> 0.54.0, `FluxIndex.Core` 0.84.0 -> 0.85.0, `FluxIndex.SDK` 0.84.0 -> 0.85.0, `TokenMeter` 0.8.0 -> 0.9.0.
+- Re-pinned sibling package(s) `TokenMeter` 0.9.0 -> 0.10.0.
 
 ## [0.15.0] - 2026-10-10
 
