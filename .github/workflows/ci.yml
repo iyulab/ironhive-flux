@@ -3,10 +3,10 @@ name: CI
 on:
   push:
     branches: [main]
-    paths: ['src/**', 'tests/**', 'Directory.Build.props', 'Directory.Packages.props', '.github/workflows/ci.yml']
+    paths: ['src/**', 'tests/**', 'Directory.Build.props', 'Directory.Packages.props', 'Directory.Build.targets', '.github/workflows/ci.yml']
   pull_request:
     branches: [main]
-    paths: ['src/**', 'tests/**', 'Directory.Build.props', 'Directory.Packages.props', '.github/workflows/ci.yml']
+    paths: ['src/**', 'tests/**', 'Directory.Build.props', 'Directory.Packages.props', 'Directory.Build.targets', '.github/workflows/ci.yml']
   workflow_dispatch:
 
 concurrency:
