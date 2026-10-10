@@ -4,6 +4,18 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [0.15.0] - Unreleased
+
+### Removed
+- **Breaking** — **`IronHiveTextCompletionServiceForFileFlux` no longer has `AnalyzeStructureAsync`,
+  `SummarizeContentAsync`, `ExtractMetadataAsync` and `AssessQualityAsync`.** FileFlux 0.57.0 removed them from
+  `IDocumentAnalysisService` (nothing in FileFlux called them), together with their result types. FileFlux keeps using
+  `GenerateAsync`, `ProviderInfo` and `IsAvailableAsync`. Migration: none through FileFlux; a caller of the adapter's own
+  methods sends its prompt through `GenerateAsync`.
+
+### Dependencies
+- Re-pinned sibling package(s) `FileFlux` 0.56.0 -> 0.57.0, `FluxIndex.Core` 0.83.0 -> 0.84.0, `FluxIndex.SDK` 0.83.0 -> 0.84.0.
+
 ## [0.14.0] - 2026-10-10
 
 ### Changed
