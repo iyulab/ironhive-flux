@@ -6,6 +6,11 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [Unreleased]
 
+### Changed
+- **The packages from this repository depend on each other at exactly the same version** (`[x.y.z]`), not a floor.
+  A consumer that moves one of them while another resolves at an older version now gets restore warning NU1608 naming
+  the pair (an error where warnings are errors) — before, the mixed versions restored silently and could fail at run time.
+
 ### Dependencies
 - Re-pinned sibling package(s) `IronHive.Abstractions` 0.59.1 -> 0.60.0, `IronHive.Core` 0.59.1 -> 0.60.0, `IronHive.Plugins.MCP` 0.59.1 -> 0.60.0, `IronHive.Providers.OpenAI` 0.59.1 -> 0.60.0.
 - Re-pinned sibling package(s) `FluxFeed` 0.53.0 -> 0.54.0, `FluxIndex.Core` 0.84.0 -> 0.85.0, `FluxIndex.SDK` 0.84.0 -> 0.85.0, `TokenMeter` 0.8.0 -> 0.9.0.
