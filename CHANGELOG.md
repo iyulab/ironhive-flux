@@ -12,6 +12,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `TokenMeter` 0.9.0 -> 0.10.0.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.85.0 -> 0.86.0, `FluxIndex.SDK` 0.85.0 -> 0.86.0.
 - Re-pinned sibling package(s) `TokenMeter` 0.10.0 -> 0.11.0.
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.86.0 -> 0.87.0, `FluxIndex.SDK` 0.86.0 -> 0.87.0, `IronHive.Abstractions` 0.60.0 -> 0.61.0, `IronHive.Core` 0.60.0 -> 0.61.0, `IronHive.Plugins.MCP` 0.60.0 -> 0.61.0, `IronHive.Providers.OpenAI` 0.60.0 -> 0.61.0.
 
 ## [0.15.0] - 2026-10-10
 
