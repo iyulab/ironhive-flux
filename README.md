@@ -13,9 +13,9 @@ Flux 통합 외에, ironhive 에이전트를 위한 외부 도구/파이프라�
 
 | Package | Description |
 |---------|-------------|
-| `IronHive.Flux.Core` | 핵심 어댑터 (Embedding, TextCompletion, ImageToText) |
+| `IronHive.Flux.Core` | 핵심 어댑터 (Embedding, TextCompletion, ImageToText) — IronHive 모델을 FileFlux · WebFlux · FluxCurator · FluxIndex 포트로 |
 | `IronHive.Flux.Rag` | RAG 도구 (검색, 메모라이즈, 상태 조회) |
-| `IronHive.Flux` | 메타패키지 |
+| `IronHive.Flux` | 메타패키지 — `IronHive.Flux.Core` + `IronHive.Flux.Rag` 만 묶는다(WebLookup · Tools 패키지는 따로 설치) |
 | `IronHive.Flux.WebLookup` | WebLookup → WebFlux → FluxIndex RAG 파이프라인 |
 | `IronHive.Tools.WebLookup` | 에이전트용 웹 검색/탐색 FunctionTool |
 | `IronHive.Tools.SystemHarness` | system-harness MCP 서버 통합 확장 |
@@ -24,7 +24,7 @@ Flux 통합 외에, ironhive 에이전트를 위한 외부 도구/파이프라�
 
 | 기능 | 진입점 | 켜는 법 |
 |---|---|---|
-| IronHive 모델을 Flux 포트로 | `AddIronHiveFluxCore(o => …)` — 임베딩·텍스트 완성·이미지→텍스트 어댑터 | opt-in. `AddIronHiveFileFluxAdapters` · `AddIronHiveWebFluxAdapters` · `AddIronHiveFluxIndexAdapters`(또는 `AddAllIronHiveFluxAdapters`)로 각 Flux 패키지의 포트에 연결 |
+| IronHive 모델을 Flux 포트로 | `AddIronHiveFluxCore(o => …)`(모델 id 등 옵션만 등록) + 임베딩·텍스트 완성·이미지→텍스트 어댑터 | opt-in. `AddIronHiveFileFluxAdapters` · `AddIronHiveWebFluxAdapters` · `AddIronHiveFluxIndexAdapters`(또는 `AddAllIronHiveFluxAdapters`)로 각 Flux 패키지의 포트에 연결 — FileFlux · WebFlux 쪽은 시맨틱 청킹용 FluxCurator `IEmbedder` 도 등록한다. 어댑터는 IronHive `IEmbeddingGenerator` · `IMessageGenerator` 를 컨테이너에서 받으므로 그 둘을 먼저 등록한다(예: `services.AddSingleton(hive.GetEmbeddingGenerator("openai"))`) |
 | 에이전트용 RAG 도구 | `AddFluxRagTools(o => …)` → `provider.GetFluxRagTools()` — `search_knowledge_base` · `memorize_document(s)` · `memorize_directory` · `memorize_web_page` · `forget_document` · `list_documents` · `get_document_info` · `detect_changes` · `knowledge_base_status` | opt-in. FluxFeed `IVault` 가 먼저 등록돼 있어야 한다. `memorize_web_page` 는 WebFlux 로 추출하므로(robots.txt · 요청 타임아웃 · 보일러플레이트 제거) `services.AddWebFlux()` 가 등록돼 있을 때만 포함된다 |
 | RAG 컨텍스트 조립 | `AddFluxRagContext(…)` → `RagContextBuilder.BuildContextAsync` | opt-in |
 | 웹 검색 → RAG 적재 | `AddWebLookupRagPipeline(…)` → `WebLookupRagPipeline`(`DiscoverUrlsAsync` · `DiscoverSitemapUrlsAsync` · `DiscoverCombinedUrlsAsync`) | opt-in. WebLookup(`services.AddWebLookup(…)`)이 먼저 |
@@ -35,19 +35,24 @@ Flux 통합 외에, ironhive 에이전트를 위한 외부 도구/파이프라�
 
 ### RAG Chatbot
 ```
-IronHive + IronBees + FluxIndex
+IronHive + FluxIndex (FluxFeed IVault)
 → 지식기반 챗봇 서비스
 ```
+
+예제: [samples/RagChatbotSample](samples/RagChatbotSample/Program.cs) — RAG 도구 목록과 `RagContextBuilder` 컨텍스트 조립.
 
 ## Quick Start
 
 ```csharp
-// Core 설정
+// Core 설정 (옵션)
 services.AddIronHiveFluxCore(options =>
 {
     options.EmbeddingModelId = "text-embedding-3-small";
     options.TextCompletionModelId = "gpt-4o";
 });
+
+// Flux 포트 어댑터 (IronHive IEmbeddingGenerator / IMessageGenerator 가 등록돼 있어야 한다)
+services.AddAllIronHiveFluxAdapters();
 
 // RAG 도구
 services.AddFluxRagTools(options =>
