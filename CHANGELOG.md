@@ -9,6 +9,9 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ### Changed
 - **The nuget.org «Release Notes» of every package link to the GitHub release of its version**, whose notes are this CHANGELOG's section for that version.
 
+### Dependencies
+- Re-pinned sibling package(s) `WebFlux` 0.25.0 -> 0.26.0.
+
 ## [0.16.0] - 2026-10-11
 
 ### Removed
