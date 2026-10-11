@@ -29,11 +29,10 @@ public class FluxCompletionRequestMappingTests
         => _generator.GenerateMessageAsync(Arg.Do<MessageGenerationRequest>(r => _sent = r), Arg.Any<CancellationToken>())
             .Returns(new MessageResponse { Message = Message.Assistant(text) });
 
-    public static TheoryData<string> Adapters => new() { "webflux", "fluxindex" };
+    // One adapter serves the shared contract for every Flux package (the per-package copies were merged).
+    public static TheoryData<string> Adapters => new() { "adapter" };
 
-    private ITextCompletionService Create(string which) => which == "webflux"
-        ? new IronHiveTextCompletionServiceForWebFlux(_generator, _options)
-        : new IronHiveTextCompletionServiceForFluxIndex(_generator, _options);
+    private IronHiveTextCompletionService Create(string _) => new(_generator, _options);
 
     [Theory]
     [MemberData(nameof(Adapters))]
@@ -83,10 +82,9 @@ public class FluxCompletionRequestMappingTests
 
     public static TheoryData<string, bool?, MessageThinkingEffort?> ThinkingCases => new()
     {
-        { "webflux", false, MessageThinkingEffort.None },
-        { "fluxindex", false, MessageThinkingEffort.None },
-        { "fluxindex", true, MessageThinkingEffort.Medium },
-        { "fluxindex", null, null },
+        { "adapter", false, MessageThinkingEffort.None },
+                { "adapter", true, MessageThinkingEffort.Medium },
+        { "adapter", null, null },
     };
 
     [Theory]
@@ -105,7 +103,7 @@ public class FluxCompletionRequestMappingTests
     {
         Respond("{}");
 
-        await Create("fluxindex").CompleteJsonAsync("p", new TextCompletionOptions { EnableThinking = false }, TestContext.Current.CancellationToken);
+        await Create("adapter").CompleteJsonAsync("p", new TextCompletionOptions { EnableThinking = false }, TestContext.Current.CancellationToken);
 
         _sent!.ThinkingEffort.Should().Be(MessageThinkingEffort.None);
     }

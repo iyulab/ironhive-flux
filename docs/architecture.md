@@ -151,8 +151,7 @@ IMessageGenerator      ──┬───>  FileFlux.IDocumentAnalysisService
 | Adapter | Source | Target | Key Methods |
 |---------|--------|--------|-------------|
 | `IronHiveTextCompletionServiceForFileFlux` | `IMessageGenerator` | `FileFlux.IDocumentAnalysisService` | `GenerateAsync`, `IsAvailableAsync`, `ProviderInfo` |
-| `IronHiveTextCompletionServiceForWebFlux` | `IMessageGenerator` | `WebFlux.ITextCompletionService` | `CompleteAsync`, `CompleteStreamAsync` |
-| `IronHiveTextCompletionServiceForFluxIndex` | `IMessageGenerator` | `FluxIndex.ITextCompletionService` | `GenerateCompletionAsync`, `GenerateJsonCompletionAsync` |
+| `IronHiveTextCompletionService` | `IMessageGenerator` | `Flux.Abstractions.ITextCompletionService` (WebFlux, FluxIndex, FluxImprover, …) | `CompleteAsync`, `CompleteJsonAsync`, `CompleteStreamAsync`, `CompleteBatchAsync` |
 
 **ImageToText Adapters** (2):
 

@@ -39,20 +39,13 @@ public class TextCompletionAdapterTests
 
     #region FluxIndex Adapter
 
-    public static TheoryData<string> AdapterPaths => ["fluxindex-text", "fluxindex-json", "webflux-text", "webflux-json"];
+    public static TheoryData<string> AdapterPaths => ["text", "json"];
 
     private Task<string> CompleteVia(string path, TextCompletionOptions options)
     {
-        ITextCompletionService fluxIndex = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
-        ITextCompletionService webFlux = new IronHiveTextCompletionServiceForWebFlux(_mockGenerator, _options);
+        ITextCompletionService adapter = new IronHiveTextCompletionService(_mockGenerator, _options);
         var ct = TestContext.Current.CancellationToken;
-        return path switch
-        {
-            "fluxindex-text" => fluxIndex.CompleteAsync("p", options, ct),
-            "fluxindex-json" => fluxIndex.CompleteJsonAsync("p", options, ct),
-            "webflux-text" => webFlux.CompleteAsync("p", options, ct),
-            _ => webFlux.CompleteJsonAsync("p", options, ct),
-        };
+        return path == "json" ? adapter.CompleteJsonAsync("p", options, ct) : adapter.CompleteAsync("p", options, ct);
     }
 
     private void SetupTruncatedResponse() =>
@@ -89,7 +82,7 @@ public class TextCompletionAdapterTests
             .GenerateMessageAsync(Arg.Any<MessageGenerationRequest>(), Arg.Any<CancellationToken>())
             .Returns(new MessageResponse { Message = Message.Assistant("done"), DoneReason = MessageDoneReason.EndTurn });
 
-        var result = await CompleteVia("fluxindex-text", new TextCompletionOptions { ThrowOnTruncation = true });
+        var result = await CompleteVia("text", new TextCompletionOptions { ThrowOnTruncation = true });
 
         result.Should().Be("done");
     }
@@ -99,7 +92,7 @@ public class TextCompletionAdapterTests
     {
         // Arrange
         SetupGeneratorResponse("Completed text response");
-        var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+        var adapter = new IronHiveTextCompletionService(_mockGenerator, _options);
 
         // Act
         var result = await adapter.CompleteAsync("test prompt", cancellationToken: TestContext.Current.CancellationToken);
@@ -113,7 +106,7 @@ public class TextCompletionAdapterTests
     {
         // Arrange
         SetupGeneratorResponse("ok");
-        var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+        var adapter = new IronHiveTextCompletionService(_mockGenerator, _options);
 
         // Act
         await adapter.CompleteAsync("test", new TextCompletionOptions { MaxTokens = 100, Temperature = 0.5f }, TestContext.Current.CancellationToken);
@@ -132,7 +125,7 @@ public class TextCompletionAdapterTests
     {
         // Arrange
         SetupGeneratorResponse("```json\n{\"key\": \"value\"}\n```");
-        var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+        var adapter = new IronHiveTextCompletionService(_mockGenerator, _options);
 
         // Act
         var result = await adapter.CompleteJsonAsync("generate json", cancellationToken: TestContext.Current.CancellationToken);
@@ -146,7 +139,7 @@ public class TextCompletionAdapterTests
     {
         // Arrange
         SetupGeneratorResponse("{\"name\": \"test\"}");
-        var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+        var adapter = new IronHiveTextCompletionService(_mockGenerator, _options);
 
         // Act
         var result = await adapter.CompleteJsonAsync("generate json", cancellationToken: TestContext.Current.CancellationToken);
@@ -160,7 +153,7 @@ public class TextCompletionAdapterTests
     {
         // Arrange
         SetupGeneratorResponse("```\n[1, 2, 3]\n```");
-        var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+        var adapter = new IronHiveTextCompletionService(_mockGenerator, _options);
 
         // Act
         var result = await adapter.CompleteJsonAsync("generate json array", cancellationToken: TestContext.Current.CancellationToken);
@@ -174,7 +167,7 @@ public class TextCompletionAdapterTests
     {
         // Arrange
         SetupGeneratorResponse("{}");
-        var adapter = new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, _options);
+        var adapter = new IronHiveTextCompletionService(_mockGenerator, _options);
 
         // Act
         await adapter.CompleteJsonAsync("test", cancellationToken: TestContext.Current.CancellationToken);
@@ -188,7 +181,7 @@ public class TextCompletionAdapterTests
     [Fact]
     public void FluxIndex_Constructor_NullGenerator_Throws()
     {
-        var act = () => new IronHiveTextCompletionServiceForFluxIndex(null!, _options);
+        var act = () => new IronHiveTextCompletionService(null!, _options);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -196,7 +189,7 @@ public class TextCompletionAdapterTests
     [Fact]
     public void FluxIndex_Constructor_NullOptions_Throws()
     {
-        var act = () => new IronHiveTextCompletionServiceForFluxIndex(_mockGenerator, null!);
+        var act = () => new IronHiveTextCompletionService(_mockGenerator, null!);
 
         act.Should().Throw<ArgumentNullException>();
     }

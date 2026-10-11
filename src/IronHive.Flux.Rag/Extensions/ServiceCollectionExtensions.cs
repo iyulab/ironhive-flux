@@ -36,8 +36,9 @@ public static class ServiceCollectionExtensions
             opt.ToolTimeout = options.ToolTimeout;
         });
 
-        // VaultSecurityOptions (defaults if not configured externally)
-        services.TryAddSingleton(Microsoft.Extensions.Options.Options.Create(new VaultSecurityOptions()));
+        // VaultSecurityOptions through the options pipeline: its defaults, plus whatever ConfigureVaultSecurity (before or
+        // after this call) sets. A fixed IOptions instance here would win over every Configure and drop those settings.
+        services.AddOptions<VaultSecurityOptions>();
 
         // 컨텍스트 빌더 등록
         services.TryAddSingleton<RagContextBuilder>();

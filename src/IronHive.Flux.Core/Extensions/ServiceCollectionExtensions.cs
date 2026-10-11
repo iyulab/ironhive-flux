@@ -60,7 +60,8 @@ public static class ServiceCollectionExtensions
     {
         // Semantic chunking runs on FluxCurator, which reads IEmbedder from the container (WebFlux 0.23.0 removed its own interface).
         services.TryAddSingleton<FluxCurator.Core.Core.IEmbedder, IronHiveEmbedderForFluxCurator>();
-        services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionServiceForWebFlux>();
+        // One adapter for the shared Flux.Abstractions contract: WebFlux, FluxIndex and the rest resolve the same service.
+        services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionService>();
         return services;
     }
 
@@ -70,7 +71,8 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddIronHiveFluxIndexAdapters(this IServiceCollection services)
     {
         services.TryAddSingleton<FluxIndex.Core.Application.Interfaces.IEmbeddingService, IronHiveEmbeddingServiceForFluxIndex>();
-        services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionServiceForFluxIndex>();
+        // One adapter for the shared Flux.Abstractions contract: WebFlux, FluxIndex and the rest resolve the same service.
+        services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionService>();
         return services;
     }
 

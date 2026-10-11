@@ -13,8 +13,7 @@
 | 클래스 | 타겟 | 주요 메서드 |
 |--------|------|------------|
 | `IronHiveTextCompletionServiceForFileFlux` | `FileFlux.IDocumentAnalysisService` | `GenerateAsync` (both overloads — `GenerationSettings` reach the request; a response cut off at the output limit throws `GenerationTruncatedException`), `IsAvailableAsync`, `ProviderInfo` |
-| `IronHiveTextCompletionServiceForWebFlux` | `WebFlux.ITextCompletionService` | `CompleteAsync`, `CompleteStreamAsync` |
-| `IronHiveTextCompletionServiceForFluxIndex` | `FluxIndex.ITextCompletionService` | `GenerateCompletionAsync`, `GenerateJsonCompletionAsync` |
+| `IronHiveTextCompletionService` | `Flux.Abstractions.ITextCompletionService` (WebFlux, FluxIndex, FluxImprover, …) | `CompleteAsync`, `CompleteJsonAsync`, `CompleteStreamAsync`, `CompleteBatchAsync` |
 
 ## ImageToText 어댑터
 

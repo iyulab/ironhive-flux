@@ -9,18 +9,20 @@ using System.Runtime.CompilerServices;
 namespace IronHive.Flux.Core.Adapters.TextCompletion;
 
 /// <summary>
-/// IronHive IMessageGenerator를 WebFlux ITextCompletionService로 어댑트
+/// IronHive <see cref="IMessageGenerator"/>를 Flux 생태계 공용 <see cref="ITextCompletionService"/>(Flux.Abstractions)로 어댑트한다.
+/// WebFlux · FluxIndex · FluxImprover 등 그 계약을 받는 모든 패키지가 같은 인스턴스를 쓴다 — 기본값은
+/// <see cref="IronHiveFluxCoreOptions.DefaultTemperature"/> · <see cref="IronHiveFluxCoreOptions.DefaultCompletionMaxTokens"/>.
 /// </summary>
-public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionService
+public partial class IronHiveTextCompletionService : ITextCompletionService
 {
     private readonly IMessageGenerator _generator;
     private readonly IronHiveFluxCoreOptions _options;
-    private readonly ILogger<IronHiveTextCompletionServiceForWebFlux>? _logger;
+    private readonly ILogger<IronHiveTextCompletionService>? _logger;
 
-    public IronHiveTextCompletionServiceForWebFlux(
+    public IronHiveTextCompletionService(
         IMessageGenerator generator,
         IOptions<IronHiveFluxCoreOptions> options,
-        ILogger<IronHiveTextCompletionServiceForWebFlux>? logger = null)
+        ILogger<IronHiveTextCompletionService>? logger = null)
     {
         _generator = generator ?? throw new ArgumentNullException(nameof(generator));
         _options = options?.Value ?? throw new ArgumentNullException(nameof(options));
@@ -137,22 +139,22 @@ public partial class IronHiveTextCompletionServiceForWebFlux : ITextCompletionSe
 
     #region LoggerMessage
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux text completion started - PromptLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Text completion started - PromptLength: {Length}")]
     private static partial void LogTextCompletionStarted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux text completion completed - ResultLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Text completion completed - ResultLength: {Length}")]
     private static partial void LogTextCompletionCompleted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux streaming text completion started - PromptLength: {Length}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Streaming text completion started - PromptLength: {Length}")]
     private static partial void LogStreamingTextCompletionStarted(ILogger logger, int Length);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux streaming text completion completed")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Streaming text completion completed")]
     private static partial void LogStreamingTextCompletionCompleted(ILogger logger);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux batch text completion started - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Batch text completion started - Count: {Count}")]
     private static partial void LogBatchTextCompletionStarted(ILogger logger, int Count);
 
-    [LoggerMessage(Level = LogLevel.Debug, Message = "WebFlux batch text completion completed - Count: {Count}")]
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Batch text completion completed - Count: {Count}")]
     private static partial void LogBatchTextCompletionCompleted(ILogger logger, int Count);
 
     #endregion

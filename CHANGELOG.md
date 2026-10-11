@@ -6,6 +6,20 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [Unreleased]
 
+### Removed
+- **Breaking: `IronHiveTextCompletionServiceForWebFlux` and `IronHiveTextCompletionServiceForFluxIndex` are one adapter,
+  `IronHiveTextCompletionService`.** Both implemented the same `Flux.Abstractions.ITextCompletionService`, so
+  `AddAllIronHiveFluxAdapters` registered only the first. `AddIronHiveFluxIndexAdapters` alone gave a copy that ignored
+  `DefaultTemperature` and `DefaultCompletionMaxTokens` (it used 0.7 and 500) and streamed the whole answer as one chunk.
+  Every registration now resolves the same service, with the configured defaults and real streaming. Migration: if you
+  construct either class yourself, construct `IronHiveTextCompletionService` (same constructor).
+
+### Fixed
+- **Breaking: `ConfigureVaultSecurity` takes effect.** `AddFluxRagTools` registered a fixed `IOptions<VaultSecurityOptions>`
+  instance, which won over every `Configure`, so `AllowedBasePaths`, `MaxFileSizeBytes` and `RejectSymlinks` set through
+  `ConfigureVaultSecurity` were silently ignored, before or after the call. The memorize tools now enforce them. If you
+  configured allowed paths, files outside them are refused from this version.
+
 ### Changed
 - **The packages from this repository depend on each other at exactly the same version** (`[x.y.z]`), not a floor.
   A consumer that moves one of them while a family member it depends on resolves at an older version now gets restore warning NU1608 naming
