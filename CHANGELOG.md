@@ -12,6 +12,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ### Dependencies
 - Re-pinned sibling package(s) `WebFlux` 0.25.0 -> 0.26.0.
 - Re-pinned sibling package(s) `FileFlux` 0.58.0 -> 0.59.0.
+- Re-pinned sibling package(s) `TokenMeter` 0.11.0 -> 0.12.0.
 
 ## [0.16.0] - 2026-10-11
 
