@@ -13,6 +13,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `WebFlux` 0.25.0 -> 0.26.0.
 - Re-pinned sibling package(s) `FileFlux` 0.58.0 -> 0.59.0.
 - Re-pinned sibling package(s) `TokenMeter` 0.11.0 -> 0.12.0.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.62.0 -> 0.63.0, `IronHive.Core` 0.62.0 -> 0.63.0, `IronHive.Plugins.MCP` 0.62.0 -> 0.63.0, `IronHive.Providers.OpenAI` 0.62.0 -> 0.63.0.
 
 ## [0.16.0] - 2026-10-11
 
