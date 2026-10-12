@@ -13,9 +13,9 @@
     <PackageVersion Include="WebFlux" Version="0.26.0" />
     <PackageVersion Include="FluxCurator.Core" Version="0.14.0" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.90.0" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.91.0" />
     <PackageVersion Include="FluxFeed" Version="0.54.0" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.90.0" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.91.0" />
     <PackageVersion Include="TokenMeter" Version="0.12.0" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
@@ -33,7 +33,7 @@
     <!-- xUnit v3/MTP native mode: no Microsoft.NET.Test.Sdk needed, coverlet.collector was a dead
          reference (CI never invoked the coverage collector flag) -->
     <PackageVersion Include="AwesomeAssertions" Version="9.6.0" />
-    <PackageVersion Include="Iyu.Conventions.Testing" Version="0.6.0" />
+    <PackageVersion Include="Iyu.Conventions.Testing" Version="0.7.0" />
     <PackageVersion Include="NSubstitute" Version="6.2.0" />
     <PackageVersion Include="xunit.v3" Version="4.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="4.0.0" />
