@@ -22,6 +22,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `Iyu.Conventions.Testing` 0.10.1 -> 0.11.0, `TokenMeter` 0.12.0 -> 0.13.0.
 - Re-pinned sibling package(s) `FileFlux` 0.59.3 -> 0.60.0.
 - Re-pinned sibling package(s) `FileFlux` 0.60.0 -> 0.61.0.
+- Re-pinned sibling package(s) `IronHive.Abstractions` 0.65.0 -> 0.65.1, `IronHive.Core` 0.65.0 -> 0.65.1, `IronHive.Plugins.MCP` 0.65.0 -> 0.65.1, `IronHive.Providers.OpenAI` 0.65.0 -> 0.65.1, `WebFlux` 0.26.0 -> 0.26.1.
 
 ## [0.16.0] - 2026-10-11
 
