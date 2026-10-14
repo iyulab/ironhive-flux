@@ -27,6 +27,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Re-pinned sibling package(s) `TokenMeter` 0.13.0 -> 0.13.1.
 - Re-pinned sibling package(s) `FluxFeed` 0.54.0 -> 0.54.1.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.91.1 -> 0.92.0, `FluxIndex.SDK` 0.91.1 -> 0.92.0.
+- Re-pinned sibling package(s) `FileFlux` 0.62.0 -> 0.63.0, `FluxIndex.Core` 0.92.0 -> 0.93.0, `FluxIndex.SDK` 0.92.0 -> 0.93.0.
 
 ## [0.16.0] - 2026-10-11
 
