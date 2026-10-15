@@ -10,13 +10,13 @@
     <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.66.0" />
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.64.0" />
+    <PackageVersion Include="FileFlux" Version="0.65.0" />
     <PackageVersion Include="WebFlux" Version="0.26.1" />
     <PackageVersion Include="FluxCurator" Version="0.16.0" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.98.0" />
-    <PackageVersion Include="FluxFeed" Version="0.55.0" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.98.0" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.99.0" />
+    <PackageVersion Include="FluxFeed" Version="0.56.0" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.99.0" />
     <PackageVersion Include="TokenMeter" Version="0.13.1" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
