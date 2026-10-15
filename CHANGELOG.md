@@ -40,6 +40,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - Microsoft.Extensions.* servicing 10.0.12 -> 10.0.13 (`Microsoft.Extensions.DependencyInjection`, `Microsoft.Extensions.DependencyInjection.Abstractions`, `Microsoft.Extensions.Logging.Abstractions`, `Microsoft.Extensions.Logging.Console`, `Microsoft.Extensions.Options`) — the floor FluxIndex 0.94.0 carries.
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.93.0 -> 0.94.0, `FluxIndex.SDK` 0.93.0 -> 0.94.0.
 - Re-pinned sibling package(s) `FluxFeed` 0.54.1 -> 0.55.0.
+- Re-pinned sibling package(s) `FileFlux` 0.63.0 -> 0.63.1, `FluxIndex.Core` 0.95.0 -> 0.96.0, `FluxIndex.SDK` 0.95.0 -> 0.96.0.
 
 ## [0.16.0] - 2026-10-11
 
