@@ -2,9 +2,12 @@ using Flux.Abstractions;
 using IronHive.Flux.Core.Adapters.Embedding;
 using IronHive.Flux.Core.Adapters.ImageToText;
 using IronHive.Flux.Core.Adapters.TextCompletion;
+using FluxIndex.Core.Application.Services;
+using IronHive.Extensions.AI;
 using IronHive.Flux.Core.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 
 namespace IronHive.Flux.Core.Extensions;
 
@@ -70,7 +73,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     public static IServiceCollection AddIronHiveFluxIndexAdapters(this IServiceCollection services)
     {
-        services.TryAddSingleton<FluxIndex.Core.Application.Interfaces.IEmbeddingService, IronHiveEmbeddingServiceForFluxIndex>();
+        services.TryAddSingleton(CreateFluxIndexEmbeddingService);
         // One adapter for the shared Flux.Abstractions contract: WebFlux, FluxIndex and the rest resolve the same service.
         services.TryAddSingleton<ITextCompletionService, IronHiveTextCompletionService>();
         return services;
@@ -85,5 +88,23 @@ public static class ServiceCollectionExtensions
         services.AddIronHiveWebFluxAdapters();
         services.AddIronHiveFluxIndexAdapters();
         return services;
+    }
+
+    // FluxIndex takes a Microsoft.Extensions.AI generator; IronHive.Extensions.AI bridges IronHive's. The provider name
+    // stays "IronHive", so the index fingerprint (provider + model + dimension) matches what the earlier adapter wrote.
+    private static FluxIndex.Core.Application.Interfaces.IEmbeddingService CreateFluxIndexEmbeddingService(IServiceProvider sp)
+    {
+        var options = sp.GetRequiredService<IOptions<IronHiveFluxCoreOptions>>().Value;
+        if (options.EmbeddingDimension <= 0)
+        {
+            throw new InvalidOperationException(
+                $"IronHiveFluxCoreOptions.EmbeddingDimension is {options.EmbeddingDimension}; FluxIndex needs the embedding " +
+                $"model's dimension (model '{options.EmbeddingModelId}') to fingerprint and size its index.");
+        }
+
+        var generator = sp.GetRequiredService<IronHive.Abstractions.Embedding.IEmbeddingGenerator>()
+            .AsEmbeddingGenerator(options.EmbeddingModelId, providerName: "IronHive");
+        return new EmbeddingGeneratorEmbeddingService(
+            generator, options: new EmbeddingGeneratorServiceOptions { Dimensions = options.EmbeddingDimension });
     }
 }

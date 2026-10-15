@@ -5,6 +5,7 @@
   <ItemGroup Label="IronHive">
     <PackageVersion Include="IronHive.Abstractions" Version="0.65.1" />
     <PackageVersion Include="IronHive.Core" Version="0.65.1" />
+    <PackageVersion Include="IronHive.Extensions.AI" Version="0.65.1" />
     <PackageVersion Include="IronHive.Plugins.MCP" Version="0.65.1" />
     <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.65.1" />
   </ItemGroup>
@@ -13,9 +14,9 @@
     <PackageVersion Include="WebFlux" Version="0.26.1" />
     <PackageVersion Include="FluxCurator.Core" Version="0.14.0" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
-    <PackageVersion Include="FluxIndex.Core" Version="0.94.0" />
+    <PackageVersion Include="FluxIndex.Core" Version="0.95.0" />
     <PackageVersion Include="FluxFeed" Version="0.55.0" />
-    <PackageVersion Include="FluxIndex.SDK" Version="0.94.0" />
+    <PackageVersion Include="FluxIndex.SDK" Version="0.95.0" />
     <PackageVersion Include="TokenMeter" Version="0.13.1" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">

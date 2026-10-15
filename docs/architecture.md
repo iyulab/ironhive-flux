@@ -144,7 +144,7 @@ IMessageGenerator      ──┬───>  FileFlux.IDocumentAnalysisService
 |---------|--------|--------|-------------|
 | `IronHiveEmbeddingServiceForFileFlux` | `IEmbeddingGenerator` | `FileFlux.IEmbeddingService` | `GenerateEmbeddingAsync`, `GenerateBatchEmbeddingsAsync` |
 | `IronHiveEmbedderForFluxCurator` | `IEmbeddingGenerator` | `FluxCurator.Core.Core.IEmbedder` | `GenerateEmbeddingAsync`, `GenerateEmbeddingsAsync`, `CalculateSimilarity` |
-| `IronHiveEmbeddingServiceForFluxIndex` | `IEmbeddingGenerator` | `FluxIndex.IEmbeddingService` | `GenerateEmbeddingAsync`, `GetModelName` |
+| FluxIndex `EmbeddingGeneratorEmbeddingService` (no class of ours) | `IEmbeddingGenerator` → `AsEmbeddingGenerator` | `FluxIndex.IEmbeddingService` | registered by `AddIronHiveFluxIndexAdapters` |
 
 **TextCompletion Adapters** (3):
 

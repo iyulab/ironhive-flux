@@ -6,7 +6,7 @@
 |--------|------|------------|
 | `IronHiveEmbeddingServiceForFileFlux` | FileFlux | `GenerateEmbeddingAsync`, `GenerateBatchEmbeddingsAsync` |
 | `IronHiveEmbedderForFluxCurator` | FluxCurator `IEmbedder` — WebFlux·FileFlux 의 Semantic 청킹 | `GenerateEmbeddingAsync`, `GenerateEmbeddingsAsync`, `CalculateSimilarity` |
-| `IronHiveEmbeddingServiceForFluxIndex` | FluxIndex | `GenerateEmbeddingAsync`, `GetModelName` |
+| (none — FluxIndex's own `EmbeddingGeneratorEmbeddingService` over `IronHive.Extensions.AI`'s generator) | FluxIndex | registered by `AddIronHiveFluxIndexAdapters`; needs `IronHiveFluxCoreOptions.EmbeddingDimension` |
 
 ## TextCompletion 어댑터
 

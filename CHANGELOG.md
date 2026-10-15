@@ -7,9 +7,18 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ## [Unreleased]
 
 ### Changed
+- **Breaking** — **FluxIndex embeds through FluxIndex's own `Microsoft.Extensions.AI` intake.** `AddIronHiveFluxIndexAdapters`
+  registers FluxIndex 0.95's `EmbeddingGeneratorEmbeddingService` over IronHive's generator (bridged by
+  `IronHive.Extensions.AI`); `IronHiveEmbeddingServiceForFluxIndex` is removed. The index fingerprint is unchanged
+  (provider `IronHive`, the model id, the dimension). `IronHiveFluxCoreOptions.EmbeddingDimension` is now required for
+  FluxIndex: 0 (unset) fails when the service is resolved, naming the option — it used to give FluxIndex a 0-dimension
+  identity. A batch is one generator call and a short or wrong-size result throws instead of storing empty vectors.
+  Migration: set `EmbeddingDimension`; replace any direct `new IronHiveEmbeddingServiceForFluxIndex(...)` with
+  `AddIronHiveFluxIndexAdapters()`.
 - **The nuget.org «Release Notes» of every package link to the GitHub release of its version**, whose notes are this CHANGELOG's section for that version.
 
 ### Dependencies
+- `FluxIndex.Core` / `FluxIndex.SDK` 0.94.0 -> 0.95.0; adds `IronHive.Extensions.AI` 0.65.1.
 - Re-pinned sibling package(s) `WebFlux` 0.25.0 -> 0.26.0.
 - Re-pinned sibling package(s) `FileFlux` 0.58.0 -> 0.59.0.
 - Re-pinned sibling package(s) `TokenMeter` 0.11.0 -> 0.12.0.
