@@ -138,13 +138,15 @@ IMessageGenerator      ──┬───>  FileFlux.IDocumentAnalysisService
 
 ### 4.3 Adapter Classes
 
-**Embedding Adapters** (3):
+**Embedding** (no adapter class of ours): `AddIronHiveEmbeddingGenerator` registers IronHive's `IEmbeddingGenerator`
+as the container's `Microsoft.Extensions.AI` generator (`AsEmbeddingGenerator(EmbeddingModelId, EmbeddingDimension)`), and each
+library takes it directly:
 
-| Adapter | Source | Target | Key Methods |
-|---------|--------|--------|-------------|
-| `IronHiveEmbeddingServiceForFileFlux` | `IEmbeddingGenerator` | `FileFlux.IEmbeddingService` | `GenerateEmbeddingAsync`, `GenerateBatchEmbeddingsAsync` |
-| `IronHiveEmbedderForFluxCurator` | `IEmbeddingGenerator` | `FluxCurator.Core.Core.IEmbedder` | `GenerateEmbeddingAsync`, `GenerateEmbeddingsAsync`, `CalculateSimilarity` |
-| FluxIndex `EmbeddingGeneratorEmbeddingService` (no class of ours) | `IEmbeddingGenerator` → `AsEmbeddingGenerator` | `FluxIndex.IEmbeddingService` | registered by `AddIronHiveFluxIndexAdapters` |
+| Library | Takes it through | Registered by |
+|---------|------------------|---------------|
+| FileFlux (Semantic chunking) | FluxCurator `EmbeddingGeneratorEmbedder` | `AddFileFlux()` itself |
+| WebFlux (Semantic chunking) | FluxCurator `EmbeddingGeneratorEmbedder` as `IEmbedder` | `AddIronHiveWebFluxAdapters` |
+| FluxIndex | FluxIndex `EmbeddingGeneratorEmbeddingService` | `AddIronHiveFluxIndexAdapters` |
 
 **TextCompletion Adapters** (3):
 
@@ -168,7 +170,6 @@ public class IronHiveFluxCoreOptions
     public string TextCompletionModelId { get; set; } = "gpt-4o";
     public string ImageToTextModelId { get; set; } = "gpt-4o";
     public int EmbeddingDimension { get; set; } = 0;
-    public int MaxTokens { get; set; } = 8191;
     public float DefaultTemperature { get; set; } = 0.7f;
     public int DefaultCompletionMaxTokens { get; set; } = 500;
 }

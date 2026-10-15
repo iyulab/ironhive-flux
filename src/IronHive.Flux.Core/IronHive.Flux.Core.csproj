@@ -11,8 +11,8 @@
     <PackageReference Include="IronHive.Extensions.AI" />
     <PackageReference Include="FileFlux" />
     <PackageReference Include="WebFlux" />
-    <!-- IronHiveEmbedderForFluxCurator implements FluxCurator's IEmbedder (semantic chunking in WebFlux and FileFlux). -->
-    <PackageReference Include="FluxCurator.Core" />
+    <!-- FluxCurator's EmbeddingGeneratorEmbedder over the container's generator is the IEmbedder for WebFlux semantic chunking. -->
+    <PackageReference Include="FluxCurator" />
     <PackageReference Include="FluxIndex.Core" />
     <PackageReference Include="TokenMeter" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" />

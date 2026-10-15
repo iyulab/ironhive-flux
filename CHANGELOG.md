@@ -7,6 +7,16 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 ## [Unreleased]
 
 ### Changed
+- **Breaking** — **FileFlux and WebFlux embed through the container's `Microsoft.Extensions.AI` generator; `IronHiveEmbeddingServiceForFileFlux` and `IronHiveEmbedderForFluxCurator` are removed.** The new
+  `AddIronHiveEmbeddingGenerator()` (called by every `Add…Adapters`) registers IronHive's generator as
+  `IEmbeddingGenerator<string, Embedding<float>>` (unless one is registered) with `IronHiveFluxCoreOptions.EmbeddingModelId`,
+  reporting `EmbeddingDimension` as the model's vector size when set (IronHive 0.66.0). FileFlux 0.64.0 builds its
+  semantic-chunking embedder from that generator; WebFlux gets FluxCurator's `EmbeddingGeneratorEmbedder` over it; FluxIndex
+  takes it too (provider name `IronHive`, so the index fingerprint is unchanged). The removed FluxCurator adapter claimed
+  1536 dimensions when `EmbeddingDimension` was unset and never checked a vector; now an unset dimension fails only
+  semantic chunking, naming the dimension, and every vector is checked. `IronHiveFluxCoreOptions.MaxTokens` is removed —
+  only the FileFlux embedding interface (gone in FileFlux 0.64.0) read it. Migration: delete any direct construction of
+  the two adapters and any `MaxTokens` setting; set `EmbeddingDimension` for semantic chunking and FluxIndex.
 - **Breaking** — **FluxIndex embeds through FluxIndex's own `Microsoft.Extensions.AI` intake.** `AddIronHiveFluxIndexAdapters`
   registers FluxIndex 0.95's `EmbeddingGeneratorEmbeddingService` over IronHive's generator (bridged by
   `IronHive.Extensions.AI`); `IronHiveEmbeddingServiceForFluxIndex` is removed. The index fingerprint is unchanged
@@ -18,6 +28,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 - **The nuget.org «Release Notes» of every package link to the GitHub release of its version**, whose notes are this CHANGELOG's section for that version.
 
 ### Dependencies
+- IronHive 0.65.1 -> 0.66.0 · FileFlux 0.63.1 -> 0.64.0 · `FluxCurator.Core` 0.15.0 -> `FluxCurator` 0.16.0 · FluxIndex 0.97.0 -> 0.98.0.
 - `FluxIndex.Core` / `FluxIndex.SDK` 0.94.0 -> 0.95.0; adds `IronHive.Extensions.AI` 0.65.1.
 - Re-pinned sibling package(s) `WebFlux` 0.25.0 -> 0.26.0.
 - Re-pinned sibling package(s) `FileFlux` 0.58.0 -> 0.59.0.

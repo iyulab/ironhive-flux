@@ -15,7 +15,6 @@ public class IronHiveFluxCoreOptionsTests
         options.TextCompletionModelId.Should().Be("gpt-4o");
         options.ImageToTextModelId.Should().Be("gpt-4o");
         options.EmbeddingDimension.Should().Be(0);
-        options.MaxTokens.Should().Be(8191);
         options.DefaultTemperature.Should().Be(0.7f);
         options.DefaultCompletionMaxTokens.Should().Be(500);
     }
@@ -29,7 +28,6 @@ public class IronHiveFluxCoreOptionsTests
             TextCompletionModelId = "gpt-3.5-turbo",
             ImageToTextModelId = "gpt-4-vision",
             EmbeddingDimension = 768,
-            MaxTokens = 4096,
             DefaultTemperature = 0.3f,
             DefaultCompletionMaxTokens = 1000
         };
@@ -38,7 +36,6 @@ public class IronHiveFluxCoreOptionsTests
         options.TextCompletionModelId.Should().Be("gpt-3.5-turbo");
         options.ImageToTextModelId.Should().Be("gpt-4-vision");
         options.EmbeddingDimension.Should().Be(768);
-        options.MaxTokens.Should().Be(4096);
         options.DefaultTemperature.Should().Be(0.3f);
         options.DefaultCompletionMaxTokens.Should().Be(1000);
     }

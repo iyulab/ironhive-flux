@@ -21,8 +21,7 @@ public class ImageToTextAdapterTests
         {
             ImageToTextModelId = "gpt-4o",
             EmbeddingModelId = "text-embedding-3-small",
-            EmbeddingDimension = 1536,
-            MaxTokens = 8191
+            EmbeddingDimension = 1536
         });
     }
 

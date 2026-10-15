@@ -26,11 +26,6 @@ public class IronHiveFluxCoreOptions
     public int EmbeddingDimension { get; set; }
 
     /// <summary>
-    /// 최대 토큰 수 (기본값: 8191)
-    /// </summary>
-    public int MaxTokens { get; set; } = 8191;
-
-    /// <summary>
     /// 텍스트 완성 기본 Temperature (0.0 - 1.0)
     /// </summary>
     public float DefaultTemperature { get; set; } = 0.7f;
