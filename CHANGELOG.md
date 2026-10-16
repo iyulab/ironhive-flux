@@ -4,6 +4,11 @@ All notable changes to this project are documented in this file. Versions follow
 [Semantic Versioning](https://semver.org/); while the major version is 0, a minor release may contain
 breaking changes, and each one is marked **Breaking** with a migration note.
 
+## [Unreleased]
+
+### Dependencies
+- Re-pinned sibling package(s) `FluxIndex.Core` 0.100.0 -> 0.101.0, `FluxIndex.SDK` 0.100.0 -> 0.101.0.
+
 ## [0.17.1] - 2026-10-16
 
 ### Dependencies
