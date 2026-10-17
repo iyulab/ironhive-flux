@@ -8,6 +8,7 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ### Dependencies
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.100.0 -> 0.101.0, `FluxIndex.SDK` 0.100.0 -> 0.101.0.
+- Re-pinned sibling package(s) `FluxFeed` 0.56.0 -> 0.56.1, `FluxIndex.Core` 0.101.0 -> 0.102.0, `FluxIndex.SDK` 0.101.0 -> 0.102.0.
 
 ## [0.17.1] - 2026-10-16
 
