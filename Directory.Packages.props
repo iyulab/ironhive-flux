@@ -10,14 +10,14 @@
     <PackageVersion Include="IronHive.Providers.OpenAI" Version="0.68.0" />
   </ItemGroup>
   <ItemGroup Label="Flux Ecosystem">
-    <PackageVersion Include="FileFlux" Version="0.65.0" />
+    <PackageVersion Include="FileFlux" Version="0.65.1" />
     <PackageVersion Include="WebFlux" Version="0.26.1" />
     <PackageVersion Include="FluxCurator" Version="0.18.0" />
     <PackageVersion Include="WebLookup" Version="0.3.0" />
     <PackageVersion Include="FluxIndex.Core" Version="0.102.0" />
     <PackageVersion Include="FluxFeed" Version="0.56.1" />
     <PackageVersion Include="FluxIndex.SDK" Version="0.102.0" />
-    <PackageVersion Include="TokenMeter" Version="0.13.1" />
+    <PackageVersion Include="TokenMeter" Version="0.14.0" />
   </ItemGroup>
   <ItemGroup Label="Microsoft">
     <!-- Override transitive vulnerable dependency (GHSA-73j8-2gch-69rq) -->
