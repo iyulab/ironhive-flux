@@ -6,6 +6,11 @@ breaking changes, and each one is marked **Breaking** with a migration note.
 
 ## [Unreleased]
 
+### Deprecated
+- **All packages in this repository are deprecated and will not be released again.** The last published version, 0.17.1, remains on
+  nuget.org. Migration: reference FileFlux, WebFlux, FluxIndex, FluxFeed, WebLookup and SystemHarness directly; the bridge types here
+  have no replacement package.
+
 ### Dependencies
 - Re-pinned sibling package(s) `FluxIndex.Core` 0.100.0 -> 0.101.0, `FluxIndex.SDK` 0.100.0 -> 0.101.0.
 - Re-pinned sibling package(s) `FluxFeed` 0.56.0 -> 0.56.1, `FluxIndex.Core` 0.101.0 -> 0.102.0, `FluxIndex.SDK` 0.101.0 -> 0.102.0.

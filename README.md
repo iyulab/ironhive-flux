@@ -1,5 +1,12 @@
 # IronHive.Flux
 
+> **Deprecated (2026-10-21).** These packages are no longer developed or released. The last published version (0.17.1) stays on
+> nuget.org. To combine IronHive with the Flux packages, reference FileFlux, WebFlux, FluxIndex and FluxFeed directly; WebLookup and
+> SystemHarness are consumed directly as well.
+>
+> **더 이상 개발·게시하지 않는다(2026-10-21).** 마지막 게시판 0.17.1 은 nuget.org 에 남는다. IronHive 와 Flux 패키지를 함께 쓰려면 FileFlux ·
+> WebFlux · FluxIndex · FluxFeed 를 직접 참조한다. WebLookup · SystemHarness 도 직접 소비한다.
+
 [![NuGet](https://img.shields.io/nuget/v/IronHive.Flux?label=IronHive.Flux)](https://www.nuget.org/packages/IronHive.Flux)
 [![NuGet](https://img.shields.io/nuget/v/IronHive.Flux.Core?label=IronHive.Flux.Core)](https://www.nuget.org/packages/IronHive.Flux.Core)
 [![NuGet](https://img.shields.io/nuget/v/IronHive.Flux.Rag?label=IronHive.Flux.Rag)](https://www.nuget.org/packages/IronHive.Flux.Rag)
